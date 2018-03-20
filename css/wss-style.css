@@ -1,0 +1,154 @@
+.single-product-support {
+  display: block;
+  padding: 1rem;
+  /*border: 1px solid #ccc;*/
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.single-product-support img {
+  margin-bottom: 0;
+}
+
+.single-product-support .product-name {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 80%;
+}
+
+.button.new-ticket,
+.button.ticket-cancel {
+  cursor: pointer;
+  float: right;
+}
+
+.thread-tools .button,
+.button.thread-cancel {
+  cursor: pointer;
+}
+
+.create-new-ticket input[type="text"],
+#wes-support-access input[type="text"],
+#wes-support-access input[type="email"] {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.single-ticket-content {
+  display: block;
+}
+
+.thread-tools {
+  display: none;
+  width: 100%;
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.thread-tools .button {
+  padding: 0.5rem;
+  background: #CACACC;
+  font-weight: normal;
+  font-size: 80%;
+}
+
+.premium-ticket-container iframe,
+.premium-ticket-container textarea#premium-ticket,
+.premium-thread-container iframe,
+.premium-thread-container textarea#premium-thread {
+  height: 300px !important;
+}
+
+.premium-ticket-container form input[type="text"] {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+}
+
+.support-tickets-table {
+  font-size: 90%;
+}
+
+.support-tickets-table td.product img {
+  width: 50px;
+  margin-bottom: 0;
+}
+
+.ticket-toggle:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.create-time, .update-time {
+  font-size: 90%;
+}
+
+.single-thread {
+  border: 1px solid #CACACC;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  font-size: 90%;
+}
+
+.thread-header {
+  padding: 1rem;
+  background: #D2D2D2;
+}
+
+.answer {
+  border: 1px solid #2fbfb0;
+}
+
+.answer .thread-header {
+  background: #2fbfb0;
+  color: #fff;
+}
+
+.thread-header .left,
+.thread-header .right {
+  float: left;
+  text-transform: capitalize;
+  line-height: 1.2rem;
+}
+
+.thread-content img {
+  /*width: 800px;*/
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.delete-thread {
+  display: none;
+}
+
+span.date {
+  font-size: 70%;
+}
+
+.thread-header img {
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.thread-content {
+  padding: 1rem;
+}
+
+.support-exit-button {
+  position: absolute;
+  right: 0;
+  z-index: 99;
+  display: none;
+  padding-left: 0.5rem;
+}
+
+.support-exit-button img {
+  display: inline-block;
+  position: relative;
+  width: 20px;
+  top: 0.3rem;
+  margin-right: 0.4rem;
+}
