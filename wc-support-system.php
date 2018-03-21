@@ -24,6 +24,7 @@ load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languag
 
 /*Files required*/
 include( plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php');
+include( plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php');
 
 
 /*Activation*/

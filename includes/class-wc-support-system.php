@@ -5,14 +5,16 @@
 
 class wc_support_system {
 
+	public $tickets_obj;
+
 	public function __construct() {
 		
 		add_action('wss_cron_tickets_action', array($this, 'wss_cron_tickets'));
 
 		add_action('admin_init', array($this, 'wss_tables'));
 		add_action('admin_init', array($this, 'add_support_page'));
+		add_action('admin_init', array($this, 'wss_save_settings'));
 		add_action('admin_menu', array($this, 'register_wss_admin'));
-		add_action('admin_menu', array($this, 'register_wss_settings'));
 
 		add_action('admin_enqueue_scripts', array($this, 'wss_admin_scripts'));
 
@@ -39,6 +41,8 @@ class wc_support_system {
 
 		add_shortcode('support-tickets-table', array($this, 'support_tickets_table'));
 		add_filter('the_content', array($this, 'page_class_instance'));
+
+		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
 
 	}
 
@@ -171,7 +175,15 @@ class wc_support_system {
 			$output['id'] = $userdata->ID;
 			$output['name'] = $userdata->display_name;
 			$output['email'] = $userdata->user_email; 
+
+			$output['admin'] = false;
+			$roles = $userdata->roles;
+			if(in_array('administrator', $roles)) {
+				$output['admin'] = true;				
+			}
+
 			$output['order_id'] = null;
+
 		} else {
 			$id = 0;
 
@@ -199,6 +211,7 @@ class wc_support_system {
 			$output['id'] = $id;
 			$output['name'] = $name;
 			$output['email'] = $email;				
+			$output['admin'] = false;
 			$output['order_id'] = $order_id;
 		}
 
@@ -326,7 +339,21 @@ class wc_support_system {
 	}
 
 
-	// public function get_older_tickets() {
+	/**
+	 * Restituisce il numero di tickets in attesa di essere letti
+	 * @return int
+	 */
+	public function get_awaiting_tickets() {
+		global $wpdb;
+		$query = "
+			SELECT * FROM " . $wpdb->prefix . "wss_support_tickets WHERE status = 1
+		";
+		$tickets = $wpdb->get_results($query);
+
+		return count($tickets);
+	}
+
+
 	public function wss_cron_tickets() {
 		global $wpdb;
 		$query = "
@@ -548,14 +575,14 @@ class wc_support_system {
 				$threads = $this->get_ticket_threads($ticket_id);
 				if($threads) {
 					foreach ($threads as $thread) {
-						echo '<div class="single-thread thread-' . $thread->id . ($thread->user_id == 1 ? ' answer' : '') . '">';
+						echo '<div class="single-thread thread-' . $thread->id . (user_can($thread->user_id, 'administrator') ? ' answer' : '') . '">';
 							echo '<div class="thread-header">';
 								echo '<div class="left">' . get_avatar($thread->user_id, 50) . '</div>';
 								echo '<div class="right">' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . html_entity_decode(wp_unslash($thread->content)) . '</div>';
+							echo '<div class="thread-content">' . html_entity_decode(nl2br(wp_unslash($thread->content))) . '</div>';
 						echo '</div>';
 					}
 				}
@@ -749,7 +776,7 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ilGhera | Wordpress Development <support@ilghera.com>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= html_entity_decode(wp_unslash($content));
+		$message .= html_entity_decode(nl2br($content));
 		$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
 		$message .= 'Don\'t reply to this message, you can read all threads and update the ticket going to <a href="' . home_url() . '/premium-support"><b>Premium support</b></a>.</p>';
 		$message .= '<b>ilGhera</b> | Wordpress Development';
@@ -791,7 +818,7 @@ class wc_support_system {
 
 		$this->update_premium_ticket($ticket_id, $date, $status);
 
-		if($user_id == 1) {
+		if(user_can($user_id, 'administrator')) {
 			$this->support_premium_notification($ticket_id, 'ilGhera Support', $content, $user_email);	
 		} else {
 			$this->support_premium_notification($ticket_id, $user_name, $content);	
@@ -838,13 +865,13 @@ class wc_support_system {
 			/*User info*/
 			$user = $this->user_data();
 
-			$ticket_status = $user['id'] == 1 ? 2 : 1;
+			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
 			$this->save_new_premium_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $ticket_status);
 
-			if($user['id'] == 1) {
+			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
 				add_action('admin_head', array($this, 'auto_open_ticket'));
 			} else {
-				add_action('wp_head', array($this, 'auto_open_ticket'));
+				add_action('wp_footer', array($this, 'auto_open_ticket'));
 			}
 		}
 	}
@@ -913,61 +940,79 @@ class wc_support_system {
 
 
 	/**
-	 * Registrazione della pagina di amministrazione	
+	 * Add all plugin admin pages and menu items	
 	 */
 	public function register_wss_admin() {
-	    add_menu_page( 'WC Support System', 'WC Support System', 'manage_options', 'wc-support-system', array($this, 'wss_admin'), 'dashicons-tickets-alt', 59);
+
+		$unread_tickets = $this->get_awaiting_tickets();
+		$bouble_count = '<span class="update-plugins count-' . $unread_tickets . '" title="' . $unread_tickets . '""><span class="update-count">' . $unread_tickets . '</span></span>';
+	    
+	    $menu_label = sprintf('WC Support %s', $bouble_count);
+
+	    /*Main menu item*/
+	    $hook = add_menu_page( 'WC Support', $menu_label, 'manage_options', 'wc-support-system', array($this, 'wss_admin'), 'dashicons-tickets-alt', 59);
+	    
+	    /*Tickets*/
+	    add_submenu_page( 'wc-support-system', 'Tickets', 'Tickets', 'manage_options', 'wc-support-system');
+
+		add_action( 'load-' . $hook, array($this, 'screen_options'));
+	    
+	    /*Options*/
+	    add_submenu_page( 'wc-support-system', __('Settings', 'wss'), __('Settings', 'wss'), 'manage_options', 'settings', array($this, 'wss_settings'));
+
 	}
+
+
+	public function set_screen($status, $option, $value) {
+		return $value;
+	}
+
+
+	/**
+	* Screen options
+	*/
+	public function screen_options() {
+
+		$option = 'per_page';
+		$args   = [
+			'label'   => 'Tickets',
+			'default' => 5,
+			'option'  => 'tickets_per_page'
+		];
+
+		add_screen_option( $option, $args );
+
+		$this->tickets_obj = new wss_table();
+	}
+
 
 
 	/**
 	 * Pagina di amministrazione Premium Support
 	 */
 	public function wss_admin() {
-	    echo '<div class="wrap">';
-		    echo '<h1>Woocommerce Support System</h1>';
-		       
-		    //TABLE
-		    echo '<table class="wp-list-table widefat fixed striped posts tickets">';
-			    echo '<thead>';
-				    echo '<tr>';
-					    echo '<th scope="col" style="width: 3%;"><b>ID</b></th>';
-					    echo '<th scope="col" style="width: 35%;"><b>Title</b></th>';
-					    echo '<th scope="col" style="width: 5%;"><b>User id</b></th>';
-					    echo '<th scope="col" style="width: 10%;"><b>User name</b></th>';
-					    echo '<th scope="col" style="width: 15%;"><b>User email</b></th>';
-					    echo '<th scope="col" style="width: 5%;"><b>Product</b></th>';
-					    echo '<th scope="col" style="width: 5%;"><b>Status</b></th>';
-					    echo '<th scope="col" style="width: 10%;"><b>Create time</b></th>';
-					    echo '<th scope="col" style="width: 10%;"><b>Update time</b></th>';
-					    echo '<th scope="col" style="width: 2%;"></th>';
+	    ?>
+		<div class="wrap">
+			<h1>Woocommerce Support System</h1>
 
-					    echo '</tr>';
-				    echo '</thead>';
-			    echo '<tbody>';
-			    	$tickets = $this->get_tickets();
-			    	foreach ($tickets as $ticket) {
-			    		echo '<tr class="ticket-' . $ticket->id . '">';
-				    		echo '<td>#' . $ticket->id . '</td>'; 
-				    		echo '<td class="ticket-toggle' . ($ticket->status == 1 ? ' bold' : '') . '" data-ticket-id="' . $ticket->id . '">' . $ticket->title . '</td>'; 
-				    		echo '<td>' . ($ticket->user_id != 0 ? $ticket->user_id : '-') . '</td>'; 
-				    		echo '<td>' . $ticket->user_name . '</td>'; 
-				    		echo '<td>' . $ticket->user_email . '</td>'; 
-				    		echo '<td>' . get_the_post_thumbnail($ticket->product_id, array(40,40)) . '</td>'; 
-				    		echo '<td class="status">' . $this->get_ticket_status_label($ticket->status) . '</td>'; 
-				    		echo '<td>' . date('d-m-Y H:i:s', strtotime($ticket->create_time)) . '</td>'; 
-				    		echo '<td>' . date('d-m-Y H:i:s', strtotime($ticket->update_time)) . '</td>'; 
-				    		echo '<td class="delete-ticket" data-ticket-id="' . $ticket->id . '"><img src="' . plugin_dir_url(__DIR__) . '/images/dustbin-admin.png"></td>';
-			    		echo '</tr>';
-			    	}
-			    echo '</tbody>';
-			echo '</table>';
-
-			$this->create_new_thread();
-			
-			echo '<div class="single-ticket-content"></div>';
-
-		echo '</div>';
+			<!-- <div id="poststuff"> -->
+				<!-- <div id="post-body" class="metabox-holder columns-2"> -->
+					<!-- <div id="post-body-content"> -->
+						<!-- <div class="meta-box-sortables ui-sortable"> -->
+							<!-- <form method="post"> -->
+								<?php
+								// $test = new wss_table();
+								$this->tickets_obj->prepare_items();
+								$this->tickets_obj->display(); 
+								?>
+							<!-- </form> -->
+						<!-- </div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<!-- <br class="clear"> -->
+			<!-- </div> -->
+		</div>
+	    <?php
 	}
 
 
@@ -1067,17 +1112,41 @@ class wc_support_system {
 
 
 	/**
-	 * Registrazione della pagina di amministrazione	
+	 * WSS Options page
 	 */
-	public function register_wss_settings() {
-	    add_submenu_page( 'wc-support-system', __('Settings', 'wss'), __('Settings', 'wss'), 'manage_options', 'settings', array($this, 'wss_settings'));
+	public function wss_settings() {
+
+		/*Get the options*/
+		$reopen_ticket = get_option('wss-reopen-ticket');
+
+	    echo '<div class="wrap">';
+		    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
+		    echo '<form name="wss-options" class="wss-options" method="post" action="">';
+		    	echo '<table class="form-table">';
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
+		    			echo '<td>';
+			    			echo '<label for="reopen-ticket">';
+		    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
+			    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.');
+			    			echo '</label>'; 
+		    			echo '</td>';
+		    		echo '</tr>';
+		    	echo '</table>';
+		    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
+		    	echo '<input type="submit" class="button button-primary" value="Save">';
+		    echo '</form>';
+		echo '</div>';
 	}
 
 
-	public function wss_settings() {
-	    echo '<div class="wrap">';
-		    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
-		echo '</div>';
+	public function wss_save_settings() {
+		if(isset($_POST['wss-options-hidden'])) {
+
+			/*Reopen ticket*/
+			$reopen_ticket = isset($_POST['reopen-ticket']) ? $_POST['reopen-ticket'] : 0;
+			update_option('wss-reopen-ticket', $reopen_ticket);
+		}
 	}
 
 
