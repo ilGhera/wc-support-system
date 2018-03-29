@@ -394,7 +394,7 @@ class wc_support_system {
 			$last_update = strtotime($ticket->update_time);
 			$now  = strtotime('now');
 
-			if( ($now - $last_update) >= $closing_delay ) {
+			if( ($now - $last_update) >= ($notice_period + $closing_delay) ) {
 
 				/*Last update is used for not modifying the ticket date*/
 				$this->update_ticket($ticket->id, $ticket->update_time, 3);
