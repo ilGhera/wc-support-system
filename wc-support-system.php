@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Woocommerce Support System
+ * Plugin Name: Woocommerce Support System - Premium
  * Plugin URI: https://www.ilghera.com/product/wc-support-system/
  * Description:  Give support to your WooComerce customers with this fast and easy to use ticket system.
  * Author: ilGhera
