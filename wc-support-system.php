@@ -21,6 +21,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
 /*Activation*/
 function wss_activation() {
 
+	/*Deactivate the free version if present*/
+	if( is_plugin_active('wc-support-system/wc-support-system.php') || class_exists('wc_support_system') ) {
+		deactivate_plugins('wc-support-system/wc-support-system.php');
+	    wp_redirect(admin_url('plugins.php?plugin_status=all&paged=1&s'));
+	}
+
 	/*WooCommerce must be installed*/
 	if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
        
