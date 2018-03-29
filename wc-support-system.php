@@ -2,13 +2,13 @@
 /**
  * Plugin Name: Woocommerce Support System
  * Plugin URI: https://www.ilghera.com/product/wc-support-system/
- * Description:  Give support to your customers with this easy and fast ticket system, available 
- * both for logged in users and guests. 
+ * Description:  Give support to your WooComerce customers with this fast and easy to use ticket system.
  * Author: ilGhera
  * Version: 0.9.0
  * Author URI: https://ilghera.com 
  * Requires at least: 4.0
  * Tested up to: 4.9
+ * WC tested up to: 3
  * Text Domain: wss
  * Domain Path: /languages
  */
@@ -18,6 +18,26 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 
 
+/*Activation*/
+function wss_activation() {
+
+	if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+       
+        wp_die( __('<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.') );	
+
+    } else {
+
+		wc_support_system::wss_tables();
+
+		/*Cron*/
+		if(!wp_next_scheduled( 'wss_cron_tickets_action' )) {
+			wp_schedule_event(time(), 'hourly', 'wss_cron_tickets_action');//temp
+	    }
+	}
+}
+register_activation_hook(__FILE__, 'wss_activation');	
+
+
 /*Internalization*/
 load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
@@ -25,16 +45,6 @@ load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languag
 /*Files required*/
 include( plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php');
 include( plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php');
-
-
-/*Activation*/
-function wss_activation() {
-	/*Cron*/
-	if(!wp_next_scheduled( 'wss_cron_tickets_action' )) {
-		wp_schedule_event(time(), 'hourly', 'wss_cron_tickets_action');
-    }	
-}
-register_activation_hook(__FILE__, 'wss_activation');	
 
 
 /*Deactivation*/

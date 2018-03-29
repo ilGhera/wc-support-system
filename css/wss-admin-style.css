@@ -2,9 +2,59 @@
  * Custom admin style
  */
 
-.wp-list-table.tickets td {
+.wp-list-table.tickets td,
+.wp-list-table.tickets th {
 	vertical-align: middle;
   color: #666a76;
+}
+
+.wp-list-table.tickets .check-column {
+  width: 3%;
+}
+
+.wp-list-table.tickets .column-id {
+  width: 5%;
+}
+
+.wp-list-table.tickets .column-title {
+  width: 26%;
+}
+
+.wp-list-table.tickets .column-user_id {
+  width: 7%;
+}
+
+.wp-list-table.tickets .column-user_name {
+  width: 10%;
+}
+
+.wp-list-table.tickets .column-user_email {
+  width: 13%;
+}
+
+.wp-list-table.tickets .column-product_id {
+  width: 7%;
+}
+
+.wp-list-table.tickets .column-status {
+  width: 10%;
+}
+
+.wp-list-table.tickets .column-create_time {
+  width: 10%;
+}
+
+.wp-list-table.tickets .column-update_time {
+  width: 10%;
+}
+
+.wp-list-table.tickets .column-delete {
+  width: 2%;
+}
+
+.wp-list-table.tickets .column-product_id img {
+  width: 40px;
+  height: 40px;
 }
 
 .ticket-toggle {
@@ -70,6 +120,9 @@
 
 .answer .thread-header {
   background: #2fbfb0;
+}
+
+.answer .thread-header .right {
   color: #fff;
 }
 
@@ -107,16 +160,16 @@ span.date {
   margin: 1.5rem auto;
 }
 
-.premium-thread-container {
+.wss-thread-container {
 	margin-top: 3rem;
 }
 
-.premium-thread-container iframe,
-.premium-thread-container textarea#premium-thread {
+.wss-thread-container iframe,
+.wss-thread-container textarea#wss-thread {
   height: 300px !important;
 }
 
-.delete-ticket {
+.column-delete img {
   cursor: pointer;
 }
 
@@ -129,6 +182,11 @@ span.date {
 
 .label.toggle {
   cursor: pointer;
+  width: 100%;
+  max-width: 50px;
+  text-align: center;
+  display: block;
+  padding: 0.35rem 0;
 }
 
 .bootstrap-iso .modal-dialog {
@@ -145,6 +203,8 @@ span.date {
 
 .status-selector .label {
   opacity: 0.3;
+  max-width: 80px;
+  margin: 0 auto; 
 }
 
 .status-selector .label:hover,
@@ -154,4 +214,36 @@ span.date {
 
 .status-selector div {
   text-align: center;
+}
+
+.create-support-page,
+.support-email-fields,
+.auto-close-fields {
+  display: none;
+}
+
+.wss-options input[type="text"],
+.wss-options select {
+  width: 180px;
+}
+
+@media only screen and (max-width: 790px) {
+  
+  th.column-id, 
+  td.column-id {
+    display: none !important;
+    padding: 3px 8px 3px 35%;
+  }
+}
+
+
+@media only screen and (max-width: 1200px) {
+  
+  th.column-create_time, 
+  td.column-create_time,
+  th.column-user_email,
+  td.column-user_email {
+    display: none;
+  }
+
 }

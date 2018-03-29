@@ -1,18 +1,18 @@
 <?php
 /**
- * Servizio di supporto
+ * Woocommerce Support System
  */
 
 class wc_support_system {
 
 	public $tickets_obj;
+	public $support_page;
+	public $support_page_url;
 
 	public function __construct() {
 		
 		add_action('wss_cron_tickets_action', array($this, 'wss_cron_tickets'));
 
-		add_action('admin_init', array($this, 'wss_tables'));
-		add_action('admin_init', array($this, 'add_support_page'));
 		add_action('admin_init', array($this, 'wss_save_settings'));
 		add_action('admin_menu', array($this, 'register_wss_admin'));
 
@@ -25,17 +25,18 @@ class wc_support_system {
 		add_action('admin_footer', array($this, 'ajax_delete_single_thread'));
 		add_action('admin_footer', array($this, 'modal_change_ticket_status'));
 
-		add_action('init', array($this, 'premium_support_access_validation'));
-		add_action('init', array($this, 'save_new_premium_ticket'));
-		add_action('init', array($this, 'save_new_premium_thread'));
+		add_action('init', array($this, 'support_access_validation'));
+		add_action('init', array($this, 'save_new_ticket'));
+		add_action('init', array($this, 'save_new_thread'));
 		add_action('init', array($this, 'wss_avoid_resend'));
 
 		add_action('wp_ajax_delete-ticket', array($this, 'delete_single_ticket_callback'));
 		add_action('wp_ajax_delete-thread', array($this, 'delete_single_thread_callback'));
-		add_action('wp_ajax_get-current-status', array($this, 'get_current_status_callback'));
 		add_action('wp_ajax_change-ticket-status', array($this, 'change_ticket_status_callback'));
 		add_action('wp_ajax_get_ticket_content', array($this, 'get_ticket_content_callback'));
 		add_action('wp_ajax_nopriv_get_ticket_content', array($this, 'get_ticket_content_callback'));
+		add_action('wp_ajax_product-select-warning', array($this, 'product_select_warning_callback'));
+		add_action('wp_ajax_nopriv_product-select-warning', array($this, 'product_select_warning_callback'));
 
 		add_action('wp_footer', array($this, 'ajax_get_ticket_content'));
 
@@ -53,38 +54,62 @@ class wc_support_system {
 	 * @return mixed           the filtered content
 	 */
 	public function page_class_instance($content) {
-		if(is_page('Support')) {
+
+		$support_page = get_option('wss-page');
+
+		if($support_page && is_page($support_page)) {
 			$wss = new self();
-			$output = do_shortcode('[support-tickets-table]') . $content;
+			
+			/*Get the tickets table*/
+			ob_start();
+			do_shortcode('[support-tickets-table]');
+			$tickets_table = ob_get_clean();
+
+			/*Get the table position in the page*/
+			$page_layout = get_option('wss-page-layout');
+			
+			$output = $page_layout == 'after' ? $content . $tickets_table : $tickets_table . $content ;
 			return $output;
+		
 		} else {
 			return $content;
 		}
+
 	}
 
 
 	/**
-	 * Fogli di stile e script della classe per il back-end
+	 * Back-end scripts and style
 	 */
 	public function wss_admin_scripts() {
 		$admin_page = get_current_screen();
-		if($admin_page->base == 'toplevel_page_wc-support-system') {
+		if( in_array($admin_page->base, array('toplevel_page_wc-support-system', 'wc-support_page_settings')) ) {
+
+			/*js*/
 		    wp_enqueue_script('bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js');
 			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . '/js/wss.js', array('jquery'));			
+	        wp_enqueue_script('wp-color-picker', array('jquery'), '', true ); 
+
+			/*css*/
 		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . '/css/bootstrap-iso.css');    
 		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . '/css/wss-admin-style.css');    
+            wp_enqueue_style('wp-color-picker' );          
 		}
 	}
 
 
 	/**
-	 * Script front-end
+	 * Front-end scripts and style
 	 */
 	public function wss_scripts() {
-		if(is_page('support')) {
+		if(is_page($this->support_page)) {
+
+			/*js*/
 			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . '/js/wss.js', array('jquery'));			
-		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . '/css/wss-style.css');
+		    
+			/*css*/
 		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . '/css/bootstrap-iso.css');    
+		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . '/css/wss-style.css');
 		}
 	}
 
@@ -92,7 +117,7 @@ class wc_support_system {
 	/**
 	 * Create the plugin db tables
 	 */
-	public function wss_tables() {
+	public static function wss_tables() {
 		global $wpdb;
 		$wss_tickets = $wpdb->prefix . 'wss_support_tickets';
 		$wss_threads = $wpdb->prefix . 'wss_support_threads';
@@ -105,7 +130,7 @@ class wc_support_system {
 				id bigint(20) NOT NULL AUTO_INCREMENT,
 				title varchar(200) NOT NULL,
 				user_id bigint(20) NOT NULL,
-				user_name varchar(20) NOT NULL,
+				user_name varchar(60) NOT NULL,
 				user_email varchar(100) NOT NULL,
 				product_id bigint(20) NOT NULL,
 				status int(11) NOT NULL,
@@ -130,7 +155,7 @@ class wc_support_system {
 				content text NOT NULL,
 				create_time datetime NOT NULL,
 				user_id bigint(20) NOT NULL,
-				user_name varchar(20) NOT NULL,
+				user_name varchar(60) NOT NULL,
 				user_email varchar(100) NOT NULL,
 				UNIQUE KEY id (id)
 			) $charset_collate;";
@@ -146,26 +171,26 @@ class wc_support_system {
 
 	/**
 	 * Create the Support page
+	 * @param string $page_titel the page title indicateded by the admin
+	 * @return int the page id
 	 */
-	public function add_support_page() {
-		if(!get_page_by_title('Support')) {
-			wp_insert_post(
-				array(
-					'post_title'  => 'Support',
-					'post_name'   => 'support',
-					'post_content'=> '',
-					'post_status' => 'publish',
-					'post_type'   => 'page',
+	public function add_support_page($page_title) {
+		$output = wp_insert_post(
+			array(
+				'post_title'  => $page_title,
+				'post_name'   => sanitize_title($page_title),
+				'post_content'=> '',
+				'post_status' => 'publish',
+				'post_type'   => 'page',
+			)
+		);	
 
-				)
-			);	
-		}
+		return $output;
 	}
 
-	
 
 	/**
-	 * Dati dell'utente, loggato e  non
+	 * Get the user data
 	 * @return array
 	 */
 	public function user_data() {
@@ -218,15 +243,18 @@ class wc_support_system {
 		return $output;
 	}
 
-	
+		
 	/**
-	 * Restituisce i prodotti acquistati dall'utente specificato
-	 * @return array        			gli id dei prodotti  
+	 * Get the products bought by the specific customer
+	 * @param  string $order_id   the order id
+	 * @param  string $user_email the user email
+	 * @return array              the products ids
 	 */
 	public function get_user_products($order_id='', $user_email='') {
 
 		$output = null;
 
+		/*Logged in user*/
 		if(is_user_logged_in()) {
 		 	$current_user = wp_get_current_user();
 			$args = array(
@@ -256,6 +284,8 @@ class wc_support_system {
 			wp_reset_query();
 
 		} elseif($order_id && $user_email) {
+
+			/*User not logged in*/
 			if(get_post_meta($order_id, '_billing_email', true) == $user_email) {
 				$order = new WC_Order($order_id);
 				$items = $order->get_items();			
@@ -272,19 +302,23 @@ class wc_support_system {
 
 	
 	/**
-	 * Verifica i dati inseriti dall'utente (premium key e email) perchè possa accedere al supporto premium
-	 * L'accesso avviene anche con premium key scaduta, l'utente non potrà pubblicare.
+	 * Check the informations provided by the user (order id and email) for the support service access
+	 * @param bool $setcookie cokies can be set for reconize the user in the current session
 	 * @return bool
 	 */
-	public function premium_support_access_validation($setcookie=null) {
-		
+	public function support_access_validation($setcookie=null) {
+
+		$validation = false;
+
+		$this->support_page = get_option('wss-page');
+		$this->support_page_url = get_the_permalink($this->support_page);
+
 		if(isset($_POST['wss-support-access'])) {
 		    //USER DATA
 			$guest_name = $_POST['wss-guest-name'];
 		    $email      = $_POST['wss-guest-email'];
 		    $order_id 	= $_POST['wss-order-id'];
-		    $validation = false;
-		    $setcookie = $setcookie ? $setcookie : true;
+		    $setcookie  = $setcookie ? $setcookie : true;
 
 		    $products = $this->get_user_products($order_id, $email);
 
@@ -293,21 +327,21 @@ class wc_support_system {
 			    	setcookie('wss-support-access', 1);
 			    	setcookie('wss-guest-name', $guest_name);
 			    	setcookie('wss-guest-email', $email);
-			    	setcookie('wss-order-id', $order_id);
-					
-					exit;
-		    	}
-		    	
-		    	$validation = true;
-		    }	    
+			    	setcookie('wss-order-id', $order_id);	
 
-		    return $validation;
+			    	wp_redirect($this->support_page_url);
+					exit;			
+		    	}		    	
+		    }	    
 	    }
+
+	    return $validation;
+
 	}
 
 
 	/**
-	 * Verifica che l'utente loggato abbia diritto al supporto premium, in base agli acquisti fatti
+	 * Check if the logged in user can access to the support service, based on his purchases
 	 * @return bool
 	 */
 	public function logged_in_user_support_access_validation() {
@@ -325,22 +359,7 @@ class wc_support_system {
 
 
 	/**
-	 * Restituisce tutti i ticket presenti nel db
-	 * @return array
-	 */
-	public function get_tickets() {
-		global $wpdb;
-		$query = "
-			SELECT * FROM " . $wpdb->prefix . "wss_support_tickets ORDER BY status ASC
-		";
-		$tickets = $wpdb->get_results($query);
-
-		return $tickets;
-	}
-
-
-	/**
-	 * Restituisce il numero di tickets in attesa di essere letti
+	 * Get the tickets that requires an answer (open)
 	 * @return int
 	 */
 	public function get_awaiting_tickets() {
@@ -354,6 +373,9 @@ class wc_support_system {
 	}
 
 
+	/**
+	 * Check for tickets not updated from a while (time option available) and send a message to the user	 
+	 */
 	public function wss_cron_tickets() {
 		global $wpdb;
 		$query = "
@@ -361,38 +383,36 @@ class wc_support_system {
 		";
 		$tickets = $wpdb->get_results($query);
 
+		/*Get the setting options*/
+		$notice_period = 60 * 60 * 24 * get_option('wss-auto-close-days-notice');
+		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
+
+		/*Message*/
+		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
+
 		foreach ($tickets as $ticket) {
 			$last_update = strtotime($ticket->update_time);
 			$now  = strtotime('now');
 
-			if( ($now - $last_update) >= 604800) {
+			if( ($now - $last_update) >= $closing_delay ) {
 
-				$message = '
-					Hi, we have not heard back from you in a few days.<br>
-					Do you need anything else from us for the support case: ' . $ticket->title . ' (case #' . $ticket->id . ')? If yes, please update the ticket on ilghera.com will get back to you asap.<br>
-					If your questions have been answered, please disregard this message and we will mark this case as resolved.<br>
-					Thanks!
-				';
+				/*Last update is used for not modifying the ticket date*/
+				$this->update_ticket($ticket->id, $ticket->update_time, 3);
 
-				/*Aggiornamento stato del ticket*/
-				$date = date('Y-m-d H:i:s');
-				$this->update_premium_ticket($ticket->id, $date, 3);
+			} elseif( ($now - $last_update) >= $notice_period ) {
 
-				/*Mail all'utente*/
-				$this->support_premium_notification($ticket->id, 'ilGhera Support', $message, $ticket->user_email);
+				/*Send user notification*/
+				$this->support_notification($ticket->id, null, $auto_close_notice_text, $ticket->user_email);
 
 			}
-
 		}
-
-		// return $tickets;
 	}
 
 
 	/**
-	 * Restituisce i ticket legati all'utente
-	 * @param  int 	  $user_id    l'id dell'utente, 0 se non loggato
-	 * @param  string $user_email la mail dell'utente				
+	 * Get the user's tickets
+	 * @param  int 	  $user_id    the user id, 0 if not logged in 
+	 * @param  string $user_email the user email				
 	 * @return array
 	 */
 	public function get_user_tickets($user_id, $user_email) {
@@ -405,20 +425,30 @@ class wc_support_system {
 		return $tickets;
 	}
 
+
+	/**
+	 * Opening a ticket, this alert is shown if a product is not selected
+	 * @return mixed
+	 */
+	public function product_select_warning_callback() {
+		echo '<div class="alert alert-warning">' . __('Please, choose a product for your support request.', 'wss') . '</div>';
+		exit;
+	}
+
 	
 	/**
-	 * Form per la pubblicazione di un nuovo ticket
-	 * @param  string $user_email la mail dell'utente
+	 * New ticket form
+	 * @param  string $user_email the user email
 	 */
 	public function create_new_ticket($order_id, $user_email) {
 		?>
-		<div class="premium-ticket-container" style="display: none;">
+		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
 				<select name="product-id" class="product-id" style="margin: 1rem 0;">
 					<?php 
 					$products = $this->get_user_products($order_id, $user_email);
 					if($products) {
-						echo '<option value="null">Select a product</option>';
+						echo '<option value="null">' . __('Select a product', 'wss') . '</option>';
 						foreach($products as $product) {
 							if($product) {
 								echo '<option value="' . $product . '">' . get_the_title($product) . '</option>';								
@@ -427,28 +457,28 @@ class wc_support_system {
 					}
 					?>
 				</select>
-				<input type="text" name="title" placeholder="Ticket subject" required="required">
-				<?php wp_editor('', 'premium-ticket'); ?>
+				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
+				<?php wp_editor('', 'wss-ticket'); ?>
 				<input type="hidden" name="ticket-sent" value="1">
-				<input type="submit" class="send-new-ticket" value="Send" style="margin-top: 1rem;">
+				<input type="submit" class="send-new-ticket" value="<?php echo __('Send', 'wss'); ?>" style="margin-top: 1rem;">
 			</form>
 			<div class="bootstrap-iso product-alert"></div>
 		</div>
-		<a class="button new-ticket">New ticket</a>
-		<a class="button ticket-cancel" style="display: none;">Cancel</a>
+		<a class="button new-ticket"><?php echo __('New ticket', 'wss'); ?></a>
+		<a class="button ticket-cancel" style="display: none;"><?php echo __('Cancel', 'wss'); ?></a>
 		<?php
 	}
 
 
 	/**
-	 * Form per la pubblicazione di un nuovo thread
+	 * New thread form
 	 */
 	public function create_new_thread() {
 		?>
-		<div class="premium-thread-container" style="display: none;">
+		<div class="wss-thread-container" style="display: none;">
 			<form method="POST" action="">
 				<?php 
-				wp_editor('', 'premium-thread'); 
+				wp_editor('', 'wss-thread'); 
 				?>
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" name="thread-sent" value="1">
@@ -457,20 +487,20 @@ class wc_support_system {
 			<div class="bootstrap-iso"></div>
 		</div>
 		<div class="thread-tools">
-			<a class="button back-to-tickets">Back to tickets</a>
-			<a class="button new-thread button-primary" style="display: none;">New thread</a>
-			<a class="button thread-cancel" style="display: none;">Cancel</a>
+			<a class="button back-to-tickets"><?php echo __('Back to tickets', 'wss'); ?></a>
+			<a class="button new-thread button-primary" style="display: none;"><?php echo __('New thread', 'wss'); ?></a>
+			<a class="button thread-cancel" style="display: none;"><?php echo __('Cancel', 'wss'); ?></a>
 		</div>
 		<?php	
 	}
 
 
 	/**
-	 * Restituisce lo stato del ticket dato
-	 * @param  int $ticket_id l'id del ticket
-	 * @return int            l'id di stato del ticket di supporto
+	 * Get the ticket status
+	 * @param  int $ticket_id the ticket id
+	 * @return int            the status id of the ticket
 	 */
-	public function get_ticket_status($ticket_id) {
+	public static function get_ticket_status($ticket_id) {
 		global $wpdb;
 		$query = "
 			SELECT status FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = '$ticket_id'
@@ -480,22 +510,23 @@ class wc_support_system {
 		return $output;
 	}
 
+
 	/**
-	 * Restituisce la label dello stato del ticket
-	 * @param  int $status_id l'id dello stato
+	 * Get the status label of the ticket from the specific status id
+	 * @param  int $status_id th estatus id
 	 * @return string
 	 */
-	public function get_ticket_status_label($status_id) {
+	public static function get_ticket_status_label($status_id) {
 		$output = null;
 		switch ($status_id) {
 			case 1:
-				$output = '<span class="label label-danger toggle" data-toggle="modal" data-target="#ticket-status-modal">Open</span>'; 
+				$output = '<span class="label label-danger toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Open', 'wss') . '</span>'; 
 				break;
 			case 2:
-				$output = '<span class="label label-warning toggle" data-toggle="modal" data-target="#ticket-status-modal">Pending</span>';
+				$output = '<span class="label label-warning toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Pending', 'wss') . '</span>';
 				break;
 			case 3:
-				$output = '<span class="label label-success toggle" data-toggle="modal" data-target="#ticket-status-modal">Closed</span>';
+				$output = '<span class="label label-success toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Closed', 'wss') . '</span>';
 				break;			
 		}
 		
@@ -504,11 +535,11 @@ class wc_support_system {
 
 
 	/**
-	 * Restituisce i threads di un dato ticket
-	 * @param  int $ticket_id l'id del ticket
+	 * Get the ticket threads
+	 * @param  int $ticket_id the ticket id
 	 * @return array
 	 */
-	public function get_ticket_threads($ticket_id) {
+	public static function get_ticket_threads($ticket_id) {
 		global $wpdb;
 		$query = "
 			SELECT * FROM " . $wpdb->prefix . "wss_support_threads WHERE ticket_id = '$ticket_id' ORDER BY id DESC
@@ -520,7 +551,7 @@ class wc_support_system {
 
 
 	/**
-	 * Ajax - Si attiva al click del singolo ticket
+	 * Ajax - Expand a single ticket in back-end
 	 * Back-end
 	 */
 	public function ajax_admin_get_ticket_content() {
@@ -538,10 +569,10 @@ class wc_support_system {
 
 
 	/**
-	 * Ajax - Si attiva al click del singolo ticket
+	 * Ajax - Expand a single ticket in front-end
 	 */
 	public function ajax_get_ticket_content() {
-		if(is_page('support')) {
+		if(is_page($this->support_page)) {
 			?>
 			<script>
 			jQuery(document).ready(function($){
@@ -554,8 +585,8 @@ class wc_support_system {
 
 	
 	/**
-	 * Callback - restituisce tutti i thread di un ticket e li mostra all'utente
-	 * @return [type] [description]
+	 * Callback - show all ticket threads to the user
+	 * @return mixed
 	 */
 	public function get_ticket_content_callback() {
 
@@ -569,18 +600,26 @@ class wc_support_system {
 
 		if($results) {
 			$ticket = $results[0];
-			echo '<div id="premium-ticket" class="ticket-' . $ticket_id . '">';
-				// echo '<div class="ticket-title">' . $ticket->title . '</div>';
+			echo '<div id="wss-ticket" class="ticket-' . $ticket_id . '">';
 
-				$threads = $this->get_ticket_threads($ticket_id);
+				$threads = self::get_ticket_threads($ticket_id);
 				if($threads) {
 					foreach ($threads as $thread) {
-						echo '<div class="single-thread thread-' . $thread->id . (user_can($thread->user_id, 'administrator') ? ' answer' : '') . '">';
-							echo '<div class="thread-header">';
+
+						/*Colors*/
+						if(user_can($thread->user_id, 'administrator')) {
+							$background_color = get_option('wss-admin-color-background') ? get_option('wss-admin-color-background') : '';
+							$text_color = get_option('wss-admin-color-text') ? get_option('wss-admin-color-text') : '';
+						} else {
+							$background_color = get_option('wss-user-color-background') ? get_option('wss-user-color-background') : '';
+							$text_color = get_option('wss-user-color-text') ? get_option('wss-user-color-text') : '';
+						}
+
+						echo '<div class="single-thread thread-' . $thread->id . (user_can($thread->user_id, 'administrator') ? ' answer' : '') . '"' . ($background_color ? 'style="border: 1px solid ' . $background_color . '"' : '') . '>';
+							echo '<div class="thread-header"' . ($background_color ? 'style="background: ' . $background_color . '"' : '') . '>';
 								echo '<div class="left">' . get_avatar($thread->user_id, 50) . '</div>';
-								echo '<div class="right">' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
+								echo '<div class="right"' . ($text_color ? ' style="color: ' . $text_color . '"' : '') . '>' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
 								echo '<div class="clear"></div>';
-								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
 							echo '<div class="thread-content">' . html_entity_decode(nl2br(wp_unslash($thread->content))) . '</div>';
 						echo '</div>';
@@ -594,20 +633,22 @@ class wc_support_system {
 
 
 	/**
-	 * Pulsante che consente all'utente non loggato, che abbia effettuato l'accesso al supporto premium, di uscire (cancellazione cookie)
+	 * Exit button for not logged in users (delete cookies)
 	 */
 	public function support_exit_button() {
-		if(isset($_COOKIE['wss-support-access']) || $this->premium_support_access_validation(false)) {
-			echo '<button type="button" class="btn btn-default support-exit-button"><img src="' . plugin_dir_url(__DIR__) . '/images/exit.png">Exit</button>';
+		if(isset($_COOKIE['wss-support-access'])) {
+			echo '<button type="button" class="btn btn-default support-exit-button"><img src="' . plugin_dir_url(__DIR__) . '/images/exit.png">' . __('Exit', 'wss') . '</button>';
 		}
 	}
 
 
 	/**
-	 * Tabella con l'elenco dei ticket dell'utente
+	 * User tickets table
 	 */
 	public function support_tickets_table() {
-		if(isset($_COOKIE['wss-support-access']) || $this->premium_support_access_validation(false) || $this->logged_in_user_support_access_validation()) :
+
+		/*The user has access to the support service*/
+		if( ( isset($_COOKIE['wss-support-access']) && get_option('wss-guest-users') ) || $this->logged_in_user_support_access_validation() ) :
 			$userdata = $this->user_data();
 			$user_id = $userdata['id'];
 			$user_email = $userdata['email'];
@@ -620,23 +661,23 @@ class wc_support_system {
 				?>
 				<table class="table support-tickets-table">
 					<thead>
-						<th style="padding-right: 2rem;">ID</th>
-						<th>Subject</th>
-						<th class="create-time">Creation time</th>
-						<th class="update-time">Update time</th>
-						<th>Product</th>
-						<th>Status</th>
+						<th style="padding-right: 2rem;"><?php echo __('Id', 'wss'); ?></th>
+						<th><?php echo __('Subject', 'wss'); ?></th>
+						<th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
+						<th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
+						<th><?php echo __('Product', 'wss'); ?></th>
+						<th><?php echo __('Status', 'wss'); ?></th>
 					</thead>
 					<tbody>
 					<?php
 					foreach ($tickets as $ticket) {
 						echo '<tr class="ticket-' . $ticket->id . '">';
 							echo '<td>#' . $ticket->id . '</td>';
-							echo '<td class="ticket-toggle" data-ticket-id="' . $ticket->id . '">' . $ticket->title . '</td>';
+							echo '<td class="ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
 							echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
 							echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
 							echo '<td class="product">' . get_the_post_thumbnail($ticket->product_id, array(50,50)) . '</td>';
-							echo '<td class="status" data-status-id="' . $ticket->status . '">' . $this->get_ticket_status_label($ticket->status) . '</td>';
+							echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
 						echo '</tr>';
 					}
 					?>
@@ -647,22 +688,30 @@ class wc_support_system {
 				<?php
 			} else {
 				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-info">It seems like you have no support tickets opened at the moment.</div>';
+					echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
 				echo '</div>';
 			}
 			$this->create_new_ticket($order_id, $user_email); 
+
+		/*Bad data provided or guest users not allowed from the plugin options*/
+		elseif( isset($_POST['wss-support-access']) && !$this->support_access_validation(false) || !get_option('wss-guest-users') ) :
+				echo '<div class="bootstrap-iso">';
+					echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wss') . '</div>';
+				echo '</div>';
+
+		/*Logged in user but not a customer*/		
 		elseif(is_user_logged_in()) :
 			echo '<div class="bootstrap-iso">';
-				echo '<div class="alert alert-danger">It seems like you haven\'t bought any productat the moment.</div>';
+				echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
 			echo '</div>';
 		else :
 			?>
 			<form id="wes-support-access" method="POST" action="">
-				<input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="Your name" required="required">
-				<input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="Email (used for the order)" required="required">
-				<input type="text" name="wss-order-id" id="wss-order-id" placeholder="The order id" required="required">
+				<input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wss'); ?>" required="required">
+				<input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wss'); ?>" required="required">
+				<input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wss'); ?>" required="required">
 				<input type="hidden" name="wss-support-access" value="1">
-				<input type="submit" value="Access">
+				<input type="submit" value="<?php echo __('Access', 'wss'); ?>">
 			</form>
 			<?php
 		endif;
@@ -670,18 +719,12 @@ class wc_support_system {
 
 
 	/**
-	 * Ajax - Finestra modale che consente di modificare manualmente lo stato del ticket di supporto
-	 * In asincrono richiede lo status del ticket
+	 * Ajax - Modal window with ticket change status functionality
 	 */
 	public function modal_change_ticket_status() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
 			?>
-			<script>
-				jQuery(document).ready(function($){
-					modal_change_ticket_status();
-				})
-			</script>
 			<div class="bootstrap-iso">
 				<div id="ticket-status-modal" class="modal fade" data-ticket-id="" role="dialog">
 					<div class="modal-dialog">
@@ -689,47 +732,38 @@ class wc_support_system {
 						<div class="modal-content">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">Modifica lo stato del ticket<span></span></h4>
+								<h4 class="modal-title"><?php echo __('Change the ticket status', 'wss'); ?><span></span></h4>
 							</div>
 							<div class="modal-body">
 								<div class="row status-selector">
-									<div class="col-xs-4 status status-1" data-status="1"><?php echo $this->get_ticket_status_label(1); ?></div>
-									<div class="col-xs-4 status status-2" data-status="2"><?php echo $this->get_ticket_status_label(2); ?></div>
-									<div class="col-xs-4 status status-3" data-status="3"><?php echo $this->get_ticket_status_label(3); ?></div>
+									<div class="col-xs-4 status status-1" data-status="1"><?php echo self::get_ticket_status_label(1); ?></div>
+									<div class="col-xs-4 status status-2" data-status="2"><?php echo self::get_ticket_status_label(2); ?></div>
+									<div class="col-xs-4 status status-3" data-status="3"><?php echo self::get_ticket_status_label(3); ?></div>
 								</div>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close', 'wss'); ?></button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<script>
+				jQuery(document).ready(function($){
+					modal_change_ticket_status();
+				})
+			</script>
 			<?php
 		}
 	}
 
 
 	/**
-	 * Callback - Restituisce lo stato attuale del ticket
-	 * @return int l'id dello stato
+	 * Update the ticket after a new thread
+	 * @param  int 		$ticket_id the ticket id to update
+	 * @param  string 	$date      the new thread date will be the modified date of the ticket
 	 */
-	public function get_current_status_callback() {
-		$ticket_id = isset($_POST['ticket_id']) ? $_POST['ticket_id'] : '';
-		if($ticket_id) {
-			$status = $this->get_ticket_status($ticket_id);
-			echo $status;
-		}
-		exit;
-	}
-
-
-	/**
-	 * Aggiorna il ticket a seguito dell'aggiunta di un nuovo thread
-	 * @param  int 		$ticket_id l'id del ticket da aggiornare
-	 * @param  string 	$date      la data del nuovo thread che coincide con quella di ultima modifica del ticket
-	 */
-	public function update_premium_ticket($ticket_id, $date, $status=1) {
+	public function update_ticket($ticket_id, $date='', $status=1) {
 		global $wpdb;
 		$wpdb->update(
 			$wpdb->prefix . 'wss_support_tickets',
@@ -749,15 +783,16 @@ class wc_support_system {
 
 
 	/**
-	 * Callback - Aggiorna lo stato del ticket nel db dopo l'azione dell'amministratore.
+	 * Callback - Update the ticket status in the db after the admin action
 	 */
 	public function change_ticket_status_callback() {
-		$ticket_id = isset($_POST['ticket_id']) ? $_POST['ticket_id'] : '';
-		$new_status = isset($_POST['new_status']) ? $_POST['new_status'] : '';
-		$date = date('Y-m-d H:i:s');
+		$ticket_id   = isset($_POST['ticket_id']) ? $_POST['ticket_id'] : '';
+		$update_time = isset($_POST['update_time']) ? $_POST['update_time'] : '';
+		$new_status  = isset($_POST['new_status']) ? $_POST['new_status'] : '';
+
 		if($ticket_id && $new_status) {
-			$this->update_premium_ticket($ticket_id, $date, $new_status);
-			$new_label = $this->get_ticket_status_label($new_status);
+			$this->update_ticket($ticket_id, $update_time, $new_status);
+			$new_label = self::get_ticket_status_label($new_status);
 			echo $new_label;
 		}
 		exit;
@@ -765,36 +800,53 @@ class wc_support_system {
 
 
 	/**
-	 * Invia notifica all'amministratore alla pubblicazione di un nuovo thread
-	 * @param  int 	  $ticket_id l'id del ticket a cui il thread è legato
-	 * @param  string $user_name il nome dell'utente che ha pubblicato il thread
-	 * @param  string $content   il contenuto del thread
-	 * @param  string $to 		 l'indirizzo del destinatario	
+	 * New thread notification used both to user and admin
+	 * @param  int 	  $ticket_id ticket id of the new thread
+	 * @param  string $user_name if not specified, the support email name is used
+	 * @param  string $content   thread content
+	 * @param  string $to 		 if not specified, the support email is used 
 	 */
-	public function support_premium_notification($ticket_id, $user_name, $content, $to='support@ilghera.com') {
-		$subject = $user_name . ' - Update ticket #' . $ticket_id;
+	public function support_notification($ticket_id, $user_name='', $content, $to='') {
+
+		$support_email = get_option('wss-support-email'); 
+		$support_email_name = get_option('wss-support-email-name');
+		$support_email_footer = get_option('wss-support-email-footer');
+
+		if($user_name == '') {
+			$user_name = $support_email_name;
+		}
+
+		if($to == '') {
+			$to = $support_email;
+		}
+
+		$subject = sprintf(__('%s - Update ticket #%d'), $user_name, $ticket_id);
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
-		$headers[] = 'From: ilGhera | Wordpress Development <support@ilghera.com>';
+		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
 		$message .= html_entity_decode(nl2br($content));
-		$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-		$message .= 'Don\'t reply to this message, you can read all threads and update the ticket going to <a href="' . home_url() . '/premium-support"><b>Premium support</b></a>.</p>';
-		$message .= '<b>ilGhera</b> | Wordpress Development';
+
+		if($support_email_footer) {
+			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
+				$message .= $support_email_footer;
+			$message .= '</p>';
+		}
+
 		wp_mail($to, $subject, $message, $headers);
 	}
 
 
 	/**
-	 * Inserisce nel db il nuovo thread
-	 * @param  int 		$ticket_id  l'id del ticket d'assistenza
-	 * @param  string 	$content    il testo
-	 * @param  date 	$date       data della richiesta
-	 * @param  int 		$user_id 	l'id dell'utente
-	 * @param  string 	$user_name  nome dell'utente
-	 * @param  string 	$user_email la mail
-	 * @param  int 		$status     indica lo stato del ticket dopo l'aggiornamento, default 1 (open), 2 se a pubblicare il thread è l'amministratore 
+	 * Insert the new thread into the db
+	 * @param  int 		$ticket_id  the ticket id
+	 * @param  string 	$content    the ticket content
+	 * @param  date 	$date       
+	 * @param  int 		$user_id 	
+	 * @param  string 	$user_name  
+	 * @param  string 	$user_email 
+	 * @param  int 		$status     the ticket status after the update 
 	 */
-	public function save_new_premium_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $status=1) {
+	public function save_new_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $status=1) {
 		global $wpdb;
 		$wpdb->insert(
 			$wpdb->prefix . 'wss_support_threads',
@@ -816,19 +868,19 @@ class wc_support_system {
 			)
 		);
 
-		$this->update_premium_ticket($ticket_id, $date, $status);
+		$this->update_ticket($ticket_id, $date, $status);
 
 		if(user_can($user_id, 'administrator')) {
-			$this->support_premium_notification($ticket_id, 'ilGhera Support', $content, $user_email);	
+			$this->support_notification($ticket_id, null, $content, $user_email);	
 		} else {
-			$this->support_premium_notification($ticket_id, $user_name, $content);	
+			$this->support_notification($ticket_id, $user_name, $content);	
 		}
 		add_action('wp_footer', array($this, 'wss_avoid_resend_footer_script'));
 	}
 
 
 	/**
-	 * Richiama nel footer lo script per modificare l'url di pagine, utile in caso di reload
+	 * Avoid resend script
 	 */
 	public function wss_avoid_resend_footer_script() {
 		?>
@@ -842,31 +894,31 @@ class wc_support_system {
 
 
 	/**
-	 * Se presente "sent" nell'url, indirizza nuovamente alla pagina di supporto evitando il resend delle informazioni
+	 * Avoid resend notifications on page reload
 	 */
 	public function wss_avoid_resend() {
 		if(isset($_GET['sent'])) {
-			header('Location: ' . home_url() . '/support');
+			header('Location: ' . $this->support_page_url);
 			exit;
 		}
 	}
 
 
 	/**
-	 * Aggiunge un nuovo thread ad una richiesta di assistenza (ticket)
+	 * Add a new thread to a ticket
 	 */
-	public function save_new_premium_thread() {
+	public function save_new_thread() {
 		if(isset($_POST['thread-sent'])){
 			$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 
-			$content 	= isset($_POST['premium-thread']) ? esc_html($_POST['premium-thread']) : '';
+			$content = isset($_POST['wss-thread']) ? esc_html($_POST['wss-thread']) : '';
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
 			$user = $this->user_data();
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
-			$this->save_new_premium_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $ticket_status);
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $ticket_status);
 
 			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
 				add_action('admin_head', array($this, 'auto_open_ticket'));
@@ -878,7 +930,7 @@ class wc_support_system {
 
 
 	/**
-	 * Riapre il ticket dopo l'aggiunta di un thread
+	 * Auto-expand the ticket after a new thread is sent
 	 */
 	public function auto_open_ticket() {
 		$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
@@ -894,14 +946,14 @@ class wc_support_system {
 
 	
 	/**
-	 * Aggiunge nel db il nuovo ticket
+	 * Insert a new ticket into the db
 	 */
-	public function save_new_premium_ticket(){
+	public function save_new_ticket(){
 
 		if(isset($_POST['ticket-sent'])) {
 			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
 			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
-			$content 	= isset($_POST['premium-ticket']) ? esc_html($_POST['premium-ticket']) : '';
+			$content 	= isset($_POST['wss-ticket']) ? esc_html($_POST['wss-ticket']) : '';
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
@@ -934,7 +986,7 @@ class wc_support_system {
 
 			$ticket_id = $wpdb->insert_id;
 
-			$this->save_new_premium_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email']);
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email']);
 		}
 	}
 
@@ -963,20 +1015,15 @@ class wc_support_system {
 	}
 
 
-	public function set_screen($status, $option, $value) {
-		return $value;
-	}
-
-
 	/**
-	* Screen options
-	*/
+	 * Scren options used for posts per page
+     */
 	public function screen_options() {
 
 		$option = 'per_page';
 		$args   = [
 			'label'   => 'Tickets',
-			'default' => 5,
+			'default' => 20,
 			'option'  => 'tickets_per_page'
 		];
 
@@ -986,41 +1033,40 @@ class wc_support_system {
 	}
 
 
+	/**
+	 * Show the scren options
+	 */
+	public function set_screen($status, $option, $value) {
+		return $value;
+	}
+
 
 	/**
-	 * Pagina di amministrazione Premium Support
+	 * Woocommerce Suport System tickets table
 	 */
 	public function wss_admin() {
 	    ?>
 		<div class="wrap">
 			<h1>Woocommerce Support System</h1>
-
-			<!-- <div id="poststuff"> -->
-				<!-- <div id="post-body" class="metabox-holder columns-2"> -->
-					<!-- <div id="post-body-content"> -->
-						<!-- <div class="meta-box-sortables ui-sortable"> -->
-							<!-- <form method="post"> -->
-								<?php
-								// $test = new wss_table();
-								$this->tickets_obj->prepare_items();
-								$this->tickets_obj->display(); 
-								?>
-							<!-- </form> -->
-						<!-- </div> -->
-					<!-- </div> -->
-				<!-- </div> -->
-				<!-- <br class="clear"> -->
-			<!-- </div> -->
+			<form id="wss-support-tickets" name="wss-support-tickets" method="post">
+				<?php
+				// $test = new wss_table();
+				$this->tickets_obj->prepare_items();
+				$this->tickets_obj->display(); 
+				$this->create_new_thread();
+				?>
+			</form>
+			<div class="single-ticket-content"></div>
 		</div>
 	    <?php
 	}
 
 
 	/**
-	 * Cancella dal db il thread dato
-	 * @param  int $thread_id l'id del thread da cancellare
+	 * Delete the specific thread
+	 * @param  int $thread_id
 	 */
-	public function delete_single_thread($thread_id) {
+	public static function delete_single_thread($thread_id) {
 		global $wpdb;
 		$wpdb->delete(
 			$wpdb->prefix . 'wss_support_threads',
@@ -1035,15 +1081,17 @@ class wc_support_system {
 
 
 	/**
-	 * Ajax - attiva la cancellazione di un singolo thread
+	 * Ajax - fires the single thread delete
 	 */
 	public function ajax_delete_single_thread() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
+			$alert_message = __('Are you sure you want to delete this thread?', 'wss');
 			?>
 			<script>
 				jQuery(document).ready(function($){
-					delete_single_thread();
+					var alert_message = '<?php echo $alert_message; ?>';
+					delete_single_thread(alert_message);
 				})
 			</script>
 			<?php
@@ -1052,28 +1100,29 @@ class wc_support_system {
 
 
 	/**
-	 * Callback - chiama la funzione di eliminazione del thread dal db
-	 * @return [type] [description]
+	 * Callback - call the delete_single_thread method
 	 */
 	public function delete_single_thread_callback() {
 		$thread_id = isset($_POST['thread_id']) ? $_POST['thread_id'] : $thread_id;
 		if($thread_id) {
-			$this->delete_single_thread($thread_id);
+			self::delete_single_thread($thread_id);
 		}
 		exit;
 	}
 
 
 	/**
-	 * Ajax - attiva la cancellazione di un singolo ticket
+	 * Ajax - fires the single ticket delete
 	 */
 	public function ajax_delete_single_ticket() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
+			$alert_message = __('Are you sure you want to delete this ticket with all his threads?', 'wss');
 			?>
 			<script>
 				jQuery(document).ready(function($){
-					delete_single_ticket();
+					var alert_message = '<?php echo $alert_message; ?>';
+					delete_single_ticket(alert_message);
 				})
 			</script>
 			<?php
@@ -1082,70 +1131,350 @@ class wc_support_system {
 
 
 	/**
-	 * Cancella dal db il singolo ticket e i relativi threads
+	 * Delete the specific ticket and all his threads
+	 */
+	public static function delete_single_ticket($ticket_id) {
+
+		global $wpdb;
+
+		/*Elimino tutti i threads del ticket*/
+		$threads = self::get_ticket_threads($ticket_id);
+		foreach ($threads as $thread) {
+			self::delete_single_thread($thread->id);
+		}
+
+		/*Elimino il ticket*/
+		$wpdb->delete(
+			$wpdb->prefix . 'wss_support_tickets',
+			array(
+				'id' => $ticket_id
+			),
+			array(
+				'%d'
+			)
+		);
+	}
+
+
+	/**
+	 * Callback - call the delete_single_ticket method
 	 */
 	public function delete_single_ticket_callback() {
 		$ticket_id = isset($_POST['ticket_id']) ? $_POST['ticket_id'] : '';
 		if($ticket_id) {
 
-			global $wpdb;
-
-			/*Elimino tutti i threads del ticket*/
-			$threads = $this->get_ticket_threads($ticket_id);
-			foreach ($threads as $thread) {
-				$this->delete_single_thread($thread->id);
-			}
-
-			/*Elimino il ticket*/
-			$wpdb->delete(
-				$wpdb->prefix . 'wss_support_tickets',
-				array(
-					'id' => $ticket_id
-				),
-				array(
-					'%d'
-				)
-			);
+			self::delete_single_ticket($ticket_id);
+			
 		}
 		exit;
 	}
 
 
 	/**
-	 * WSS Options page
+	 * WSS settings page
 	 */
 	public function wss_settings() {
 
 		/*Get the options*/
-		$reopen_ticket = get_option('wss-reopen-ticket');
+		$support_page  		 	= get_option('wss-page');
+		$reopen_ticket 		 	= get_option('wss-reopen-ticket');
+		$page_layout   		 	= get_option('wss-page-layout');
+		$guest_users    	 	= get_option('wss-guest-users');
+		$admin_color_background = get_option('wss-admin-color-background');
+		$admin_color_text 	    = get_option('wss-admin-color-text');
+		$user_color_background  = get_option('wss-user-color-background');
+		$user_color_text 	    = get_option('wss-user-color-text');
+		$user_notification		= get_option('wss-user-notification');
+		$admin_notification		= get_option('wss-admin-notification');
+		$support_email			= get_option('wss-support-email');
+		$support_email_name		= get_option('wss-support-email-name');
+		$support_email_footer   = get_option('wss-support-email-footer');
+		$auto_close_tickets		= get_option('wss-auto-close-tickets');		
+		$auto_close_days_notice = get_option('wss-auto-close-days-notice') ? get_option('wss-auto-close-days-notice') : 7;
+		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
+		$auto_close_days 		= get_option('wss-auto-close-days') ? get_option('wss-auto-close-days') : 2;
 
 	    echo '<div class="wrap">';
 		    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
 		    echo '<form name="wss-options" class="wss-options" method="post" action="">';
 		    	echo '<table class="form-table">';
+
+		    		/*Choose the support page*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Support page', 'wss') . '</th>';
+		    			echo '<td>';
+		    				$pages = get_posts('post_type=page&posts_per_page=-1');
+		    				echo '<select id="support-page" name="support-page">';
+		    					echo '<option>-</option>';
+		    					foreach ($pages as $page) {
+		    						echo '<option name="' . $page->post_name . '" class="' . $page->post_name . '"';
+		    						echo ' value="' . $page->ID . '"' . ($support_page == $page->ID ? ' selected="selected"' : '') . '>';
+		    						echo $page->post_title . '</option>';
+		    					}
+		    					echo '<option value="new">' . __('Create a new page', 'wss') . '</option>';
+		    				echo '</select>';
+    						echo '<p class="description">' . __('Select a page for customer support or create a new one.', 'wss') . '</div>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Create a new page*/
+		    		echo '<tr class="create-support-page">';
+		    			echo '<th scope="row">' . __('Page title', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="text" name="support-page-title" value="">';
+		    				echo '<p class="description">' . __('Chose a title for your support page.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Tickets table position in the page*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Page layout', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<select id="page-layout" name="page-layout">';
+		    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wss') . '</option>';
+		    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wss') . '</option>';
+		    				echo '</select>';
+		    				echo '<p class="description">' . __('Place the tickets table before or after the page content.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Admin threads color background*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Admin threads colors', 'wss') . '</th>';
+		    			echo '<td>';
+		    				/*Background*/
+		    				echo '<input type="text" class="wss-color-field" name="admin-color-background" value="' . $admin_color_background . '">';
+		    				echo '<p class="description">' . __('Select the background color for the admin\'s threads.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Admin threads color text*/
+		    		echo '<tr>';
+		    			echo '<th scope="row"></th>';
+		    			echo '<td>';
+		    				echo '<input type="text" class="wss-color-field" name="admin-color-text" value="' . $admin_color_text . '">';
+		    				echo '<p class="description">' . __('Select the text color for the admin\'s threads.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*User threads color background*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('User threads colors', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="text" class="wss-color-field" name="user-color-background" value="' . $user_color_background . '">';
+		    				echo '<p class="description">' . __('Select the background color for the user\'s threads.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*User threads color text*/
+		    		echo '<tr>';
+		    			echo '<th scope="row"></th>';
+		    			echo '<td>';
+		    				echo '<input type="text" class="wss-color-field" name="user-color-text" value="' . $user_color_text . '">';
+		    				echo '<p class="description">' . __('Select the text color for the user\'s threads.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*User email notification*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('User email notification', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<label for="user-notification">';
+			    				echo '<input type="checkbox" class="user-notification" name="user-notification" value="1"' . ($user_notification == 1 ? ' checked="checked"' : '') . '>';
+			    				echo __('Send an email notifications to the user when an answer was published.', 'wss');
+		    				echo '</label>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Admin email notification*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Admin email notification', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<label for="admin-notification">';
+			    				echo '<input type="checkbox" class="admin-notification" name="admin-notification" value="1"' . ($admin_notification == 1 ? ' checked="checked"' : '') . '>';
+			    				echo __('Send an email notifications to the admin when a new thread is published.', 'wss');
+		    				echo '</label>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Support email*/
+		    		echo '<tr class="support-email-fields">';
+		    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreplay@example.com" value="' . $support_email . '">';
+		    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Support email "from" name*/
+		    		echo '<tr class="support-email-fields">';
+		    			echo '<th scope="row">' . __('"From" name', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="text" class="support-email-name regular-text" name="support-email-name" placeholder="Example Support" value="' . $support_email_name . '">';
+		    				echo '<p class="description">' . __('The sender name for notifications.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Footer email text*/
+		    		echo '<tr class="support-email-fields">';
+		    			echo '<th scope="row">' . __('Footer email text', 'wss') . '</th>';
+		    			echo '<td>';
+
+		    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
+
+		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . $support_email_footer . '</textarea>';
+		    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Support for not logged in users*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<label for="guest-users">';
+			    				echo '<input type="checkbox" name="guest-users" value="1"' . ($guest_users == 1 ? ' checked="checked"' : '') . '>';
+			    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
+		    				echo '</label>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Reopen a ticket after a new thread is sent in back-end*/
 		    		echo '<tr>';
 		    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
 		    			echo '<td>';
 			    			echo '<label for="reopen-ticket">';
-		    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
-			    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.');
+			    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
+				    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.');
 			    			echo '</label>'; 
 		    			echo '</td>';
 		    		echo '</tr>';
+
+		    		/*Close not updated tickets after a specified period*/
+		    		echo '<tr>';
+		    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<label for="">';
+		    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ($auto_close_tickets == 1 ? ' checked="checked"' : '') . '>';
+			    				echo  __('Close tickets not updated for a specified period.', 'wss');
+		    				echo '</label>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Days of no updates for sending a notice to the user*/
+		    		echo '<tr class="auto-close-fields">';
+		    			echo '<th scope="row">' . __('Notice period', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . $auto_close_days_notice . '">';
+		    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Closing ticket user notification*/
+		    		echo '<tr class="auto-close-fields">';
+		    			echo '<th scope="row">' . __('User notice', 'wss') . '</th>';
+		    			echo '<td>';
+
+							$default_text = sprintf( 
+								__(
+									"Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 
+									"wss"
+								),
+								get_bloginfo()
+							);
+
+							$notice = $auto_close_notice_text ? $auto_close_notice_text : $default_text;
+
+		    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
+		    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Days after the notice for closing the ticket defintely*/
+		    		echo '<tr class="auto-close-fields">';
+		    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
+		    			echo '<td>';
+		    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . $auto_close_days . '">';
+		    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
+		    			echo '</td>';
+		    		echo '</tr>';
+
+		    		/*Reopen ticket after a thread is published*/
 		    	echo '</table>';
 		    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
-		    	echo '<input type="submit" class="button button-primary" value="Save">';
+		    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wss') . '">';
 		    echo '</form>';
 		echo '</div>';
 	}
 
 
+	/**
+	 * Save the WSS options
+	 */
 	public function wss_save_settings() {
+
 		if(isset($_POST['wss-options-hidden'])) {
+
+			/*Support page*/
+			$support_page = isset($_POST['support-page']) ? sanitize_text_field($_POST['support-page']) : '';
+			if($support_page == 'new') {
+				$page_title = isset($_POST['support-page-title']) ? sanitize_text_field($_POST['support-page-title']) : '';
+				if($page_title) {
+					$support_page = $this->add_support_page($page_title);
+				}
+			}
+
+			update_option('wss-page', $support_page);
+			$this->support_page = $support_page;
+			$this->support_page_url = get_the_permalink($this->support_page);
+
+			/*Page layout*/
+			$page_layout = isset($_POST['page-layout']) ? sanitize_text_field($_POST['page-layout']) : '';
+			update_option('wss-page-layout', $page_layout);
+
+			/*Admin's threads colors*/
+			$admin_color_background = isset($_POST['admin-color-background']) ? sanitize_text_field($_POST['admin-color-background']) : '';
+			$admin_color_text = isset($_POST['admin-color-text']) ? sanitize_text_field($_POST['admin-color-text']) : '';
+			update_option('wss-admin-color-background', $admin_color_background);
+			update_option('wss-admin-color-text', $admin_color_text);
+
+			/*User's threads colors*/
+			$user_color_background = isset($_POST['user-color-background']) ? sanitize_text_field($_POST['user-color-background']) : '';
+			$user_color_text = isset($_POST['user-color-text']) ? sanitize_text_field($_POST['user-color-text']) : '';
+			update_option('wss-user-color-background', $user_color_background);
+			update_option('wss-user-color-text', $user_color_text);
+
+			/*Notifications*/
+			$user_notification = isset($_POST['user-notification']) ? sanitize_text_field($_POST['user-notification']) : 0;
+			$admin_notification = isset($_POST['admin-notification']) ? sanitize_text_field($_POST['admin-notification']) : 0;
+			update_option('wss-user-notification', $user_notification);
+			update_option('wss-admin-notification', $admin_notification);			
+
+			/*Support email/ email name*/
+			$support_email = isset($_POST['support-email']) ? sanitize_text_field($_POST['support-email']) : '';
+			$support_email_name = isset($_POST['support-email-name']) ? sanitize_text_field($_POST['support-email-name']) : '';
+			$support_email_footer = isset($_POST['support-email-footer']) ? sanitize_text_field($_POST['support-email-footer']) : '';
+			update_option('wss-support-email', $support_email);
+			update_option('wss-support-email-name', $support_email_name);
+			update_option('wss-support-email-footer', $support_email_footer);
+
+			/*Guest users*/
+			$guest_users = isset($_POST['guest-users']) ? sanitize_text_field($_POST['guest-users']) : 0;
+			update_option('wss-guest-users', $guest_users);
 
 			/*Reopen ticket*/
 			$reopen_ticket = isset($_POST['reopen-ticket']) ? $_POST['reopen-ticket'] : 0;
 			update_option('wss-reopen-ticket', $reopen_ticket);
+
+			/*Auto close tickets*/
+			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
+			$auto_close_days_notice = isset($_POST['auto-close-days-notice']) ? sanitize_text_field($_POST['auto-close-days-notice']) : '';
+			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? sanitize_text_field($_POST['auto-close-notice-text']) : '';
+			$auto_close_days = isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
+			update_option('wss-auto-close-tickets', $auto_close_tickets);
+			update_option('wss-auto-close-days-notice', $auto_close_days_notice);
+			update_option('wss-auto-close-notice-text', $auto_close_notice_text);
+			update_option('wss-auto-close-days', $auto_close_days);
+
 		}
 	}
 

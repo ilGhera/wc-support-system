@@ -1,10 +1,5 @@
 /**
- * Annulla l'invio del ticket se non è stato selezionato alcun prodotto
- */
-	
-
-/**
- * Impedisce l'invio di un ticket se non è stato selezionato un prodotto tra quelli acquistati dall'utente
+ * A product must be selected for opening a ticket
  */
 var check_ticket_product = function(){
 	jQuery(function($){
@@ -12,7 +7,13 @@ var check_ticket_product = function(){
 			var product_id = $('.product-id').val();
 			if(product_id == 'null') {
 				event.preventDefault();
-				$('.product-alert').html('<div class="alert alert-warning">Please, choose a product for your support request.</div>');				
+
+				var data = {
+					'action': 'product-select-warning'
+				}
+				$.post(ajaxurl, data, function(response){
+					$('.product-alert').html(response);						
+				})
 			} 
 		})
 	})
@@ -20,7 +21,7 @@ var check_ticket_product = function(){
 
 
 /**
- * Mostra tutti i threads del ticket selezionato, nascondendo tutti gli altri.
+ * Clicking on a ticket, all his threads are shown and all the other tickets hidden
  */
 var get_ticket_content = function() {
 	jQuery(function($){
@@ -30,8 +31,8 @@ var get_ticket_content = function() {
 			/*Nascondo gli altri ticket*/
 
 			/*Front-end*/
-			$('.support-tickets-table tbody tr').removeClass('opened').hide();
-
+			$('.support-tickets-table tbody tr').removeClass('opened').hide()
+;
 			/*Back-end*/
 			$('.wp-list-table.tickets tbody tr').removeClass('opened').hide();
 
@@ -56,8 +57,8 @@ var get_ticket_content = function() {
 
 
 /**
- * Apre il ticket dato dopo l'aggiunta di un nuovo thread
- * @param  {int} ticket_id l'id del ticket da aprire
+ * If set in the plugin options, the ticket is reopened after a new thread was sent
+ * @param  {int} ticket_id
  */
 var auto_open_ticket = function(ticket_id){
 	jQuery(function($){
@@ -70,7 +71,7 @@ var auto_open_ticket = function(ticket_id){
 
 
 /**
- * Modifica l'url a ticket/ thread inviato, utile in caso di reload di pagina
+ * Avoids to send the same ticket/ thread on page reload
  */
 var avoid_resend = function(){
 	jQuery(function($){
@@ -83,12 +84,12 @@ var avoid_resend = function(){
 
 
 /**
- * Cancellazione del singolo ticket e di tutti i thread ad esso appartenenti
+ * Fires the delete of a specific ticket with all his threads - back-end
  */
-var delete_single_ticket = function(){
+var delete_single_ticket = function(alert_message){
 	jQuery(function($){
-		$(document).on('click', '.delete-ticket', function(){
-			var confirmed = confirm('Sicuro di voler eliminare il ticket e tutti i messaggi contenuti?');
+		$(document).on('click', '.column-delete img', function(){
+			var confirmed = confirm(alert_message);
 			if(confirmed) {
 				var ticket_id = $(this).data('ticket-id');
 				var data = {
@@ -97,7 +98,6 @@ var delete_single_ticket = function(){
 				}
 				$.post(ajaxurl, data, function(response){
 					$('.ticket-' + ticket_id).hide('slow');
-					console.log(response);
 				})				
 			}
 		})
@@ -106,13 +106,12 @@ var delete_single_ticket = function(){
 
 
 /**
- * Delete single thread in back-end
- * @param  {int} thread_id	l'id del thread da eliminare
+ * Fires the delete of a specific thread - back-end
  */
-var delete_single_thread = function(){
+var delete_single_thread = function(alert_message){
 	jQuery(function($){
 		$(document).on('click', '.delete-thread', function(){
-			var confirmed = confirm('Sicuro di voler eliminare il ticket e tutti i messaggi contenuti?');
+			var confirmed = confirm(alert_message);
 			if(confirmed) {
 				var thread_id = $(this).data('thread-id');
 				var data = {
@@ -121,7 +120,6 @@ var delete_single_thread = function(){
 				}
 				$.post(ajaxurl, data, function(response){
 					$('.thread-' + thread_id).hide('slow');
-					console.log(response);
 				})
 			}
 		})
@@ -130,16 +128,19 @@ var delete_single_thread = function(){
 
 
 /**
- * Invia il nuovo stato del ticket perchè venga salvato nel db
- * @param  {int} ticket_id l'id del ticket da aggiornare
+ * Send the new ticket status for being saved in the db
+ * @param  {int} ticket_id
  */
-var change_ticket_status = function(ticket_id){
+var change_ticket_status = function(ticket_id, update_time){
 	jQuery(function($){
-		$(document).on('click', '.status-selector .label', function(){
-			var status = $(this).closest('.status').data('status');
+		$('.status-selector .label').off('click').on('click', function(event){
+
+			var status = $(this).data('status');
+
 			var data = {
 				'action': 'change-ticket-status',
 				'ticket_id': ticket_id,
+				'update_time': update_time,
 				'new_status': status
 			}
 			$.post(ajaxurl, data, function(response){
@@ -151,29 +152,30 @@ var change_ticket_status = function(ticket_id){
 
 
 /**
- * Mostra la finestra modale per cambiare manualmente lo stato del ticket di supporto
+ * Show the modal window for changing the tickets status in back-end
  */
 var modal_change_ticket_status = function(){
 	jQuery(function($){
-		$(document).on('click', '.label.toggle', function(){
-			var tr = $(this).closest('tr');
-			var ticket_id = $('.ticket-toggle', tr).data('ticket-id');
+		$(document).on('click', '.column-status .label.toggle', function(e){
 
+			var tr 			= $(this).closest('tr');
+			var ticket_id   = $('.ticket-toggle', tr).data('ticket-id');
+			var status_id   = $(this).data('status');
+			var update_time = $('.update_time', tr).text();
+
+			/*Modal window changes*/
 			$('#ticket-status-modal').attr('data-ticket-id', ticket_id);
 			$('.modal-title span').html(' #' + ticket_id);
 			$('.status-selector div').removeClass('active');
 
-			var data = {
-				'action': 'get-current-status',
-				'ticket_id': ticket_id
-			}
+			/*Show the current status in the modal window*/
+			$('.status-selector .status-' + status_id).addClass('active');
 
-			$.post(ajaxurl, data, function(response){
-				console.log(response);
-				$('.status-selector .status-' + response).addClass('active');
-				change_ticket_status(ticket_id);
-			})
-		
+			if(ticket_id) {
+				console.log(ticket_id);
+				change_ticket_status(ticket_id, update_time);
+			}	
+
 		})
 	})
 }
@@ -181,36 +183,36 @@ var modal_change_ticket_status = function(){
 
 jQuery(document).ready(function($){
 	
-	/*Form invio nuovo ticket*/
+	/*New ticket form*/
 	$('.new-ticket').on('click', function(){
-		$('.premium-ticket-container').show();
+		$('.wss-ticket-container').show();
 		$(this).hide();
 		$('.ticket-cancel').show();
 	})	
 
 	$('.ticket-cancel').on('click', function(){
-		$('.premium-ticket-container').hide();		
+		$('.wss-ticket-container').hide();		
 		$(this).hide();
 		$('.new-ticket').show();
 	})
 
-	/*Form invio nuovo thread*/
+	/*New thread form*/
 	$('.new-thread').on('click', function(){
 		var ticket_id = $('.opened .ticket-toggle').data('ticket-id');
-		$('.premium-thread-container form input.ticket-id').attr('value', ticket_id);
+		$('.wss-thread-container input.ticket-id').attr('value', ticket_id);
 
-		$('.premium-thread-container').show();
+		$('.wss-thread-container').show();
 		$(this).hide();
 		$('.thread-cancel').show();
 	})	
 
 	$('.thread-cancel').on('click', function(){
-		$('.premium-thread-container').hide();		
+		$('.wss-thread-container').hide();		
 		$(this).hide();
 		$('.new-thread').show();
 	})
 
-	/*Mostra un alert se non è stato selezionato un prodotto all'invio di un ticket*/
+	/*A product must be selected alert*/
 	check_ticket_product();
 	$('.product-id').on('change', function(){
 		if($(this).val() != 'null') {
@@ -218,7 +220,7 @@ jQuery(document).ready(function($){
 		}
 	})
 
-	/*Chiude il singolo ticket per tornare all'elenco principale*/
+	/*Close the single ticket and go back to the list*/
 	$('.back-to-tickets').on('click', function(){
 		$('.support-tickets-table tbody tr').removeClass('opened').show();
 		$('.wp-list-table.tickets tbody tr').removeClass('opened').show();
@@ -226,13 +228,13 @@ jQuery(document).ready(function($){
 		$('.single-ticket-content').html('');
 		$('.button.new-ticket').show();
 		$('.new-thread').hide();
-		$('.premium-thread-container').hide();		
+		$('.wss-thread-container').hide();		
 		$('.thread-cancel').hide();
 	})
 
-	/*Pulsante Exit*/
+	/*Support exit button for not logged in users*/
 	$('.page.type-page').css('position', 'relative');
-	$('.support-exit-button').prependTo('.page.type-page').show('slow');
+	$('.support-exit-button').prependTo('.page.type-page').show();
 	$('.support-exit-button').on('click', function(){
 		document.cookie = "wss-support-access=; expires=expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 		document.cookie = "wss-guest-name=; expires=expires=Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -242,7 +244,7 @@ jQuery(document).ready(function($){
 	    window.location.href = url;
 	})
 
-	/*Mostra il pulsante New thread solo se il ticket non è chiuso*/
+	/*If the ticket is closed the new thread button is not available*/
 	$('.ticket-toggle').each(function(){
 		$(this).on('click', function(){
 			var ticket = $(this).closest('tr');
@@ -252,4 +254,54 @@ jQuery(document).ready(function($){
 			}
 		})
 	})
+
+	/*Show the create support page field in the plugin settings page*/
+	$('#support-page').on('change', function(){
+		if($(this).val() == 'new') {
+			$('.create-support-page').fadeIn();
+		}
+	})
+
+	/*Add support email if notifications are selected*/
+	if( $('.user-notification').attr('checked') == 'checked' || $('.admin-notification').attr('checked') == 'checked' ) {
+		$('.support-email-fields').show();
+		$('.support-email').attr('required', 'required');
+		$('.support-email-name').attr('required', 'required');
+	}
+
+	/*Show/ Hide support email fields on single notification change*/
+	$('.user-notification, .admin-notification').on('change', function(){
+		var other = $(this).hasClass('user-notification') ? $('.admin-notification') : $('.user-notification');  
+		if( $(this).attr('checked') == 'checked' || $(other).attr('checked') == 'checked' ) {
+			$('.support-email-fields').show();
+			$('.support-email').attr('required', 'required');
+			$('.support-email-name').attr('required', 'required');
+		} else {
+			$('.support-email-fields').fadeOut();
+			$('.support-email').removeAttr('required');		
+			$('.support-email-name').removeAttr('required');		
+		}	
+	})
+
+	/*Show auto close fields if activated*/
+	if( $('.auto-close-tickets').attr('checked') == 'checked' ) {
+		$('.auto-close-fields').show();
+		$('.auto-close-notice-text').attr('required', 'required');
+	}
+
+	/*Show/ Hide auto close ticket on change*/
+	$('.auto-close-tickets').on('change', function(){
+		if( $(this).attr('checked') == 'checked' ) {
+			$('.auto-close-fields').fadeIn();
+		} else {
+			$('.auto-close-fields').fadeOut();
+		}
+	})
+
+	/*Define the color field only in back-end*/
+	var field = $('.wss-color-field');
+	if(typeof field.wpColorPicker == 'function') { 
+		$('.wss-color-field').wpColorPicker();
+	}
+
 })

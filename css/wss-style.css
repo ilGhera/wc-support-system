@@ -53,14 +53,14 @@
   font-size: 80%;
 }
 
-.premium-ticket-container iframe,
-.premium-ticket-container textarea#premium-ticket,
-.premium-thread-container iframe,
-.premium-thread-container textarea#premium-thread {
+.wss-ticket-container iframe,
+.wss-ticket-container textarea#wss-ticket,
+.wss-thread-container iframe,
+.wss-thread-container textarea#wss-thread {
   height: 300px !important;
 }
 
-.premium-ticket-container form input[type="text"] {
+.wss-ticket-container form input[type="text"] {
   background: #fff;
   border: 1px solid #e5e5e5;
 }
@@ -84,7 +84,7 @@
 }
 
 .single-thread {
-  border: 1px solid #CACACC;
+  border: 1px solid #D9D9D9;
   border-radius: 0.5rem;
   overflow: hidden;
   margin-bottom: 1rem;
@@ -93,7 +93,7 @@
 
 .thread-header {
   padding: 1rem;
-  background: #D2D2D2;
+  background: #D9D9D9;
 }
 
 .answer {
@@ -102,6 +102,9 @@
 
 .answer .thread-header {
   background: #2fbfb0;
+}
+
+.answer .thread-header .right {
   color: #fff;
 }
 
@@ -110,6 +113,8 @@
   float: left;
   text-transform: capitalize;
   line-height: 1.2rem;
+  font-weight: bold;
+  color: #666;
 }
 
 .thread-content img {
@@ -124,8 +129,17 @@
   display: none;
 }
 
+.label.toggle {
+  width: 100%;
+  max-width: 50px;
+  text-align: center;
+  display: block;
+  padding: 0.35rem 0;  
+}
+
 span.date {
-  font-size: 70%;
+  font-size: 80%;
+  font-weight: normal;
 }
 
 .thread-header img {
@@ -148,7 +162,7 @@ span.date {
 .support-exit-button img {
   display: inline-block;
   position: relative;
-  width: 20px;
-  top: 0.3rem;
+  width: 16px;
+  top: 0.2rem;
   margin-right: 0.4rem;
 }
