@@ -22,7 +22,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 function wss_premium_activation() {
 
 	/*Deactivate the free version if present*/
-	if( is_plugin_active('wc-support-system/wc-support-system.php') || function_exists('wss_activation') ) {
+	if(function_exists('wss_activation')) {
 		deactivate_plugins('wc-support-system/wc-support-system.php');
 	    remove_action( 'plugins_loaded', 'wss_activation' );
 	    wp_redirect(admin_url('plugins.php?plugin_status=all&paged=1&s'));
