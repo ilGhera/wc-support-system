@@ -59,4 +59,4 @@ function wss_premium_activation() {
 
 	}
 }
-add_action( 'plugins_loaded', 'wss_activation');
+add_action( 'plugins_loaded', 'wss_activation', 1);
