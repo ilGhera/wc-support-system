@@ -24,6 +24,7 @@ function wss_premium_activation() {
 	/*Deactivate the free version if present*/
 	if( is_plugin_active('wc-support-system/wc-support-system.php') || class_exists('wc_support_system') ) {
 		deactivate_plugins('wc-support-system/wc-support-system.php');
+	    remove_action( 'plugins_loaded', 'wss_activation' );
 	    wp_redirect(admin_url('plugins.php?plugin_status=all&paged=1&s'));
 	}
 
