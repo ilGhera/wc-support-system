@@ -51,5 +51,4 @@ function wss_activation() {
 		register_deactivation_hook(__FILE__, 'wss_deactivation');
 	}
 }
-add_action( 'plugins_loaded', 'wss_activation', 100);
-// register_activation_hook(__FILE__, 'wss_activation');
+add_action( 'plugins_loaded', 'wss_activation');
