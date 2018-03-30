@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Support System\n"
-"POT-Creation-Date: 2018-03-29 13:04+0200\n"
-"PO-Revision-Date: 2018-03-29 13:06+0200\n"
+"POT-Creation-Date: 2018-03-30 09:38+0200\n"
+"PO-Revision-Date: 2018-03-30 09:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: ilGhera\n"
 "Language: it_IT\n"
@@ -291,8 +291,6 @@ msgid "Notice period"
 msgstr "Periodo notifica"
 
 #: includes/class-wc-support-system.php:1368
-#, fuzzy
-#| msgid "Days with no updates for sending a notice to the user"
 msgid "Days with no updates for sending a notice to the user."
 msgstr "Giorni senza aggiornamenti per l'invio di una notifica all'utente."
 
@@ -373,7 +371,7 @@ msgstr "Data creazione"
 msgid "Delete Permanently"
 msgstr "Elimina definitivamente"
 
-#: wc-support-system.php:26
+#: wc-support-system.php:27
 msgid ""
 "<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="
 "\"https://it.wordpress.org/plugins/woocommerce/\" target=\"_blank"

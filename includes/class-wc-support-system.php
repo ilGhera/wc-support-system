@@ -1344,7 +1344,7 @@ class wc_support_system {
 		    			echo '<td>';
 			    			echo '<label for="reopen-ticket">';
 			    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
-				    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.');
+				    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.', 'wss');
 			    			echo '</label>'; 
 		    			echo '</td>';
 		    		echo '</tr>';
@@ -1468,7 +1468,7 @@ class wc_support_system {
 			/*Auto close tickets*/
 			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
 			$auto_close_days_notice = isset($_POST['auto-close-days-notice']) ? sanitize_text_field($_POST['auto-close-days-notice']) : '';
-			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? sanitize_text_field($_POST['auto-close-notice-text']) : '';
+			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? $_POST['auto-close-notice-text'] : '';
 			$auto_close_days = isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
 			update_option('wss-auto-close-tickets', $auto_close_tickets);
 			update_option('wss-auto-close-days-notice', $auto_close_days_notice);

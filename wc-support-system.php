@@ -34,6 +34,14 @@ function wss_activation() {
 
     } else {
 
+		/*Internalization*/
+		load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languages' );
+
+
+		/*Files required*/
+		include( plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php');
+		include( plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php');
+
 		wc_support_system::wss_tables();
 
 		/*Cron*/
@@ -42,16 +50,8 @@ function wss_activation() {
 	    }
 	}
 }
-register_activation_hook(__FILE__, 'wss_activation');	
-
-
-/*Internalization*/
-load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languages' );
-
-
-/*Files required*/
-include( plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php');
-include( plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php');
+add_action( 'plugins_loaded', 'wss_activation');	
+// register_activation_hook(__FILE__, 'wss_activation');	
 
 
 /*Deactivation*/
