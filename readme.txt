@@ -1,4 +1,4 @@
-=== Woocommerce Support System ===
+=== Woocommerce Support System - Premium ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
 Version: 0.9.0

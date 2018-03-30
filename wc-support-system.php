@@ -19,7 +19,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 
 /*Activation*/
-function wss_activation() {
+function wss_premium_activation() {
 
 	/*Deactivate the free version if present*/
 	if( is_plugin_active('wc-support-system/wc-support-system.php') || class_exists('wc_support_system') ) {
