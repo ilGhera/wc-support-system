@@ -1348,7 +1348,7 @@ class wc_support_system {
 
 		    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
 
-		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . stripcslashes($support_email_footer) . '</textarea>';
+		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . wp_unslash($support_email_footer) . '</textarea>';
 		    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
 		    			echo '</td>';
 		    		echo '</tr>';
