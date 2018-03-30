@@ -42,15 +42,14 @@ function wss_activation() {
 		if(!wp_next_scheduled( 'wss_cron_tickets_action' )) {
 			wp_schedule_event(time(), 'hourly', 'wss_cron_tickets_action');//temp
 	    }
+
+	    /*Deactivation*/
+		function wss_deactivation() {
+			$timestamp = wp_next_scheduled( 'wss_cron_tickets_action' );
+		    wp_unschedule_event( $timestamp, 'wss_cron_tickets_action' );
+		} 
+		register_deactivation_hook(__FILE__, 'wss_deactivation');
 	}
 }
-add_action( 'plugins_loaded', 'wss_activation', 100);	
-// register_activation_hook(__FILE__, 'wss_activation');	
-
-
-/*Deactivation*/
-function wss_deactivation() {
-	$timestamp = wp_next_scheduled( 'wss_cron_tickets_action' );
-    wp_unschedule_event( $timestamp, 'wss_cron_tickets_action' );
-} 
-register_deactivation_hook(__FILE__, 'wss_deactivation');
+add_action( 'plugins_loaded', 'wss_activation', 100);
+// register_activation_hook(__FILE__, 'wss_activation');
