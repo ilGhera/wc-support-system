@@ -1202,6 +1202,7 @@ class wc_support_system {
 	public function wss_settings() {
 
 		/*Get the options*/
+		$premium_key			= get_option('wss-premium-key');
 		$support_page  		 	= get_option('wss-page');
 		$reopen_ticket 		 	= get_option('wss-reopen-ticket');
 		$page_layout   		 	= get_option('wss-page-layout');
@@ -1221,215 +1222,235 @@ class wc_support_system {
 		$auto_close_days 		= get_option('wss-auto-close-days') ? get_option('wss-auto-close-days') : 2;
 
 	    echo '<div class="wrap">';
-		    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
-		    echo '<form name="wss-options" class="wss-options" method="post" action="">';
-		    	echo '<table class="form-table">';
+	    	echo '<div class="wrap-left">';
+			    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
 
-		    		/*Choose the support page*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Support page', 'wss') . '</th>';
-		    			echo '<td>';
-		    				$pages = get_posts('post_type=page&posts_per_page=-1');
-		    				echo '<select id="support-page" name="support-page">';
-		    					echo '<option>-</option>';
-		    					foreach ($pages as $page) {
-		    						echo '<option name="' . $page->post_name . '" class="' . $page->post_name . '"';
-		    						echo ' value="' . $page->ID . '"' . ($support_page == $page->ID ? ' selected="selected"' : '') . '>';
-		    						echo $page->post_title . '</option>';
-		    					}
-		    					echo '<option value="new">' . __('Create a new page', 'wss') . '</option>';
-		    				echo '</select>';
-    						echo '<p class="description">' . __('Select a page for customer support or create a new one.', 'wss') . '</div>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    /*Premium key form*/
+			    echo '<form name="wss-options" class="wss-options one-of" method="post" action="">';
+			    	echo '<table class="form-table">';
+						echo '<th scope="row">' . __('Premium Key', 'wss') . '</th>';
+						echo '<td>';
+							echo '<input type="text" class="regular-text" name="wss-premium-key" id="wss-premium-key" placeholder="' . __('Add your Premium Key', 'wss' ) . '" value="' . $premium_key . '" />';
+							echo '<p class="description">' . __('Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wss') . '</p>';
+						echo '</td>';
+					echo '</table>';
+					echo '<input type="hidden" name="premium-key-sent" value="1" />';
+					echo '<input type="submit" class="button button-primary" value="' . __('Save ', 'wss') . '" />';
+				echo '</form>';
 
-		    		/*Create a new page*/
-		    		echo '<tr class="create-support-page">';
-		    			echo '<th scope="row">' . __('Page title', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="text" name="support-page-title" value="">';
-		    				echo '<p class="description">' . __('Chose a title for your support page.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    echo '<form name="wss-options" class="wss-options" method="post" action="">';
+			    	echo '<table class="form-table">';
 
-		    		/*Tickets table position in the page*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Page layout', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<select id="page-layout" name="page-layout">';
-		    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wss') . '</option>';
-		    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wss') . '</option>';
-		    				echo '</select>';
-		    				echo '<p class="description">' . __('Place the tickets table before or after the page content.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Choose the support page*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Support page', 'wss') . '</th>';
+			    			echo '<td>';
+			    				$pages = get_posts('post_type=page&posts_per_page=-1');
+			    				echo '<select id="support-page" name="support-page">';
+			    					echo '<option>-</option>';
+			    					foreach ($pages as $page) {
+			    						echo '<option name="' . $page->post_name . '" class="' . $page->post_name . '"';
+			    						echo ' value="' . $page->ID . '"' . ($support_page == $page->ID ? ' selected="selected"' : '') . '>';
+			    						echo $page->post_title . '</option>';
+			    					}
+			    					echo '<option value="new">' . __('Create a new page', 'wss') . '</option>';
+			    				echo '</select>';
+	    						echo '<p class="description">' . __('Select a page for customer support or create a new one.', 'wss') . '</div>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Admin threads color background*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Admin threads colors', 'wss') . '</th>';
-		    			echo '<td>';
-		    				/*Background*/
-		    				echo '<input type="text" class="wss-color-field" name="admin-color-background" value="' . $admin_color_background . '">';
-		    				echo '<p class="description">' . __('Select the background color for the admin\'s threads.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Create a new page*/
+			    		echo '<tr class="create-support-page">';
+			    			echo '<th scope="row">' . __('Page title', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="text" name="support-page-title" value="">';
+			    				echo '<p class="description">' . __('Chose a title for your support page.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Admin threads color text*/
-		    		echo '<tr>';
-		    			echo '<th scope="row"></th>';
-		    			echo '<td>';
-		    				echo '<input type="text" class="wss-color-field" name="admin-color-text" value="' . $admin_color_text . '">';
-		    				echo '<p class="description">' . __('Select the text color for the admin\'s threads.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Tickets table position in the page*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Page layout', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<select id="page-layout" name="page-layout">';
+			    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wss') . '</option>';
+			    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wss') . '</option>';
+			    				echo '</select>';
+			    				echo '<p class="description">' . __('Place the tickets table before or after the page content.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*User threads color background*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('User threads colors', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="text" class="wss-color-field" name="user-color-background" value="' . $user_color_background . '">';
-		    				echo '<p class="description">' . __('Select the background color for the user\'s threads.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Admin threads color background*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Admin threads colors', 'wss') . '</th>';
+			    			echo '<td>';
+			    				/*Background*/
+			    				echo '<input type="text" class="wss-color-field" name="admin-color-background" value="' . $admin_color_background . '">';
+			    				echo '<p class="description">' . __('Select the background color for the admin\'s threads.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*User threads color text*/
-		    		echo '<tr>';
-		    			echo '<th scope="row"></th>';
-		    			echo '<td>';
-		    				echo '<input type="text" class="wss-color-field" name="user-color-text" value="' . $user_color_text . '">';
-		    				echo '<p class="description">' . __('Select the text color for the user\'s threads.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Admin threads color text*/
+			    		echo '<tr>';
+			    			echo '<th scope="row"></th>';
+			    			echo '<td>';
+			    				echo '<input type="text" class="wss-color-field" name="admin-color-text" value="' . $admin_color_text . '">';
+			    				echo '<p class="description">' . __('Select the text color for the admin\'s threads.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*User email notification*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('User email notification', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<label for="user-notification">';
-			    				echo '<input type="checkbox" class="user-notification" name="user-notification" value="1"' . ($user_notification == 1 ? ' checked="checked"' : '') . '>';
-			    				echo __('Send an email notifications to the user when an answer was published.', 'wss');
-		    				echo '</label>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*User threads color background*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('User threads colors', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="text" class="wss-color-field" name="user-color-background" value="' . $user_color_background . '">';
+			    				echo '<p class="description">' . __('Select the background color for the user\'s threads.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Admin email notification*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Admin email notification', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<label for="admin-notification">';
-			    				echo '<input type="checkbox" class="admin-notification" name="admin-notification" value="1"' . ($admin_notification == 1 ? ' checked="checked"' : '') . '>';
-			    				echo __('Send an email notifications to the admin when a new thread is published.', 'wss');
-		    				echo '</label>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*User threads color text*/
+			    		echo '<tr>';
+			    			echo '<th scope="row"></th>';
+			    			echo '<td>';
+			    				echo '<input type="text" class="wss-color-field" name="user-color-text" value="' . $user_color_text . '">';
+			    				echo '<p class="description">' . __('Select the text color for the user\'s threads.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Support email*/
-		    		echo '<tr class="support-email-fields">';
-		    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreplay@example.com" value="' . $support_email . '">';
-		    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*User email notification*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('User email notification', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="user-notification">';
+				    				echo '<input type="checkbox" class="user-notification" name="user-notification" value="1"' . ($user_notification == 1 ? ' checked="checked"' : '') . '>';
+				    				echo __('Send an email notifications to the user when an answer was published.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Support email "from" name*/
-		    		echo '<tr class="support-email-fields">';
-		    			echo '<th scope="row">' . __('"From" name', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="text" class="support-email-name regular-text" name="support-email-name" placeholder="Example Support" value="' . $support_email_name . '">';
-		    				echo '<p class="description">' . __('The sender name for notifications.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Admin email notification*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Admin email notification', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="admin-notification">';
+				    				echo '<input type="checkbox" class="admin-notification" name="admin-notification" value="1"' . ($admin_notification == 1 ? ' checked="checked"' : '') . '>';
+				    				echo __('Send an email notifications to the admin when a new thread is published.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Footer email text*/
-		    		echo '<tr class="support-email-fields">';
-		    			echo '<th scope="row">' . __('Footer email text', 'wss') . '</th>';
-		    			echo '<td>';
+			    		/*Support email*/
+			    		echo '<tr class="support-email-fields">';
+			    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreplay@example.com" value="' . $support_email . '">';
+			    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
+			    		/*Support email "from" name*/
+			    		echo '<tr class="support-email-fields">';
+			    			echo '<th scope="row">' . __('"From" name', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="text" class="support-email-name regular-text" name="support-email-name" placeholder="Example Support" value="' . $support_email_name . '">';
+			    				echo '<p class="description">' . __('The sender name for notifications.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . wp_unslash($support_email_footer) . '</textarea>';
-		    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Footer email text*/
+			    		echo '<tr class="support-email-fields">';
+			    			echo '<th scope="row">' . __('Footer email text', 'wss') . '</th>';
+			    			echo '<td>';
 
-		    		/*Support for not logged in users*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<label for="guest-users">';
-			    				echo '<input type="checkbox" name="guest-users" value="1"' . ($guest_users == 1 ? ' checked="checked"' : '') . '>';
-			    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
-		    				echo '</label>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
 
-		    		/*Reopen a ticket after a new thread is sent in back-end*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
-		    			echo '<td>';
-			    			echo '<label for="reopen-ticket">';
-			    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
-				    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.', 'wss');
-			    			echo '</label>'; 
-		    			echo '</td>';
-		    		echo '</tr>';
+			    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . wp_unslash($support_email_footer) . '</textarea>';
+			    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Close not updated tickets after a specified period*/
-		    		echo '<tr>';
-		    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<label for="">';
-		    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ($auto_close_tickets == 1 ? ' checked="checked"' : '') . '>';
-			    				echo  __('Close tickets not updated for a specified period.', 'wss');
-		    				echo '</label>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Support for not logged in users*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="guest-users">';
+				    				echo '<input type="checkbox" name="guest-users" value="1"' . ($guest_users == 1 ? ' checked="checked"' : '') . '>';
+				    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Days of no updates for sending a notice to the user*/
-		    		echo '<tr class="auto-close-fields">';
-		    			echo '<th scope="row">' . __('Notice period', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . $auto_close_days_notice . '">';
-		    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+			    		/*Reopen a ticket after a new thread is sent in back-end*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
+			    			echo '<td>';
+				    			echo '<label for="reopen-ticket">';
+				    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
+					    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.', 'wss');
+				    			echo '</label>'; 
+			    			echo '</td>';
+			    		echo '</tr>';
 
-		    		/*Closing ticket user notification*/
-		    		echo '<tr class="auto-close-fields">';
-		    			echo '<th scope="row">' . __('User notice', 'wss') . '</th>';
-		    			echo '<td>';
+			    		/*Close not updated tickets after a specified period*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="">';
+			    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ($auto_close_tickets == 1 ? ' checked="checked"' : '') . '>';
+				    				echo  __('Close tickets not updated for a specified period.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-							$default_text = sprintf( 
-								__(
-									"Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 
-									"wss"
-								),
-								get_bloginfo()
-							);
+			    		/*Days of no updates for sending a notice to the user*/
+			    		echo '<tr class="auto-close-fields">';
+			    			echo '<th scope="row">' . __('Notice period', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . $auto_close_days_notice . '">';
+			    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
 
-							$notice = $auto_close_notice_text ? wp_unslash($auto_close_notice_text) : $default_text;
+			    		/*Closing ticket user notification*/
+			    		echo '<tr class="auto-close-fields">';
+			    			echo '<th scope="row">' . __('User notice', 'wss') . '</th>';
+			    			echo '<td>';
 
-		    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
-		    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+								$default_text = sprintf( 
+									__(
+										"Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 
+										"wss"
+									),
+									get_bloginfo()
+								);
 
-		    		/*Days after the notice for closing the ticket defintely*/
-		    		echo '<tr class="auto-close-fields">';
-		    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
-		    			echo '<td>';
-		    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . $auto_close_days . '">';
-		    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
-		    			echo '</td>';
-		    		echo '</tr>';
+								$notice = $auto_close_notice_text ? wp_unslash($auto_close_notice_text) : $default_text;
 
-		    		/*Reopen ticket after a thread is published*/
-		    	echo '</table>';
-		    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
-		    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wss') . '">';
-		    echo '</form>';
-		echo '</div>';
+			    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
+			    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
+
+			    		/*Days after the notice for closing the ticket defintely*/
+			    		echo '<tr class="auto-close-fields">';
+			    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . $auto_close_days . '">';
+			    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
+			    			echo '</td>';
+			    		echo '</tr>';
+
+			    		/*Reopen ticket after a thread is published*/
+			    	echo '</table>';
+			    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
+			    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wss') . '">';
+			    echo '</form>';
+			echo '</div>';
+			echo '<div class="wrap-right">';
+				// echo '<iframe width="300" height="900" scrolling="no" src="http://www.ilghera.com/images/wcifd-premium-iframe.html"></iframe>';
+			echo '</div>';
+			echo '<div class="clear"></div>';			
+		echo '</div>';			
 	}
 
 
@@ -1438,7 +1459,13 @@ class wc_support_system {
 	 */
 	public function wss_save_settings() {
 
-		if(isset($_POST['wss-options-hidden'])) {
+		if(isset($_POST['premium-key-sent'])) {
+
+			/*Premium key*/
+			$premium_key = isset($_POST['wss-premium-key']) ? sanitize_text_field($_POST['wss-premium-key']) : '';
+			update_option('wss-premium-key', $premium_key);
+
+		} elseif(isset($_POST['wss-options-hidden'])) {
 
 			/*Support page*/
 			$support_page = isset($_POST['support-page']) ? sanitize_text_field($_POST['support-page']) : '';

@@ -222,9 +222,18 @@ span.date {
   display: none;
 }
 
+.wss-options {
+  margin-top: 3rem;
+}
+
+.wss-options.one-of {
+  padding-bottom: 3rem;
+  border-bottom: 1px solid #ccc;
+}
+
 .wss-options input[type="text"],
 .wss-options select {
-  width: 180px;
+  min-width: 180px;
 }
 
 @media only screen and (max-width: 790px) {
