@@ -809,12 +809,6 @@ class wc_support_system {
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
 
 			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $customer_email, $ticket_status);
-
-			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
-				add_action('admin_head', array($this, 'auto_open_ticket'));
-			} else {
-				add_action('wp_footer', array($this, 'auto_open_ticket'));
-			}
 		}
 	}
 
