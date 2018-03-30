@@ -918,6 +918,9 @@ class wc_support_system {
 	 * Avoid resend notifications on page reload
 	 */
 	public function wss_avoid_resend() {
+		$this->support_page = get_option('wss-page');
+		$this->support_page_url = get_the_permalink($this->support_page);
+
 		if(isset($_GET['sent'])) {
 			header('Location: ' . $this->support_page_url);
 			exit;
