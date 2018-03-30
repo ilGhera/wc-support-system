@@ -222,12 +222,13 @@ span.date {
   display: none;
 }
 
-.wss-options {
-  margin-top: 3rem;
+.wss-options,
+#wss-support-tickets {
+  margin-top: 2rem;
 }
 
 .wss-options.one-of {
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
   border-bottom: 1px solid #ccc;
 }
 
