@@ -11,8 +11,6 @@ class wc_support_system {
 
 	public function __construct() {
 		
-		add_action('wss_cron_tickets_action', array($this, 'wss_cron_tickets'));
-
 		add_action('admin_init', array($this, 'wss_save_settings'));
 		add_action('admin_menu', array($this, 'register_wss_admin'));
 
@@ -25,7 +23,6 @@ class wc_support_system {
 		add_action('admin_footer', array($this, 'ajax_delete_single_thread'));
 		add_action('admin_footer', array($this, 'modal_change_ticket_status'));
 
-		add_action('init', array($this, 'support_access_validation'));
 		add_action('init', array($this, 'save_new_ticket'));
 		add_action('init', array($this, 'save_new_thread'));
 		add_action('init', array($this, 'wss_avoid_resend'));
@@ -195,50 +192,20 @@ class wc_support_system {
 	 */
 	public function user_data() {
 		$output = array();
-		if(is_user_logged_in()) {
-			$userdata = get_userdata(get_current_user_id());
-			$output['id'] = $userdata->ID;
-			$output['name'] = $userdata->display_name;
-			$output['email'] = $userdata->user_email; 
-
-			$output['admin'] = false;
-			$roles = $userdata->roles;
-			if(in_array('administrator', $roles)) {
-				$output['admin'] = true;				
-			}
-
-			$output['order_id'] = null;
-
-		} else {
-			$id = 0;
-
-			$name = null;
-			if(isset($_COOKIE['wss-guest-name'])) {
-				$name = sanitize_text_field($_COOKIE['wss-guest-name']);
-			} elseif(isset($_POST['wss-guest-name'])) {
-				$name = sanitize_text_field($_POST['wss-guest-name']);
-			}
-
-			$email = null;
-			if(isset($_COOKIE['wss-guest-email'])) {
-				$email = sanitize_text_field($_COOKIE['wss-guest-email']);
-			} elseif(isset($_POST['wss-guest-email'])) {
-				$email = sanitize_text_field($_POST['wss-guest-email']);
-			}
-
-			$order_id = null;
-			if(isset($_COOKIE['wss-order-id'])) {
-				$order_id = sanitize_text_field($_COOKIE['wss-order-id']);
-			} elseif(isset($_POST['wss-order-id'])) {
-				$order_id = sanitize_text_field($_POST['wss-order-id']);
-			}
-
-			$output['id'] = $id;
-			$output['name'] = $name;
-			$output['email'] = $email;				
-			$output['admin'] = false;
-			$output['order_id'] = $order_id;
+	
+		$userdata = get_userdata(get_current_user_id());
+	
+		$output['id']    = $userdata->ID;
+		$output['name']  = $userdata->display_name;
+		$output['email'] = $userdata->user_email; 
+		$output['admin'] = false;
+		$roles 			 = $userdata->roles;
+		
+		if(in_array('administrator', $roles)) {
+			$output['admin'] = true;				
 		}
+
+		$output['order_id'] = null;
 
 		return $output;
 	}
@@ -300,45 +267,6 @@ class wc_support_system {
 
 	}
 
-	
-	/**
-	 * Check the informations provided by the user (order id and email) for the support service access
-	 * @param bool $setcookie cokies can be set for reconize the user in the current session
-	 * @return bool
-	 */
-	public function support_access_validation($setcookie=null) {
-
-		$validation = false;
-
-		$this->support_page = get_option('wss-page');
-		$this->support_page_url = get_the_permalink($this->support_page);
-
-		if(isset($_POST['wss-support-access'])) {
-		    //USER DATA
-			$guest_name = $_POST['wss-guest-name'];
-		    $email      = $_POST['wss-guest-email'];
-		    $order_id 	= $_POST['wss-order-id'];
-		    $setcookie  = $setcookie ? $setcookie : true;
-
-		    $products = $this->get_user_products($order_id, $email);
-
-		    if($products) {
-		    	if($setcookie) {
-			    	setcookie('wss-support-access', 1);
-			    	setcookie('wss-guest-name', $guest_name);
-			    	setcookie('wss-guest-email', $email);
-			    	setcookie('wss-order-id', $order_id);	
-
-			    	wp_redirect($this->support_page_url);
-					exit;			
-		    	}		    	
-		    }	    
-	    }
-
-	    return $validation;
-
-	}
-
 
 	/**
 	 * Check if the logged in user can access to the support service, based on his purchases
@@ -370,42 +298,6 @@ class wc_support_system {
 		$tickets = $wpdb->get_results($query);
 
 		return count($tickets);
-	}
-
-
-	/**
-	 * Check for tickets not updated from a while (time option available) and send a message to the user	 
-	 */
-	public function wss_cron_tickets() {
-		global $wpdb;
-		$query = "
-			SELECT * FROM " . $wpdb->prefix . "wss_support_tickets WHERE status = 2
-		";
-		$tickets = $wpdb->get_results($query);
-
-		/*Get the setting options*/
-		$notice_period = 60 * 60 * 24 * get_option('wss-auto-close-days-notice');
-		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
-
-		/*Message*/
-		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
-
-		foreach ($tickets as $ticket) {
-			$last_update = strtotime($ticket->update_time);
-			$now  = strtotime('now');
-
-			if( ($now - $last_update) >= ($notice_period + $closing_delay) ) {
-
-				/*Last update is used for not modifying the ticket date*/
-				$this->update_ticket($ticket->id, $ticket->update_time, 3);
-
-			} elseif( ($now - $last_update) >= $notice_period ) {
-
-				/*Send user notification*/
-				$this->support_notification($ticket->id, null, $auto_close_notice_text, $ticket->user_email);
-
-			}
-		}
 	}
 
 
@@ -633,28 +525,16 @@ class wc_support_system {
 
 
 	/**
-	 * Exit button for not logged in users (delete cookies)
-	 */
-	public function support_exit_button() {
-		if(isset($_COOKIE['wss-support-access'])) {
-			echo '<button type="button" class="btn btn-default support-exit-button"><img src="' . plugin_dir_url(__DIR__) . '/images/exit.png">' . __('Exit', 'wss') . '</button>';
-		}
-	}
-
-
-	/**
 	 * User tickets table
 	 */
 	public function support_tickets_table() {
 
 		/*The user has access to the support service*/
-		if( ( isset($_COOKIE['wss-support-access']) && get_option('wss-guest-users') ) || $this->logged_in_user_support_access_validation() ) :
+		if( $this->logged_in_user_support_access_validation() ) :
 			$userdata = $this->user_data();
 			$user_id = $userdata['id'];
 			$user_email = $userdata['email'];
 			$order_id = $userdata['order_id'];
-
-			$this->support_exit_button();
 
 			$tickets = $this->get_user_tickets($user_id, $user_email);
 			if($tickets) {
@@ -693,27 +573,15 @@ class wc_support_system {
 			}
 			$this->create_new_ticket($order_id, $user_email); 
 
-		/*Bad data provided or guest users not allowed from the plugin options*/
-		elseif( isset($_POST['wss-support-access']) && !$this->support_access_validation(false) || !get_option('wss-guest-users') ) :
-				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wss') . '</div>';
-				echo '</div>';
-
 		/*Logged in user but not a customer*/		
 		elseif(is_user_logged_in()) :
 			echo '<div class="bootstrap-iso">';
 				echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
 			echo '</div>';
 		else :
-			?>
-			<form id="wes-support-access" method="POST" action="">
-				<input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wss'); ?>" required="required">
-				<input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wss'); ?>" required="required">
-				<input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wss'); ?>" required="required">
-				<input type="hidden" name="wss-support-access" value="1">
-				<input type="submit" value="<?php echo __('Access', 'wss'); ?>">
-			</form>
-			<?php
+			echo '<div class="bootstrap-iso">';
+				echo '<div class="alert alert-danger">' . __('You must be logged in to access support service.', 'wss') . '</div>';
+			echo '</div>';
 		endif;
 	}
 
@@ -919,29 +787,7 @@ class wc_support_system {
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
 			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $ticket_status);
-
-			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
-				add_action('admin_head', array($this, 'auto_open_ticket'));
-			} else {
-				add_action('wp_footer', array($this, 'auto_open_ticket'));
-			}
 		}
-	}
-
-
-	/**
-	 * Auto-expand the ticket after a new thread is sent
-	 */
-	public function auto_open_ticket() {
-		$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
-		?>
-		<script>
-			jQuery(document).ready(function($){
-				var ticket_id = '<?php echo $ticket_id; ?>';
-				auto_open_ticket(ticket_id);
-			})
-		</script>
-		<?php
 	}
 
 	
@@ -1171,15 +1017,24 @@ class wc_support_system {
 
 
 	/**
+	 * Button premium call to action
+	 * @return mixed
+	 */
+	public function go_premium() {
+		echo '<div class="bootstrap-iso">';
+			echo '<span class="label label-warning premium"><a href="https://www.ilghera.com/product/woocommerce-support-system-premium" target="_blank">Premium</a></label>';
+		echo '</div>';
+	}
+
+
+	/**
 	 * WSS settings page
 	 */
 	public function wss_settings() {
 
 		/*Get the options*/
 		$support_page  		 	= get_option('wss-page');
-		$reopen_ticket 		 	= get_option('wss-reopen-ticket');
 		$page_layout   		 	= get_option('wss-page-layout');
-		$guest_users    	 	= get_option('wss-guest-users');
 		$admin_color_background = get_option('wss-admin-color-background');
 		$admin_color_text 	    = get_option('wss-admin-color-text');
 		$user_color_background  = get_option('wss-user-color-background');
@@ -1189,10 +1044,6 @@ class wc_support_system {
 		$support_email			= get_option('wss-support-email');
 		$support_email_name		= get_option('wss-support-email-name');
 		$support_email_footer   = get_option('wss-support-email-footer');
-		$auto_close_tickets		= get_option('wss-auto-close-tickets');		
-		$auto_close_days_notice = get_option('wss-auto-close-days-notice') ? get_option('wss-auto-close-days-notice') : 7;
-		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
-		$auto_close_days 		= get_option('wss-auto-close-days') ? get_option('wss-auto-close-days') : 2;
 
 	    echo '<div class="wrap">';
 		    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
@@ -1238,7 +1089,7 @@ class wc_support_system {
 		    			echo '</td>';
 		    		echo '</tr>';
 
-		    		/*Admin threads color background*/
+					/*Admin threads color background*/
 		    		echo '<tr>';
 		    			echo '<th scope="row">' . __('Admin threads colors', 'wss') . '</th>';
 		    			echo '<td>';
@@ -1332,9 +1183,10 @@ class wc_support_system {
 		    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
 		    			echo '<td>';
 		    				echo '<label for="guest-users">';
-			    				echo '<input type="checkbox" name="guest-users" value="1"' . ($guest_users == 1 ? ' checked="checked"' : '') . '>';
+			    				echo '<input type="checkbox" name="guest-users" value="1" checked="checked" disabled="disabled">';
 			    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
 		    				echo '</label>';
+		    				$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
@@ -1343,9 +1195,10 @@ class wc_support_system {
 		    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
 		    			echo '<td>';
 			    			echo '<label for="reopen-ticket">';
-			    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
+			    				echo '<input type="checkbox" name="reopen-ticket" value="1" checked="checked" disabled="disabled">';
 				    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.', 'wss');
 			    			echo '</label>'; 
+							$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
@@ -1354,9 +1207,10 @@ class wc_support_system {
 		    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
 		    			echo '<td>';
 		    				echo '<label for="">';
-		    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ($auto_close_tickets == 1 ? ' checked="checked"' : '') . '>';
+		    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1" checked="checked" disabled="disabled">';
 			    				echo  __('Close tickets not updated for a specified period.', 'wss');
 		    				echo '</label>';
+							$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
@@ -1364,8 +1218,9 @@ class wc_support_system {
 		    		echo '<tr class="auto-close-fields">';
 		    			echo '<th scope="row">' . __('Notice period', 'wss') . '</th>';
 		    			echo '<td>';
-		    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . $auto_close_days_notice . '">';
+		    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="7" disabled="disabled">';
 		    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wss') . '</p>';
+							$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
@@ -1382,10 +1237,9 @@ class wc_support_system {
 								get_bloginfo()
 							);
 
-							$notice = $auto_close_notice_text ? $auto_close_notice_text : $default_text;
-
-		    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
+		    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6" disabled="disabled">' . $default_text . '</textarea>';
 		    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
+							$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
@@ -1393,12 +1247,12 @@ class wc_support_system {
 		    		echo '<tr class="auto-close-fields">';
 		    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
 		    			echo '<td>';
-		    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . $auto_close_days . '">';
+		    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="1" disabled="disabled">';
 		    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
+							$this->go_premium();
 		    			echo '</td>';
 		    		echo '</tr>';
 
-		    		/*Reopen ticket after a thread is published*/
 		    	echo '</table>';
 		    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
 		    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wss') . '">';
@@ -1456,24 +1310,6 @@ class wc_support_system {
 			update_option('wss-support-email', $support_email);
 			update_option('wss-support-email-name', $support_email_name);
 			update_option('wss-support-email-footer', $support_email_footer);
-
-			/*Guest users*/
-			$guest_users = isset($_POST['guest-users']) ? sanitize_text_field($_POST['guest-users']) : 0;
-			update_option('wss-guest-users', $guest_users);
-
-			/*Reopen ticket*/
-			$reopen_ticket = isset($_POST['reopen-ticket']) ? $_POST['reopen-ticket'] : 0;
-			update_option('wss-reopen-ticket', $reopen_ticket);
-
-			/*Auto close tickets*/
-			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
-			$auto_close_days_notice = isset($_POST['auto-close-days-notice']) ? sanitize_text_field($_POST['auto-close-days-notice']) : '';
-			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? $_POST['auto-close-notice-text'] : '';
-			$auto_close_days = isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
-			update_option('wss-auto-close-tickets', $auto_close_tickets);
-			update_option('wss-auto-close-days-notice', $auto_close_days_notice);
-			update_option('wss-auto-close-notice-text', $auto_close_notice_text);
-			update_option('wss-auto-close-days', $auto_close_days);
 
 		}
 	}
