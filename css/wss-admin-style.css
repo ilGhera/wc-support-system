@@ -222,9 +222,14 @@ span.date {
   display: none;
 }
 
+.wss-options,
+#wss-support-tickets {
+  margin-top: 2rem;
+}
+
 .wss-options input[type="text"],
 .wss-options select {
-  width: 180px;
+  min-width: 180px;
 }
 
 @media only screen and (max-width: 790px) {
