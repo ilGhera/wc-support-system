@@ -77,7 +77,7 @@ var avoid_resend = function(){
 	jQuery(function($){
 		setTimeout(function(){
 		    var url = window.location.href + '?sent=1';
-		    window.history.pushState({}, 'support', url);
+		    window.history.pushState({}, '', url);
 		}, 1000);
 	})
 }
@@ -200,6 +200,10 @@ jQuery(document).ready(function($){
 	$('.new-thread').on('click', function(){
 		var ticket_id = $('.opened .ticket-toggle').data('ticket-id');
 		$('.wss-thread-container input.ticket-id').attr('value', ticket_id);
+
+		/*In back-end, add the customer email to the form to send the user notification*/
+		var customer_email = $('.opened .column-user_email').text();
+		$('.wss-thread-container input.customer-email').attr('value', customer_email);
 
 		$('.wss-thread-container').show();
 		$(this).hide();
