@@ -52,5 +52,5 @@ function wss_activation() {
 
 	}
 }
-add_action( 'plugins_loaded', 'wss_activation');	
-// register_activation_hook(__FILE__, 'wss_activation');	
+add_action( 'plugins_loaded', 'wss_activation');
+// register_activation_hook(__FILE__, 'wss_activation');
