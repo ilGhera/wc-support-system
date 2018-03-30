@@ -390,7 +390,7 @@ class wc_support_system {
 		/*Message*/
 		$auto_close_notice_text = wp_unslash(get_option('wss-auto-close-notice-text'));
 
-		if($ticekts) {
+		if($tickets) {
 			foreach ($tickets as $ticket) {
 				$last_update = strtotime($ticket->update_time);
 				$now  = strtotime('now');
