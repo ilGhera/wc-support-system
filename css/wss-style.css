@@ -69,6 +69,10 @@
   font-size: 90%;
 }
 
+.support-tickets-table td {
+  vertical-align: middle;
+}
+
 .support-tickets-table td.product img {
   width: 50px;
   margin-bottom: 0;

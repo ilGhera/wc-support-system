@@ -124,13 +124,13 @@ class wc_support_system {
 			$charset_collate = $wpdb->get_charset_collate();
 
 			$sql = "CREATE TABLE $wss_tickets (
-				id bigint(20) NOT NULL AUTO_INCREMENT,
-				title varchar(200) NOT NULL,
-				user_id bigint(20) NOT NULL,
-				user_name varchar(60) NOT NULL,
-				user_email varchar(100) NOT NULL,
-				product_id bigint(20) NOT NULL,
-				status int(11) NOT NULL,
+				id 			bigint(20) NOT NULL AUTO_INCREMENT,
+				title 		varchar(200) NOT NULL,
+				user_id 	bigint(20) NOT NULL,
+				user_name 	varchar(60) NOT NULL,
+				user_email 	varchar(100) NOT NULL,
+				product_id 	bigint(20) NOT NULL,
+				status 		int(11) NOT NULL,
 				create_time datetime NOT NULL,
 				update_time datetime NOT NULL,
 				UNIQUE KEY id (id)
@@ -147,13 +147,13 @@ class wc_support_system {
 			$charset_collate = $wpdb->get_charset_collate();
 
 			$sql = "CREATE TABLE $wss_threads (
-				id bigint(20) NOT NULL AUTO_INCREMENT,
-				ticket_id bigint(20),
-				content text NOT NULL,
+				id 			bigint(20) NOT NULL AUTO_INCREMENT,
+				ticket_id 	bigint(20),
+				content 	text NOT NULL,
 				create_time datetime NOT NULL,
-				user_id bigint(20) NOT NULL,
-				user_name varchar(60) NOT NULL,
-				user_email varchar(100) NOT NULL,
+				user_id 	bigint(20) NOT NULL,
+				user_name 	varchar(60) NOT NULL,
+				user_email  varchar(100) NOT NULL,
 				UNIQUE KEY id (id)
 			) $charset_collate;";
 			
@@ -373,6 +373,7 @@ class wc_support_system {
 				wp_editor('', 'wss-thread'); 
 				?>
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
+				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
 				<input type="submit" class="send-new-thread button-primary" value="Send" style="margin-top: 1rem;">
 			</form>
@@ -556,7 +557,16 @@ class wc_support_system {
 							echo '<td class="ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
 							echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
 							echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
-							echo '<td class="product">' . get_the_post_thumbnail($ticket->product_id, array(50,50)) . '</td>';
+
+							/*Product image*/
+							$thumbnail = get_the_post_thumbnail($ticket->product_id, array(50,50));
+							if($thumbnail) {
+								$image = $thumbnail;
+							} else {
+								$image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
+							}
+
+							echo '<td class="product">' . $image . '</td>';
 							echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
 						echo '</tr>';
 					}
@@ -692,11 +702,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= html_entity_decode(nl2br($content));
+		$message .= html_entity_decode(nl2br(wp_unslash($content)));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= $support_email_footer;
+				$message .= wp_unslash($support_email_footer);
 			$message .= '</p>';
 		}
 
@@ -714,7 +724,7 @@ class wc_support_system {
 	 * @param  string 	$user_email 
 	 * @param  int 		$status     the ticket status after the update 
 	 */
-	public function save_new_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $status=1) {
+	public function save_new_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $customer_email=null, $status=1) {
 		global $wpdb;
 		$wpdb->insert(
 			$wpdb->prefix . 'wss_support_threads',
@@ -738,10 +748,19 @@ class wc_support_system {
 
 		$this->update_ticket($ticket_id, $date, $status);
 
+		/*Notifications settings*/
+		$user_notification	= get_option('wss-user-notification');
+		$admin_notification	= get_option('wss-admin-notification');
+
+
 		if(user_can($user_id, 'administrator')) {
-			$this->support_notification($ticket_id, null, $content, $user_email);	
+			if($user_notification) {
+				$this->support_notification($ticket_id, null, $content, $customer_email);					
+			}
 		} else {
-			$this->support_notification($ticket_id, $user_name, $content);	
+			if($admin_notification) {
+				$this->support_notification($ticket_id, $user_name, $content);					
+			}
 		}
 		add_action('wp_footer', array($this, 'wss_avoid_resend_footer_script'));
 	}
@@ -779,6 +798,8 @@ class wc_support_system {
 		if(isset($_POST['thread-sent'])){
 			$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 
+			$customer_email = isset($_POST['customer-email']) ? sanitize_text_field($_POST['customer-email']) : '';
+
 			$content = isset($_POST['wss-thread']) ? esc_html($_POST['wss-thread']) : '';
 			$date = date('Y-m-d H:i:s');
 
@@ -786,7 +807,14 @@ class wc_support_system {
 			$user = $this->user_data();
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
-			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $ticket_status);
+
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $customer_email, $ticket_status);
+
+			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
+				add_action('admin_head', array($this, 'auto_open_ticket'));
+			} else {
+				add_action('wp_footer', array($this, 'auto_open_ticket'));
+			}
 		}
 	}
 
@@ -1173,7 +1201,7 @@ class wc_support_system {
 
 		    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
 
-		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . $support_email_footer . '</textarea>';
+		    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . stripcslashes($support_email_footer) . '</textarea>';
 		    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
 		    			echo '</td>';
 		    		echo '</tr>';
