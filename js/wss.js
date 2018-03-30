@@ -77,7 +77,7 @@ var avoid_resend = function(){
 	jQuery(function($){
 		setTimeout(function(){
 		    var url = window.location.href + '?sent=1';
-		    window.history.pushState({}, 'support', url);
+		    window.history.pushState({}, '', url);
 		}, 1000);
 	})
 }
