@@ -65,9 +65,9 @@ add_action( 'plugins_loaded', 'wss_premium_activation', 1);
 /*Update checker*/
 require( plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php');
 $wss_update_checker = Puc_v4_Factory::buildUpdateChecker(
-    'https://www.ilghera.com/wp-update-server-2/?action=get_metadata&slug=ec-support-system-premium',
+    'https://www.ilghera.com/wp-update-server-2/?action=get_metadata&slug=wc-support-system-premium',
     __FILE__,
-    'ec-support-system-premium'
+    'wc-support-system-premium'
 );
 
 $wss_update_checker->addQueryArgFilter('wss_secure_update_check');
