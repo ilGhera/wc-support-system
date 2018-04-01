@@ -9,8 +9,8 @@ Give support to your WooComerce customers with this fast and easy to use ticket 
 
 
 == Description ==
-Customer care is a very important part of our online store and a support service is essential to bring our e-commerce to the next level.
-WooCommerce Support System integrates into your WordPress site a simple and fast support system, which will allow your users to open ticket assistance for WooCommerce products purchased, then receiving a notification when a reply is published.
+Customer care is a very important part of our online store and a support service is essential to bring our e-commerce to the next level.<br>
+WooCommerce Support System integrates into your WordPress site a simple and fast support system, which will allow your users to open ticket assistance for WooCommerce products purchased, then receiving a notification when a reply is published.<br>
 The ability to update the ticket with new messages, allows you to keep the logical thread of the conversation, making more productive your work and facilitating the user.
 
 
