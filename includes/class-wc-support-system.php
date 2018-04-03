@@ -388,7 +388,7 @@ class wc_support_system {
 		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
 
 		/*Message*/
-		$auto_close_notice_text = nl2br(wp_unslash(esc_html(get_option('wss-auto-close-notice-text'))));
+		$auto_close_notice_text = wp_unslash(get_option('wss-auto-close-notice-text'));
 
 		if($tickets) {
 			foreach ($tickets as $ticket) {
