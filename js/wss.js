@@ -172,7 +172,6 @@ var modal_change_ticket_status = function(){
 			$('.status-selector .status-' + status_id).addClass('active');
 
 			if(ticket_id) {
-				console.log(ticket_id);
 				change_ticket_status(ticket_id, update_time);
 			}	
 
