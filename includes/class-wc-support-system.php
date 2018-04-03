@@ -623,6 +623,7 @@ class wc_support_system {
 								echo '<div class="left">' . get_avatar($thread->user_id, 50) . '</div>';
 								echo '<div class="right"' . ($text_color ? ' style="color: ' . $text_color . '"' : '') . '>' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
 								echo '<div class="clear"></div>';
+								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
 							echo '<div class="thread-content">' . nl2br(wp_unslash(esc_html($thread->content))) . '</div>';
 						echo '</div>';
