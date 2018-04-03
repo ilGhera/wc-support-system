@@ -86,13 +86,13 @@ class wc_support_system {
 		if( in_array($admin_page->base, array('toplevel_page_wc-support-system', 'wc-support_page_settings')) ) {
 
 			/*js*/
-		    wp_enqueue_script('bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js');
-			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . '/js/wss.js', array('jquery'));			
+		    wp_enqueue_script('bootstrap-js', plugin_dir_url(__DIR__) . 'js/bootstrap.min.js');
+			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
 	        wp_enqueue_script('wp-color-picker', array('jquery'), '', true ); 
 
 			/*css*/
-		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . '/css/bootstrap-iso.css');    
-		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . '/css/wss-admin-style.css');    
+		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . 'css/wss-admin-style.css');    
             wp_enqueue_style('wp-color-picker' );          
 		}
 	}
@@ -105,11 +105,11 @@ class wc_support_system {
 		if(is_page($this->support_page)) {
 
 			/*js*/
-			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . '/js/wss.js', array('jquery'));			
+			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
 		    
 			/*css*/
-		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . '/css/bootstrap-iso.css');    
-		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . '/css/wss-style.css');
+		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . 'css/wss-style.css');
 		}
 	}
 
@@ -221,9 +221,9 @@ class wc_support_system {
 
 			$email = null;
 			if(isset($_COOKIE['wss-guest-email'])) {
-				$email = sanitize_text_field($_COOKIE['wss-guest-email']);
+				$email = sanitize_email($_COOKIE['wss-guest-email']);
 			} elseif(isset($_POST['wss-guest-email'])) {
-				$email = sanitize_text_field($_POST['wss-guest-email']);
+				$email = sanitize_email($_POST['wss-guest-email']);
 			}
 
 			$order_id = null;
@@ -388,7 +388,7 @@ class wc_support_system {
 		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
 
 		/*Message*/
-		$auto_close_notice_text = wp_unslash(get_option('wss-auto-close-notice-text'));
+		$auto_close_notice_text = nl2br(wp_unslash(esc_html(get_option('wss-auto-close-notice-text'))));
 
 		if($tickets) {
 			foreach ($tickets as $ticket) {
@@ -623,8 +623,9 @@ class wc_support_system {
 								echo '<div class="left">' . get_avatar($thread->user_id, 50) . '</div>';
 								echo '<div class="right"' . ($text_color ? ' style="color: ' . $text_color . '"' : '') . '>' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
 								echo '<div class="clear"></div>';
+								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . html_entity_decode(nl2br(wp_unslash($thread->content))) . '</div>';
+							echo '<div class="thread-content">' . nl2br(wp_unslash(esc_html($thread->content))) . '</div>';
 						echo '</div>';
 					}
 				}
@@ -836,11 +837,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= html_entity_decode(nl2br(wp_unslash($content)));
+		$message .= nl2br(wp_unslash(esc_html($content)));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= wp_unslash($support_email_footer);
+				$message .= nl2br(wp_unslash(esc_html($support_email_footer)));
 			$message .= '</p>';
 		}
 
@@ -935,9 +936,9 @@ class wc_support_system {
 		if(isset($_POST['thread-sent'])){
 			$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 
-			$customer_email = isset($_POST['customer-email']) ? sanitize_text_field($_POST['customer-email']) : '';
+			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
 
-			$content = isset($_POST['wss-thread']) ? esc_html($_POST['wss-thread']) : '';
+			$content = isset($_POST['wss-thread']) ? sanitize_textarea_field($_POST['wss-thread']) : '';
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
@@ -979,7 +980,7 @@ class wc_support_system {
 		if(isset($_POST['ticket-sent'])) {
 			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
 			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
-			$content 	= isset($_POST['wss-ticket']) ? esc_html($_POST['wss-ticket']) : '';
+			$content 	= isset($_POST['wss-ticket']) ? sanitize_textarea_field($_POST['wss-ticket']) : '';
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
@@ -1451,6 +1452,7 @@ class wc_support_system {
 			echo '</div>';
 			echo '<div class="clear"></div>';			
 		echo '</div>';			
+
 	}
 
 
@@ -1485,14 +1487,14 @@ class wc_support_system {
 			update_option('wss-page-layout', $page_layout);
 
 			/*Admin's threads colors*/
-			$admin_color_background = isset($_POST['admin-color-background']) ? sanitize_text_field($_POST['admin-color-background']) : '';
-			$admin_color_text = isset($_POST['admin-color-text']) ? sanitize_text_field($_POST['admin-color-text']) : '';
+			$admin_color_background = isset($_POST['admin-color-background']) ? sanitize_hex_color($_POST['admin-color-background']) : '';
+			$admin_color_text = isset($_POST['admin-color-text']) ? sanitize_hex_color($_POST['admin-color-text']) : '';
 			update_option('wss-admin-color-background', $admin_color_background);
 			update_option('wss-admin-color-text', $admin_color_text);
 
 			/*User's threads colors*/
-			$user_color_background = isset($_POST['user-color-background']) ? sanitize_text_field($_POST['user-color-background']) : '';
-			$user_color_text = isset($_POST['user-color-text']) ? sanitize_text_field($_POST['user-color-text']) : '';
+			$user_color_background = isset($_POST['user-color-background']) ? sanitize_hex_color($_POST['user-color-background']) : '';
+			$user_color_text = isset($_POST['user-color-text']) ? sanitize_hex_color($_POST['user-color-text']) : '';
 			update_option('wss-user-color-background', $user_color_background);
 			update_option('wss-user-color-text', $user_color_text);
 
@@ -1503,9 +1505,9 @@ class wc_support_system {
 			update_option('wss-admin-notification', $admin_notification);			
 
 			/*Support email/ email name*/
-			$support_email = isset($_POST['support-email']) ? sanitize_text_field($_POST['support-email']) : '';
+			$support_email = isset($_POST['support-email']) ? sanitize_email($_POST['support-email']) : '';
 			$support_email_name = isset($_POST['support-email-name']) ? sanitize_text_field($_POST['support-email-name']) : '';
-			$support_email_footer = isset($_POST['support-email-footer']) ? sanitize_text_field($_POST['support-email-footer']) : '';
+			$support_email_footer = isset($_POST['support-email-footer']) ? sanitize_textarea_field($_POST['support-email-footer']) : '';
 			update_option('wss-support-email', $support_email);
 			update_option('wss-support-email-name', $support_email_name);
 			update_option('wss-support-email-footer', $support_email_footer);
@@ -1515,14 +1517,14 @@ class wc_support_system {
 			update_option('wss-guest-users', $guest_users);
 
 			/*Reopen ticket*/
-			$reopen_ticket = isset($_POST['reopen-ticket']) ? $_POST['reopen-ticket'] : 0;
+			$reopen_ticket = isset($_POST['reopen-ticket']) ? sanitize_text_field($_POST['reopen-ticket']) : 0;
 			update_option('wss-reopen-ticket', $reopen_ticket);
 
 			/*Auto close tickets*/
 			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
 			$auto_close_days_notice = isset($_POST['auto-close-days-notice']) ? sanitize_text_field($_POST['auto-close-days-notice']) : '';
-			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? $_POST['auto-close-notice-text'] : '';
-			$auto_close_days = isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
+			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? sanitize_textarea_field($_POST['auto-close-notice-text']) : '';
+			$auto_close_days 		= isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
 			update_option('wss-auto-close-tickets', $auto_close_tickets);
 			update_option('wss-auto-close-days-notice', $auto_close_days_notice);
 			update_option('wss-auto-close-notice-text', $auto_close_notice_text);
