@@ -47,7 +47,7 @@ function wss_premium_activation() {
 
 		/*Cron*/
 		if(!wp_next_scheduled( 'wss_cron_tickets_action' )) {
-			wp_schedule_event(time(), 'hourly', 'wss_cron_tickets_action');//temp
+			wp_schedule_event(time(), 'daily', 'wss_cron_tickets_action');//temp
 	    }
 
 	    /*Deactivation*/
