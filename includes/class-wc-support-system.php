@@ -388,7 +388,7 @@ class wc_support_system {
 		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
 
 		/*Message*/
-		$auto_close_notice_text = wp_unslash(get_option('wss-auto-close-notice-text'));
+		$auto_close_notice_text = nl2br(wp_unslash(esc_html(get_option('wss-auto-close-notice-text'))));
 
 		if($ticekts) {
 			foreach ($tickets as $ticket) {
@@ -624,7 +624,7 @@ class wc_support_system {
 								echo '<div class="right"' . ($text_color ? ' style="color: ' . $text_color . '"' : '') . '>' . $thread->user_name . '<br><span class="date">' . date('d-m-Y H:i:s', strtotime($thread->create_time)) . '</span></div>';
 								echo '<div class="clear"></div>';
 							echo '</div>';
-							echo '<div class="thread-content">' . html_entity_decode(nl2br(wp_unslash($thread->content))) . '</div>';
+							echo '<div class="thread-content">' . nl2br(wp_unslash(esc_html($thread->content))) . '</div>';
 						echo '</div>';
 					}
 				}
@@ -836,11 +836,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= html_entity_decode(nl2br(wp_unslash($content)));
+		$message .= nl2br(wp_unslash(esc_html($content)));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= wp_unslash($support_email_footer);
+				$message .= nl2br(wp_unslash(esc_html($support_email_footer)));
 			$message .= '</p>';
 		}
 
