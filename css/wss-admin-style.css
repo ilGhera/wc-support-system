@@ -247,6 +247,18 @@ span.date {
   min-width: 180px;
 }
 
+
+.wrap-left {
+  float: left;
+  width: 70%;
+}
+
+.wrap-right {
+  float: left;
+  width: 30%;
+}
+
+
 @media only screen and (max-width: 790px) {
   
   th.column-id, 
@@ -254,6 +266,12 @@ span.date {
     display: none !important;
     padding: 3px 8px 3px 35%;
   }
+
+  .wrap-left, .wrap-right {
+    float: none;
+    width: 100%;
+  }
+
 }
 
 
