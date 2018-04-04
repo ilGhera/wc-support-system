@@ -15,6 +15,16 @@ WooCommerce Support System integrates into your WordPress site a simple and fast
 The ability to update the ticket with new messages, allows you to keep the logical thread of the conversation, making more productive your work and facilitating the user.
 
 
+**Functionlities**
+
+* Select a page or create a new one for adding the support service in front-end
+* Chose if insert the tickets table before or after the page content
+* Customize the colors for admin and users threads.
+* Send notifications to admin and users
+* Support service for not logged in users (Premium)
+* Auto-close tickets after a specified period of time (Premium)
+
+
 == Installation ==
 **From your WordPress dashboard**
 
@@ -31,8 +41,18 @@ The ability to update the ticket with new messages, allows you to keep the logic
 * Once Activated, go to **WC Support/ Settings** menu and set you preferences.
 
 
+== Screenshots ==
+1. Single ticket view in fornt-end
+2. Single ticket view in back-end
+3. Changing the ticket status
+4. E-mail notifications
+5. Colors customizations
+6. Not only for logged in users (Premium)
+7. Auto-close tickets (Premium)
+
+
 == Changelog ==
 = 0.9.0 =
-Release Date: 30 March, 2018
+Release Date: 4 April, 2018
 
 * First release
