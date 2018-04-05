@@ -1,10 +1,9 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 0.9.0
+Version: 0.9.1
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 0.9.0
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
@@ -52,6 +51,13 @@ The ability to update the ticket with new messages, allows you to keep the logic
 
 
 == Changelog ==
+= 0.9.1 =
+Release Date: 5 April, 2018
+
+* Bug Fix: Plugin not deactivated if WooCommerce is not installed.
+
+
+* First release
 = 0.9.0 =
 Release Date: 4 April, 2018
 
