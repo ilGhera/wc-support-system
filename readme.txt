@@ -57,7 +57,6 @@ Release Date: 5 April, 2018
 * Bug Fix: Plugin not deactivated if WooCommerce is not installed.
 
 
-* First release
 = 0.9.0 =
 Release Date: 4 April, 2018
 
