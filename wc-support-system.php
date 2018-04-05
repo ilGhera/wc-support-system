@@ -23,6 +23,9 @@ function wss_activation() {
 
 	/*WooCommerce must be installed*/
 	if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+
+		/*Deactivate the plugin*/
+		deactivate_plugins(__FILE__);
        
         wp_die( __('<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.') );	
 
