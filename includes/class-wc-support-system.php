@@ -227,27 +227,21 @@ class wc_support_system {
 			$args = array(
 			    'post_type'       => 'product',
 			    'post_status'     => 'publish',
-			    'meta_query'      => array(
-			        array(
-			            'key'     => '_visibility',
-			            'value'   => array('catalog', 'visible'),
-			            'compare' => 'IN'
-			        )
-			    )
+			    'posts_per_page'  => -1
 			);
 
 			$loop = new WP_Query($args);
 			$output = null;
-				 
+
 			while($loop->have_posts()) : $loop->the_post();
-				
+
 				$bought = wc_customer_bought_product($current_user->user_email, $current_user->ID, get_the_ID());
 				
 				if($bought) {
 					$output[] = get_the_ID(); 
 				}
 
-			endwhile; 
+			endwhile;
 			wp_reset_query();
 
 		} elseif($order_id && $user_email) {
