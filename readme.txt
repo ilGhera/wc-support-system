@@ -1,7 +1,7 @@
 === Woocommerce Support System - Premium ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 0.9.0
+Version: 0.9.1
 Requires at least: 4.0
 Tested up to: 4.9
 
@@ -31,6 +31,12 @@ The ability to update the ticket with new messages, allows you to keep the logic
 
 
 == Changelog ==
+= 0.9.1 =
+Release Date: 24 May, 2018
+
+* Bug Fix: Products purchased by the user not found.
+
+
 = 0.9.0 =
 Release Date: 30 March, 2018
 
