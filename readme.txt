@@ -52,7 +52,7 @@ The ability to update the ticket with new messages, allows you to keep the logic
 
 == Changelog ==
 = 0.9.2 =
-Release Date: 5 April, 2018
+Release Date: 24 May, 2018
 
 * Bug Fix: Products purchased by the user not found.
 
