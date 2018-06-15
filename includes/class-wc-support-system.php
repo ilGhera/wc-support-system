@@ -876,7 +876,7 @@ class wc_support_system {
 		add_action( 'load-' . $hook, array($this, 'screen_options'));
 	    
 	    /*Options*/
-	    add_submenu_page( 'wc-support-system', __('Settings', 'wss'), __('Settings', 'wss'), 'manage_options', 'settings', array($this, 'wss_settings'));
+	    add_submenu_page( 'wc-support-system', __('Settings', 'wss'), __('Settings', 'wss'), 'manage_options', 'wss-settings', array($this, 'wss_settings'));
 
 	}
 
