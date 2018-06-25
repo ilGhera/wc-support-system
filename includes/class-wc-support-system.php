@@ -83,7 +83,7 @@ class wc_support_system {
 	 */
 	public function wss_admin_scripts() {
 		$admin_page = get_current_screen();
-		if( in_array($admin_page->base, array('toplevel_page_wc-support-system', 'wc-support_page_settings')) ) {
+		if( in_array($admin_page->base, array('toplevel_page_wc-support-system', 'wc-support_page_wss-settings')) ) {
 
 			/*js*/
 		    wp_enqueue_script('bootstrap-js', plugin_dir_url(__DIR__) . 'js/bootstrap.min.js');
