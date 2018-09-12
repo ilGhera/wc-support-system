@@ -58,7 +58,6 @@ class wc_support_system {
 		$support_page = get_option('wss-page');
 
 		if($support_page && is_page($support_page)) {
-			$wss = new self();
 			
 			/*Get the tickets table*/
 			ob_start();
