@@ -3,7 +3,7 @@ Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
 Version: 0.9.0
 Requires at least: 4.0
-Tested up to: 4.9
+Tested up to: 5.0
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
