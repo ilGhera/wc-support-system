@@ -41,7 +41,7 @@ class wc_support_system {
 		add_action('wp_footer', array($this, 'ajax_get_ticket_content'));
 
 		add_shortcode('support-tickets-table', array($this, 'support_tickets_table'));
-		add_filter('the_content', array($this, 'page_class_instance'));
+		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
 
@@ -58,11 +58,12 @@ class wc_support_system {
 		$support_page = get_option('wss-page');
 
 		if($support_page && is_page($support_page)) {
-			
+
 			/*Get the tickets table*/
 			ob_start();
 			do_shortcode('[support-tickets-table]');
-			$tickets_table = ob_get_clean();
+			$tickets_table = ob_get_contents();
+			ob_end_clean();
 
 			/*Get the table position in the page*/
 			$page_layout = get_option('wss-page-layout');
@@ -104,11 +105,13 @@ class wc_support_system {
 		if(is_page($this->support_page)) {
 
 			/*js*/
-			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
+			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));	
 		    
 			/*css*/
-		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+			wp_enqueue_style('wss-tinymce-style', includes_url() . 'css/editor.min.css');
+	        wp_enqueue_style('wss-dashicons-style', includes_url() . 'css/dashicons.min.css');
 		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . 'css/wss-style.css');
+		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
 		}
 	}
 
@@ -433,9 +436,10 @@ class wc_support_system {
 	
 	/**
 	 * New ticket form
+	 * @param  int    $order_id   the order id if the user is not logged in
 	 * @param  string $user_email the user email
 	 */
-	public function create_new_ticket($order_id, $user_email) {
+    public function create_new_ticket($order_id, $user_email) {
 		?>
 		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
@@ -472,9 +476,7 @@ class wc_support_system {
 		?>
 		<div class="wss-thread-container" style="display: none;">
 			<form method="POST" action="">
-				<?php 
-				wp_editor('', 'wss-thread'); 
-				?>
+				<?php wp_editor('', 'wss-thread'); ?>
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
