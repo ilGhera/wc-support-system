@@ -43,6 +43,8 @@ class wc_support_system {
 		add_shortcode('support-tickets-table', array($this, 'support_tickets_table'));
 		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
+		add_action('init', array($this, 'customer_upload_images'));
+
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
 
 	}
@@ -73,6 +75,16 @@ class wc_support_system {
 		
 		} else {
 			return $content;
+		}
+
+	}
+
+
+	public function customer_upload_images() {
+
+		if (current_user_can('customer') && !current_user_can('upload_files')) {
+			$customer = get_role('customer');
+			$customer->add_cap('upload_files');
 		}
 
 	}

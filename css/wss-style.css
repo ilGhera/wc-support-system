@@ -170,3 +170,7 @@ span.date {
   top: 0.2rem;
   margin-right: 0.4rem;
 }
+
+.supports-drag-drop .uploader-inline .drop-instructions {
+  text-align: center;
+}
