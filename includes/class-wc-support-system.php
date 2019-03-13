@@ -14,6 +14,7 @@ class wc_support_system {
 		add_action('wss_cron_tickets_action', array($this, 'wss_cron_tickets'));
 
 		add_action('admin_init', array($this, 'wss_save_settings'));
+		add_action('admin_init', array($this, 'dashboard_customer_access'));
 		add_action('admin_menu', array($this, 'register_wss_admin'));
 
 		add_action('admin_enqueue_scripts', array($this, 'wss_admin_scripts'));
@@ -41,10 +42,35 @@ class wc_support_system {
 		add_action('wp_footer', array($this, 'ajax_get_ticket_content'));
 
 		add_shortcode('support-tickets-table', array($this, 'support_tickets_table'));
-		add_filter('the_content', array($this, 'page_class_instance'));
+		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
 
+		add_filter( 'show_admin_bar', array($this, 'admin_bar_for_customer'));
+
+	}
+
+
+	/**
+	 * Avoid dashboard customer access with upload files option activated
+	 */
+	public function dashboard_customer_access() {
+		if(is_admin() && !defined('DOING_AJAX') && (current_user_can('customer') || current_user_can('subscriber'))) {
+			if('1' === get_option('wss-customer-uploads')) {				
+				wp_redirect(home_url());
+				exit();
+			}
+		}
+	}
+
+
+	/**
+	 * Hide admin bar to customers with upload files option activated
+	 */
+	public function admin_bar_for_customer() {
+		if('1' === get_option('wss-customer-uploads') && (current_user_can('customer') || current_user_can('subscriber'))) {
+			return false;
+		}
 	}
 
 
@@ -58,11 +84,12 @@ class wc_support_system {
 		$support_page = get_option('wss-page');
 
 		if($support_page && is_page($support_page)) {
-			
+
 			/*Get the tickets table*/
 			ob_start();
 			do_shortcode('[support-tickets-table]');
-			$tickets_table = ob_get_clean();
+			$tickets_table = ob_get_contents();
+			ob_end_clean();
 
 			/*Get the table position in the page*/
 			$page_layout = get_option('wss-page-layout');
@@ -72,6 +99,34 @@ class wc_support_system {
 		
 		} else {
 			return $content;
+		}
+
+	}
+
+
+	/**
+	 * Let customer update images in threads
+	 */
+	public function customer_upload_files($customer_uploads) {
+
+		$roles = array('customer', 'subscriber');
+		$value = '1' === $customer_uploads ? true : false;		
+
+		foreach ($roles as $role) {
+			$user_role = get_role($role);
+		
+			$user_role->add_cap('upload_files', $value);
+			
+			$user_role->add_cap('publish_posts', $value);
+			$user_role->add_cap('edit_posts', $value);
+			$user_role->add_cap('edit_others_posts', $value);
+			$user_role->add_cap('edit_published_posts', $value);
+
+			$user_role->add_cap('publish_pages', $value);
+			$user_role->add_cap('edit_pages', $value);
+			$user_role->add_cap('edit_others_pages', $value);
+			$user_role->add_cap('edit_published_pages', $value);
+
 		}
 
 	}
@@ -104,11 +159,13 @@ class wc_support_system {
 		if(is_page($this->support_page)) {
 
 			/*js*/
-			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
+			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));	
 		    
 			/*css*/
-		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+			wp_enqueue_style('wss-tinymce-style', includes_url() . 'css/editor.min.css');
+	        wp_enqueue_style('wss-dashicons-style', includes_url() . 'css/dashicons.min.css');
 		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . 'css/wss-style.css');
+		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
 		}
 	}
 
@@ -381,7 +438,7 @@ class wc_support_system {
 		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
 
 		/*Message*/
-		$auto_close_notice_text = wp_unslash(get_option('wss-auto-close-notice-text'));
+		$auto_close_notice_text = nl2br(wp_kses(stripslashes(get_option('wss-auto-close-notice-text')), 'post'));
 
 		if($tickets) {
 			foreach ($tickets as $ticket) {
@@ -433,9 +490,10 @@ class wc_support_system {
 	
 	/**
 	 * New ticket form
+	 * @param  int    $order_id   the order id if the user is not logged in
 	 * @param  string $user_email the user email
 	 */
-	public function create_new_ticket($order_id, $user_email) {
+    public function create_new_ticket($order_id, $user_email) {
 		?>
 		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
@@ -472,9 +530,7 @@ class wc_support_system {
 		?>
 		<div class="wss-thread-container" style="display: none;">
 			<form method="POST" action="">
-				<?php 
-				wp_editor('', 'wss-thread'); 
-				?>
+				<?php wp_editor('', 'wss-thread'); ?>
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
@@ -618,7 +674,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br(wp_unslash(esc_html($thread->content))) . '</div>';
+							echo '<div class="thread-content">' . nl2br(wp_kses(stripslashes($thread->content), 'post') . '</div>');
 						echo '</div>';
 					}
 				}
@@ -830,11 +886,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= nl2br(wp_unslash(esc_html($content)));
+		$message .= nl2br(wp_kses(stripslashes($content), 'post'));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= nl2br(wp_unslash(esc_html($support_email_footer)));
+				$message .= wp_kses(addslashes($support_email_footer), 'post');
 			$message .= '</p>';
 		}
 
@@ -931,7 +987,8 @@ class wc_support_system {
 
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
 
-			$content = isset($_POST['wss-thread']) ? sanitize_textarea_field($_POST['wss-thread']) : '';
+			$content = isset($_POST['wss-thread']) ? wp_filter_post_kses($_POST['wss-thread']) : '';
+
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
@@ -1200,6 +1257,7 @@ class wc_support_system {
 		$support_page  		 	= get_option('wss-page');
 		$reopen_ticket 		 	= get_option('wss-reopen-ticket');
 		$page_layout   		 	= get_option('wss-page-layout');
+		$customer_uploads       = get_option('wss-customer-uploads');
 		$guest_users    	 	= get_option('wss-guest-users');
 		$admin_color_background = get_option('wss-admin-color-background');
 		$admin_color_text 	    = get_option('wss-admin-color-text');
@@ -1363,6 +1421,17 @@ class wc_support_system {
 			    			echo '</td>';
 			    		echo '</tr>';
 
+			    		/*Uploads available for customers*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Upload files', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="customer-uploads">';
+				    				echo '<input type="checkbox" name="customer-uploads" value="1"' . ($customer_uploads == 1 ? ' checked="checked"' : '') . '>';
+				    				echo __('Allow customers upload images and all the other permitted file types.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
+
 			    		/*Support for not logged in users*/
 			    		echo '<tr>';
 			    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
@@ -1504,6 +1573,11 @@ class wc_support_system {
 			update_option('wss-support-email', $support_email);
 			update_option('wss-support-email-name', $support_email_name);
 			update_option('wss-support-email-footer', $support_email_footer);
+
+			/*Customer uploads*/
+			$customer_uploads = isset($_POST['customer-uploads']) ? sanitize_text_field($_POST['customer-uploads']) : 0;
+			update_option('wss-customer-uploads', $customer_uploads);
+			$this->customer_upload_files($customer_uploads);
 
 			/*Guest users*/
 			$guest_users = isset($_POST['guest-users']) ? sanitize_text_field($_POST['guest-users']) : 0;
