@@ -1,5 +1,8 @@
 /**
- * Custom admin style
+ * Admin style
+ * @author ilGhera
+ * @package wc-support-system-premium/css
+ * @since 1.0.0
  */
 
 .wp-list-table.tickets td,
@@ -245,6 +248,8 @@ span.date {
 .wrap-right {
   float: left;
   width: 30%;
+  text-align: center;
+  padding-top: 3rem;
 }
 
 

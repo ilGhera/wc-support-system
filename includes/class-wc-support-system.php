@@ -1,8 +1,10 @@
 <?php
 /**
- * Woocommerce Support System
+ * Main plugin class
+ * @author ilGhera
+ * @package wc-support-system-premium/includes
+ * @since 1.0.0
  */
-
 class wc_support_system {
 
 	public $tickets_obj;

@@ -1,10 +1,15 @@
 <?php
+/**
+ * Admin tickets table
+ * @author ilGhera
+ * @package wc-support-system-premium/includes
+ * @since 0.9.4
+ */
 
 /*The main calss is required*/
 if (!class_exists('WP_List_Table')) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
-
 
 /**
  * WSS Table
