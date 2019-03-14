@@ -70,7 +70,9 @@ function wss_premium_activation() {
 add_action( 'plugins_loaded', 'wss_premium_activation', 1);
 
 
-/*Update checker*/
+/**
+ * Update checker
+ */
 require( plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php');
 $wss_update_checker = Puc_v4_Factory::buildUpdateChecker(
     'https://www.ilghera.com/wp-update-server-2/?action=get_metadata&slug=wc-support-system-premium',
@@ -87,3 +89,36 @@ function wss_secure_update_check($queryArgs) {
     }
     return $queryArgs;
 }
+
+
+/**
+ * Update message
+ */
+function wss_update_message($plugin_data, $response) {
+
+	$message = null;
+	$key = get_option('wss-premium-key');
+
+	$message = null;
+
+	if(!$key) {
+
+		$message = 'A <b>Premium Key</b> is required for keeping this plugin up to date. Please, add yours in the <a href="' . admin_url() . 'admin.php/?page=wss-settings">options page</a> or click <a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank">here</a> for prices and details.';
+
+	} else {
+
+		$decoded_key = explode('|', base64_decode($key));
+		$bought_date = date('d-m-Y', strtotime($decoded_key[1]));
+		$limit = strtotime($bought_date . ' + 365 day');
+		$now = strtotime('today');
+
+		if($limit < $now) {
+			$message = 'It seems like your <strong>Premium Key</strong> is expired. Please, click <a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank">here</a> for prices and details.';
+		} elseif($decoded_key[2] != 3292) {
+			$message = 'It seems like your <strong>Premium Key</strong> is not valid. Please, click <a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank">here</a> for prices and details.';
+		}
+	}
+	echo $message ? '<br><span class="wss-alert">' . $message . '</span>' : '';
+
+}
+add_action('in_plugin_update_message-wc-support-system-premium/wc-support-system.php', 'wss_update_message', 10, 2);

@@ -1,0 +1,19 @@
+/**
+ * Backend plugins archive style
+ * @author ilGhera
+ * @package wc-support-system-premium/css
+ * @since 1.0.0
+ */
+.wss-alert {
+  display: block;
+  margin: 1rem 0 0;
+  padding: 0.6rem;
+  background: #F2DEDE;
+  border-radius: 0.2rem;
+  color: #a94442; 
+}
+
+.wss-alert a {
+  color: #a94442; 
+  text-decoration: underline;
+}
