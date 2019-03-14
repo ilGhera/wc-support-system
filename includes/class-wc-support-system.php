@@ -94,11 +94,7 @@ class wc_support_system {
 		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . 'css/wss-admin-style.css');    
             wp_enqueue_style('wp-color-picker' );          
 
-		} elseif('plugins' === $admin_page->base) {
-			
-			/*css*/
-		    wp_enqueue_style('wss-plugins-style', plugin_dir_url(__DIR__) . 'css/wss-plugins-style.css');    
-		}
+		} 
 	}
 
 
