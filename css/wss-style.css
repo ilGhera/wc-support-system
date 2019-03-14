@@ -1,3 +1,9 @@
+/**
+ * Frontend style
+ * @author ilGhera
+ * @package wc-support-system-premium/css
+ * @since 1.0.0
+ */
 .single-product-support {
   display: block;
   padding: 1rem;
@@ -169,4 +175,8 @@ span.date {
   width: 16px;
   top: 0.2rem;
   margin-right: 0.4rem;
+}
+
+.supports-drag-drop .uploader-inline .drop-instructions {
+  text-align: center;
 }

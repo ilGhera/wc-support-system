@@ -1,4 +1,11 @@
 /**
+ * WSS js scripts
+ * @author ilGhera
+ * @package wc-support-system-premium/js
+ * @since 0.9.4
+ */
+
+/**
  * A product must be selected for opening a ticket
  */
 var check_ticket_product = function(){

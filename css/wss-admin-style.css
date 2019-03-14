@@ -1,5 +1,8 @@
 /**
- * Custom admin style
+ * Admin style
+ * @author ilGhera
+ * @package wc-support-system-premium/css
+ * @since 1.0.0
  */
 
 .wp-list-table.tickets td,
@@ -242,11 +245,15 @@ span.date {
   margin-top: 2rem;
 }
 
+.wss-options.one-of {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+}
+
 .wss-options input[type="text"],
 .wss-options select {
   min-width: 180px;
 }
-
 
 .wrap-left {
   float: left;
@@ -256,6 +263,8 @@ span.date {
 .wrap-right {
   float: left;
   width: 30%;
+  text-align: center;
+  padding-top: 3rem;
 }
 
 

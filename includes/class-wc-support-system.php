@@ -1,8 +1,10 @@
 <?php
 /**
- * Woocommerce Support System
+ * Main plugin class
+ * @author ilGhera
+ * @package wc-support-system-premium/includes
+ * @since 1.0.0
  */
-
 class wc_support_system {
 
 	public $tickets_obj;
@@ -38,7 +40,7 @@ class wc_support_system {
 		add_action('wp_footer', array($this, 'ajax_get_ticket_content'));
 
 		add_shortcode('support-tickets-table', array($this, 'support_tickets_table'));
-		add_filter('the_content', array($this, 'page_class_instance'));
+		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
 
@@ -55,11 +57,12 @@ class wc_support_system {
 		$support_page = get_option('wss-page');
 
 		if($support_page && is_page($support_page)) {
-			
+
 			/*Get the tickets table*/
 			ob_start();
 			do_shortcode('[support-tickets-table]');
-			$tickets_table = ob_get_clean();
+			$tickets_table = ob_get_contents();
+			ob_end_clean();
 
 			/*Get the table position in the page*/
 			$page_layout = get_option('wss-page-layout');
@@ -90,6 +93,11 @@ class wc_support_system {
 		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
 		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . 'css/wss-admin-style.css');    
             wp_enqueue_style('wp-color-picker' );          
+
+		} elseif('plugins' === $admin_page->base) {
+			
+			/*css*/
+		    wp_enqueue_style('wss-plugins-style', plugin_dir_url(__DIR__) . 'css/wss-plugins-style.css');    
 		}
 	}
 
@@ -101,11 +109,13 @@ class wc_support_system {
 		if(is_page($this->support_page)) {
 
 			/*js*/
-			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
+			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));	
 		    
 			/*css*/
-		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+			wp_enqueue_style('wss-tinymce-style', includes_url() . 'css/editor.min.css');
+	        wp_enqueue_style('wss-dashicons-style', includes_url() . 'css/dashicons.min.css');
 		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . 'css/wss-style.css');
+		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
 		}
 	}
 
@@ -323,9 +333,10 @@ class wc_support_system {
 	
 	/**
 	 * New ticket form
+	 * @param  int    $order_id   the order id if the user is not logged in
 	 * @param  string $user_email the user email
 	 */
-	public function create_new_ticket($order_id, $user_email) {
+    public function create_new_ticket($order_id, $user_email) {
 		?>
 		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
@@ -362,9 +373,7 @@ class wc_support_system {
 		?>
 		<div class="wss-thread-container" style="display: none;">
 			<form method="POST" action="">
-				<?php 
-				wp_editor('', 'wss-thread'); 
-				?>
+				<?php wp_editor('', 'wss-thread'); ?>
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
@@ -508,7 +517,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br(wp_unslash(esc_html($thread->content))) . '</div>';
+							echo '<div class="thread-content">' . nl2br(wp_kses(stripslashes($thread->content), 'post') . '</div>');
 						echo '</div>';
 					}
 				}
@@ -696,11 +705,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= nl2br(wp_unslash(esc_html($content)));
+		$message .= nl2br(wp_kses(stripslashes($content), 'post'));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= nl2br(wp_unslash(esc_html($support_email_footer)));
+				$message .= wp_kses(addslashes($support_email_footer), 'post');
 			$message .= '</p>';
 		}
 
@@ -797,7 +806,8 @@ class wc_support_system {
 
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
 
-			$content = isset($_POST['wss-thread']) ? sanitize_textarea_field($_POST['wss-thread']) : '';
+			$content = isset($_POST['wss-thread']) ? wp_filter_post_kses($_POST['wss-thread']) : '';
+
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
@@ -1052,6 +1062,7 @@ class wc_support_system {
 	public function wss_settings() {
 
 		/*Get the options*/
+		$premium_key			= get_option('wss-premium-key');
 		$support_page  		 	= get_option('wss-page');
 		$page_layout   		 	= get_option('wss-page-layout');
 		$admin_color_background = get_option('wss-admin-color-background');
@@ -1198,6 +1209,18 @@ class wc_support_system {
 			    			echo '</td>';
 			    		echo '</tr>';
 
+			    		/*Uploads available for customers*/
+			    		echo '<tr>';
+			    			echo '<th scope="row">' . __('Upload files', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="customer-uploads">';
+				    				echo '<input type="checkbox" name="customer-uploads" value="1" checked="checked" disabled="disabled">';
+				    				echo __('Allow customers upload images and all the other permitted file types.', 'wss');
+			    				echo '</label>';
+			    				$this->go_premium();
+			    			echo '</td>';
+			    		echo '</tr>';
+
 			    		/*Support for not logged in users*/
 			    		echo '<tr>';
 			    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
@@ -1291,7 +1314,13 @@ class wc_support_system {
 	 */
 	public function wss_save_settings() {
 
-		if(isset($_POST['wss-options-hidden'])) {
+		if(isset($_POST['premium-key-sent'])) {
+
+			/*Premium key*/
+			$premium_key = isset($_POST['wss-premium-key']) ? sanitize_text_field($_POST['wss-premium-key']) : '';
+			update_option('wss-premium-key', $premium_key);
+
+		} elseif(isset($_POST['wss-options-hidden'])) {
 
 			/*Support page*/
 			$support_page = isset($_POST['support-page']) ? sanitize_text_field($_POST['support-page']) : '';
@@ -1338,7 +1367,6 @@ class wc_support_system {
 
 		}
 	}
-
 
 }
 new wc_support_system();
