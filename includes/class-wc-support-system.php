@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.0
+ * @since 1.0.1
  */
 class wc_support_system {
 
@@ -470,14 +470,13 @@ class wc_support_system {
 
 	/**
 	 * Get the user's tickets
-	 * @param  int 	  $user_id    the user id, 0 if not logged in 
 	 * @param  string $user_email the user email				
 	 * @return array
 	 */
-	public function get_user_tickets($user_id, $user_email) {
+	public function get_user_tickets($user_email) {
 		global $wpdb;
 		$query = "
-			SELECT * FROM " . $wpdb->prefix . "wss_support_tickets WHERE user_id = '$user_id' AND user_email = '$user_email' ORDER BY create_time DESC
+			SELECT * FROM " . $wpdb->prefix . "wss_support_tickets WHERE user_email = '$user_email' ORDER BY create_time DESC
 		";
 		$tickets = $wpdb->get_results($query);
 
@@ -716,7 +715,7 @@ class wc_support_system {
 
 			$this->support_exit_button();
 
-			$tickets = $this->get_user_tickets($user_id, $user_email);
+			$tickets = $this->get_user_tickets($user_email);
 			if($tickets) {
 				?>
 				<table class="table support-tickets-table">
