@@ -2,7 +2,7 @@
  * Frontend style
  * @author ilGhera
  * @package wc-support-system-premium/css
- * @since 1.0.0
+ * @since 1.0.2
  */
 .single-product-support {
   display: block;
@@ -177,6 +177,7 @@ span.date {
   margin-right: 0.4rem;
 }
 
-.supports-drag-drop .uploader-inline .drop-instructions {
+.supports-drag-drop .uploader-inline .drop-instructions,
+.upload-message {
   text-align: center;
 }
