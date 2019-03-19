@@ -57,7 +57,7 @@ The ability to update the ticket with new messages, allows you to keep the logic
 Release Date: 19 March, 2019
 
 * Enhancement: Allowed HTML in Footer email text and in User notice fields.
-* Bug Fix: Front-end user can now see only his files with "Add Media" button.
+* Bug Fix: Front-end user can now see only his files with "Add Media" button (Premium).
 
 
 = 1.0.1 =
