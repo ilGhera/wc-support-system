@@ -7,7 +7,7 @@
  * Version: 1.0.2
  * Author URI: https://ilghera.com 
  * Requires at least: 4.0
- * Tested up to: 5.0
+ * Tested up to: 5.1
  * WC tested up to: 3
  * Text Domain: wss
  * Domain Path: /languages
