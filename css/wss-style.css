@@ -177,6 +177,7 @@ span.date {
   margin-right: 0.4rem;
 }
 
-.supports-drag-drop .uploader-inline .drop-instructions {
+.supports-drag-drop .uploader-inline .drop-instructions,
+.upload-message {
   text-align: center;
 }

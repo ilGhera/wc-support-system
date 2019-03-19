@@ -47,8 +47,8 @@ class wc_support_system {
 		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
-
-		add_filter( 'show_admin_bar', array($this, 'admin_bar_for_customer'));
+		add_filter('show_admin_bar', array($this, 'admin_bar_for_customer'));
+		add_filter('parse_query', array($this, 'filter_media_files'));
 
 	}
 
@@ -103,6 +103,20 @@ class wc_support_system {
 			return $content;
 		}
 
+	}
+
+
+	/**
+	 * If the client/ user can upload images has to have access only to his files
+	 * @param  object $wp_query
+	 */
+	function filter_media_files($wp_query) {
+	    if (!current_user_can('editor') && !current_user_can('administrator')) {
+			if (isset($wp_query->query_vars['post_type']) && $wp_query->query_vars['post_type'] == 'attachment') {
+	            global $current_user;
+	            $wp_query->set('author', $current_user->ID);
+	        }
+	    }
 	}
 
 
@@ -445,7 +459,7 @@ class wc_support_system {
 		$closing_delay = 60 * 60 * 24 * get_option('wss-auto-close-days');
 
 		/*Message*/
-		$auto_close_notice_text = nl2br(wp_kses(stripslashes(get_option('wss-auto-close-notice-text')), 'post'));
+		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
 
 		if($tickets) {
 			foreach ($tickets as $ticket) {
@@ -680,7 +694,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br(wp_kses(stripslashes($thread->content), 'post') . '</div>');
+							echo '<div class="thread-content">' . nl2br(wp_kses(wp_unslash($thread->content), 'post') . '</div>');
 						echo '</div>';
 					}
 				}
@@ -892,11 +906,11 @@ class wc_support_system {
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message  = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
-		$message .= nl2br(wp_kses(stripslashes($content), 'post'));
+		$message .= nl2br(wp_kses(wp_unslash($content), 'post'));
 
 		if($support_email_footer) {
 			$message .= '<p style="display: block; margin-top: 1.5rem; font-size: 12px; color: #666;">';
-				$message .= wp_kses(addslashes($support_email_footer), 'post');
+				$message .= wp_unslash($support_email_footer);
 			$message .= '</p>';
 		}
 
@@ -1422,7 +1436,7 @@ class wc_support_system {
 
 			    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
 
-			    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . wp_unslash($support_email_footer) . '</textarea>';
+			    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . esc_html(wp_unslash($support_email_footer)) . '</textarea>';
 			    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
@@ -1493,7 +1507,7 @@ class wc_support_system {
 									get_bloginfo()
 								);
 
-								$notice = $auto_close_notice_text ? wp_unslash($auto_close_notice_text) : $default_text;
+								$notice = $auto_close_notice_text ? esc_html(wp_unslash($auto_close_notice_text)) : $default_text;
 
 			    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
 			    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
@@ -1575,7 +1589,7 @@ class wc_support_system {
 			/*Support email/ email name*/
 			$support_email = isset($_POST['support-email']) ? sanitize_email($_POST['support-email']) : '';
 			$support_email_name = isset($_POST['support-email-name']) ? sanitize_text_field($_POST['support-email-name']) : '';
-			$support_email_footer = isset($_POST['support-email-footer']) ? sanitize_textarea_field($_POST['support-email-footer']) : '';
+			$support_email_footer = isset($_POST['support-email-footer']) ? wp_filter_post_kses($_POST['support-email-footer']) : '';
 			update_option('wss-support-email', $support_email);
 			update_option('wss-support-email-name', $support_email_name);
 			update_option('wss-support-email-footer', $support_email_footer);
@@ -1596,7 +1610,7 @@ class wc_support_system {
 			/*Auto close tickets*/
 			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
 			$auto_close_days_notice = isset($_POST['auto-close-days-notice']) ? sanitize_text_field($_POST['auto-close-days-notice']) : '';
-			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? sanitize_textarea_field($_POST['auto-close-notice-text']) : '';
+			$auto_close_notice_text = isset($_POST['auto-close-notice-text']) ? wp_filter_post_kses($_POST['auto-close-notice-text']) : '';
 			$auto_close_days 		= isset($_POST['auto-close-days']) ? sanitize_text_field($_POST['auto-close-days']) : '';
 			update_option('wss-auto-close-tickets', $auto_close_tickets);
 			update_option('wss-auto-close-days-notice', $auto_close_days_notice);
