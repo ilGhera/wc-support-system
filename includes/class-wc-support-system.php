@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.2
+ * @since 1.0.3
  */
 class wc_support_system {
 
@@ -211,6 +211,7 @@ class wc_support_system {
 				user_email 	varchar(100) NOT NULL,
 				product_id 	bigint(20) NOT NULL,
 				status 		int(11) NOT NULL,
+				notified 	int(11) NOT NULL,
 				create_time datetime NOT NULL,
 				update_time datetime NOT NULL,
 				UNIQUE KEY id (id)
@@ -220,7 +221,17 @@ class wc_support_system {
 		
 			dbDelta( $sql );
 		
-		}
+		} elseif( '1.0.2' > get_option('wss-db-version') ) {
+
+			error_log('DB VERSION: ' . get_option('wss-db-version'));
+ 
+            $sql = "ALTER TABLE $wss_tickets ADD notified INT(11) NOT NULL DEFAULT 0";
+ 
+	        $wpdb->query($sql);
+
+			update_option('wss-db-version', '1.0.2');
+ 
+ 		}
 
 		if($wpdb->get_var("SHOW TABLES LIKE '$wss_threads'") != $wss_threads) {
 
@@ -473,8 +484,12 @@ class wc_support_system {
 
 				} elseif( ($now - $last_update) >= $notice_period ) {
 
-					/*Send user notification*/
-					$this->support_notification($ticket->id, null, $auto_close_notice_text, $ticket->user_email);
+					if(0 == $this->get_ticket($ticket->id, 'notified')) {
+
+						/*Send user notification*/
+						$this->support_notification($ticket->id, null, $auto_close_notice_text, $ticket->user_email, true);
+
+					}
 
 				}
 			}
@@ -569,16 +584,24 @@ class wc_support_system {
 
 	/**
 	 * Get the ticket status
-	 * @param  int $ticket_id the ticket id
-	 * @return int            the status id of the ticket
+	 * @param  int    $ticket_id the ticket id
+	 * @param  string $col       the column to retrieve from the row
+	 * @return object the ticket data
 	 */
-	public static function get_ticket_status($ticket_id) {
+	public static function get_ticket($ticket_id, $col='') {
 		global $wpdb;
+
+		$output = null;
+
+		$data = $col ? $col : '*';
 		$query = "
-			SELECT status FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = '$ticket_id'
+			SELECT $data FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = '$ticket_id'
 		";
 		$results = $wpdb->get_results($query);
-		$output = $results ? $results[0]->status : null;
+
+		if(isset($results[0])) {
+			$output = $col ? $results[0]->$col : $results[0];
+		}
 		return $output;
 	}
 
@@ -882,13 +905,35 @@ class wc_support_system {
 
 
 	/**
-	 * New thread notification used both to user and admin
-	 * @param  int 	  $ticket_id ticket id of the new thread
-	 * @param  string $user_name if not specified, the support email name is used
-	 * @param  string $content   thread content
-	 * @param  string $to 		 if not specified, the support email is used 
+	 * Register to the db that the notification was sent
+	 * @param  int $ticket_id the ticket id
 	 */
-	public function support_notification($ticket_id, $user_name='', $content, $to='') {
+	public function notification_sent($ticket_id) {
+		global $wpdb;
+		$wpdb->update(
+			$wpdb->prefix . 'wss_support_tickets',
+			array(
+				'notified' => 1, 
+			),
+			array(
+				'id' => $ticket_id,
+			),
+			array(
+				'%d',
+			)
+		);
+	}
+
+
+	/**
+	 * New thread notification used both to user and admin
+	 * @param  int 	  $ticket_id 	ticket id of the new thread
+	 * @param  string $user_name 	if not specified, the support email name is used
+	 * @param  string $content   	thread content
+	 * @param  string $to 		 	if not specified, the support email is used 
+	 * @param  bool   $notification is it a notification before closing the ticket?
+	 */
+	public function support_notification($ticket_id, $user_name='', $content, $to='', $notification=false) {
 
 		$support_email = get_option('wss-support-email'); 
 		$support_email_name = get_option('wss-support-email-name');
@@ -915,6 +960,10 @@ class wc_support_system {
 		}
 
 		wp_mail($to, $subject, $message, $headers);
+
+		if($notification) {
+			$this->notification_sent($ticket_id);
+		}
 	}
 
 
