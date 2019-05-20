@@ -37,6 +37,18 @@ class wss_table extends WP_List_Table {
 		global $wpdb;
 		
 		$query  = "SELECT * FROM " . $wpdb->prefix . "wss_support_tickets";
+
+		/*Filtered by search term*/
+		if(isset($_REQUEST['s'])) {
+
+			$query .= " WHERE title LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR id = '" . esc_sql($_REQUEST['s']) . "'";
+			$query .= " OR user_id = '" . esc_sql($_REQUEST['s']) . "'";
+			$query .= " OR user_name LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR user_email LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR product_id = '" . esc_sql($_REQUEST['s']) . "'";
+
+		}
 		
 		/*If filtered by the admin*/
 		if(!empty( $_REQUEST['orderby'])) {

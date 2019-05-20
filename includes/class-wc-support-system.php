@@ -1198,6 +1198,7 @@ class wc_support_system {
 				<?php
 				// $test = new wss_table();
 				$this->tickets_obj->prepare_items();
+                $this->tickets_obj->search_box(__( 'Search', 'wss' ), 'wss-search');
 				$this->tickets_obj->display(); 
 				$this->create_new_thread();
 				?>
