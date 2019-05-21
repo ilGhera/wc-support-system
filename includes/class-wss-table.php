@@ -43,6 +43,7 @@ class wss_table extends WP_List_Table {
 
 			$query .= " WHERE user_name LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
 			$query .= " OR user_email LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR title LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
 		
 		}
 		
