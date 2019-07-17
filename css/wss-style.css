@@ -2,7 +2,7 @@
  * Frontend style
  * @author ilGhera
  * @package wc-support-system-premium/css
- * @since 1.0.2
+ * @since 1.0.3
  */
 .single-product-support {
   display: block;
@@ -26,6 +26,7 @@
 .button.ticket-cancel {
   cursor: pointer;
   float: right;
+  margin-bottom: 2rem;
 }
 
 .thread-tools .button,
@@ -180,4 +181,36 @@ span.date {
 .supports-drag-drop .uploader-inline .drop-instructions,
 .upload-message {
   text-align: center;
+}
+
+@media only screen and (max-width: 640px) {
+
+  .support-tickets-table {
+    font-size: 0.8em;
+  }
+
+  .support-tickets-table .create-time {
+    display: none;
+  } 
+
+}
+
+@media only screen and (max-width: 580px) {
+
+  .support-tickets-table .update-time {
+    display: none;
+  }
+
+  .support-tickets-table .subject {
+    width: 60%;
+  }
+
+}
+
+@media only screen and (max-width: 380px) {
+
+  .support-tickets-table .id {
+    display: none;
+  }
+
 }

@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.2
+ * @since 1.0.3
  */
 class wc_support_system {
 
@@ -135,6 +135,7 @@ class wc_support_system {
 				user_email 	varchar(100) NOT NULL,
 				product_id 	bigint(20) NOT NULL,
 				status 		int(11) NOT NULL,
+				notified 	int(11) NOT NULL,
 				create_time datetime NOT NULL,
 				update_time datetime NOT NULL,
 				UNIQUE KEY id (id)
@@ -144,7 +145,17 @@ class wc_support_system {
 		
 			dbDelta( $sql );
 		
-		}
+		} elseif( '1.0.2' > get_option('wss-db-version') ) {
+
+			error_log('DB VERSION: ' . get_option('wss-db-version'));
+ 
+            $sql = "ALTER TABLE $wss_tickets ADD notified INT(11) NOT NULL DEFAULT 0";
+ 
+	        $wpdb->query($sql);
+
+			update_option('wss-db-version', '1.0.2');
+ 
+ 		}
 
 		if($wpdb->get_var("SHOW TABLES LIKE '$wss_threads'") != $wss_threads) {
 
@@ -377,7 +388,7 @@ class wc_support_system {
 		</div>
 		<div class="thread-tools">
 			<a class="button back-to-tickets"><?php echo __('Back to tickets', 'wss'); ?></a>
-			<a class="button new-thread button-primary" style="display: none;"><?php echo __('New thread', 'wss'); ?></a>
+			<a class="button new-thread button-primary" style="display: none;"><?php echo __('New message', 'wss'); ?></a>
 			<a class="button thread-cancel" style="display: none;"><?php echo __('Cancel', 'wss'); ?></a>
 		</div>
 		<?php	
@@ -386,16 +397,24 @@ class wc_support_system {
 
 	/**
 	 * Get the ticket status
-	 * @param  int $ticket_id the ticket id
-	 * @return int            the status id of the ticket
+	 * @param  int    $ticket_id the ticket id
+	 * @param  string $col       the column to retrieve from the row
+	 * @return object the ticket data
 	 */
-	public static function get_ticket_status($ticket_id) {
+	public static function get_ticket($ticket_id, $col='') {
 		global $wpdb;
+
+		$output = null;
+
+		$data = $col ? $col : '*';
 		$query = "
-			SELECT status FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = '$ticket_id'
+			SELECT $data FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = '$ticket_id'
 		";
 		$results = $wpdb->get_results($query);
-		$output = $results ? $results[0]->status : null;
+
+		if(isset($results[0])) {
+			$output = $col ? $results[0]->$col : $results[0];
+		}
 		return $output;
 	}
 
@@ -540,8 +559,8 @@ class wc_support_system {
 				?>
 				<table class="table support-tickets-table">
 					<thead>
-						<th style="padding-right: 2rem;"><?php echo __('Id', 'wss'); ?></th>
-						<th><?php echo __('Subject', 'wss'); ?></th>
+						<th class="id" style="padding-right: 2rem;"><?php echo __('Id', 'wss'); ?></th>
+						<th class="subject"><?php echo __('Subject', 'wss'); ?></th>
 						<th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
 						<th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
 						<th><?php echo __('Product', 'wss'); ?></th>
@@ -551,8 +570,8 @@ class wc_support_system {
 					<?php
 					foreach ($tickets as $ticket) {
 						echo '<tr class="ticket-' . $ticket->id . '">';
-							echo '<td>#' . $ticket->id . '</td>';
-							echo '<td class="ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
+							echo '<td class="id">#' . $ticket->id . '</td>';
+							echo '<td class="subject ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
 							echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
 							echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
 
@@ -676,13 +695,35 @@ class wc_support_system {
 
 
 	/**
-	 * New thread notification used both to user and admin
-	 * @param  int 	  $ticket_id ticket id of the new thread
-	 * @param  string $user_name if not specified, the support email name is used
-	 * @param  string $content   thread content
-	 * @param  string $to 		 if not specified, the support email is used 
+	 * Register to the db that the notification was sent
+	 * @param  int $ticket_id the ticket id
 	 */
-	public function support_notification($ticket_id, $user_name='', $content, $to='') {
+	public function notification_sent($ticket_id) {
+		global $wpdb;
+		$wpdb->update(
+			$wpdb->prefix . 'wss_support_tickets',
+			array(
+				'notified' => 1, 
+			),
+			array(
+				'id' => $ticket_id,
+			),
+			array(
+				'%d',
+			)
+		);
+	}
+
+
+	/**
+	 * New thread notification used both to user and admin
+	 * @param  int 	  $ticket_id 	ticket id of the new thread
+	 * @param  string $user_name 	if not specified, the support email name is used
+	 * @param  string $content   	thread content
+	 * @param  string $to 		 	if not specified, the support email is used 
+	 * @param  bool   $notification is it a notification before closing the ticket?
+	 */
+	public function support_notification($ticket_id, $user_name='', $content, $to='', $notification=false) {
 
 		$support_email = get_option('wss-support-email'); 
 		$support_email_name = get_option('wss-support-email-name');
@@ -709,6 +750,10 @@ class wc_support_system {
 		}
 
 		wp_mail($to, $subject, $message, $headers);
+
+		if($notification) {
+			$this->notification_sent($ticket_id);
+		}
 	}
 
 
@@ -922,6 +967,7 @@ class wc_support_system {
 				<?php
 				// $test = new wss_table();
 				$this->tickets_obj->prepare_items();
+                $this->tickets_obj->search_box(__( 'Search', 'wss' ), 'wss-search');
 				$this->tickets_obj->display(); 
 				$this->create_new_thread();
 				?>
@@ -956,7 +1002,7 @@ class wc_support_system {
 	public function ajax_delete_single_thread() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
-			$alert_message = __('Are you sure you want to delete this thread?', 'wss');
+			$alert_message = __('Are you sure you want to delete this message?', 'wss');
 			?>
 			<script>
 				jQuery(document).ready(function($){
@@ -987,7 +1033,7 @@ class wc_support_system {
 	public function ajax_delete_single_ticket() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
-			$alert_message = __('Are you sure you want to delete this ticket with all his threads?', 'wss');
+			$alert_message = __('Are you sure you want to delete this ticket with all his messages?', 'wss');
 			?>
 			<script>
 				jQuery(document).ready(function($){
@@ -1117,11 +1163,11 @@ class wc_support_system {
 
 						/*Admin threads color background*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Admin threads colors', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Admin messages colors', 'wss') . '</th>';
 			    			echo '<td>';
 			    				/*Background*/
 			    				echo '<input type="text" class="wss-color-field" name="admin-color-background" value="' . $admin_color_background . '">';
-			    				echo '<p class="description">' . __('Select the background color for the admin\'s threads.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the background color for the admin\'s messages.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1130,16 +1176,16 @@ class wc_support_system {
 			    			echo '<th scope="row"></th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="admin-color-text" value="' . $admin_color_text . '">';
-			    				echo '<p class="description">' . __('Select the text color for the admin\'s threads.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the text color for the admin\'s messages.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*User threads color background*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('User threads colors', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('User messages colors', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="user-color-background" value="' . $user_color_background . '">';
-			    				echo '<p class="description">' . __('Select the background color for the user\'s threads.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the background color for the user\'s messages.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1148,7 +1194,7 @@ class wc_support_system {
 			    			echo '<th scope="row"></th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="user-color-text" value="' . $user_color_text . '">';
-			    				echo '<p class="description">' . __('Select the text color for the user\'s threads.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the text color for the user\'s messages.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1169,7 +1215,7 @@ class wc_support_system {
 			    			echo '<td>';
 			    				echo '<label for="admin-notification">';
 				    				echo '<input type="checkbox" class="admin-notification" name="admin-notification" value="1"' . ($admin_notification == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Send an email notifications to the admin when a new thread is published.', 'wss');
+				    				echo __('Send an email notifications to the admin when a new message is published.', 'wss');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
@@ -1197,7 +1243,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Footer email text', 'wss') . '</th>';
 			    			echo '<td>';
 
-			    				$placeholder = sprintf( __('Don\'t reply to this message, you can read all threads and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
+			    				$placeholder = sprintf( __('Don\'t reply to this email, you can read all messages and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
 
 			    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . esc_html(wp_unslash($support_email_footer)) . '</textarea>';
 			    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
@@ -1234,7 +1280,7 @@ class wc_support_system {
 			    			echo '<td>';
 				    			echo '<label for="reopen-ticket">';
 				    				echo '<input type="checkbox" name="reopen-ticket" value="1" checked="checked" disabled="disabled">';
-					    			echo __('After sending a new thread, the admin can choose to left the specific ticket open and see all the threads in there.', 'wss');
+					    			echo __('After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wss');
 				    			echo '</label>'; 
 								$this->go_premium();
 			    			echo '</td>';

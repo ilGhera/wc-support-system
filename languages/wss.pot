@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Support System\n"
-"POT-Creation-Date: 2019-03-14 16:51+0100\n"
+"POT-Creation-Date: 2019-07-17 13:10+0200\n"
 "PO-Revision-Date: 2018-03-27 11:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: ilGhera\n"
@@ -10,313 +10,317 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: __\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: includes/class-wc-support-system.php:493
+#: includes/class-wc-support-system.php:521
 msgid "Please, choose a product for your support request."
 msgstr ""
 
-#: includes/class-wc-support-system.php:511
+#: includes/class-wc-support-system.php:539
 msgid "Select a product"
 msgstr ""
 
-#: includes/class-wc-support-system.php:520
+#: includes/class-wc-support-system.php:548
 msgid "Ticket subject"
 msgstr ""
 
-#: includes/class-wc-support-system.php:523
+#: includes/class-wc-support-system.php:551
 msgid "Send"
 msgstr ""
 
-#: includes/class-wc-support-system.php:527
+#: includes/class-wc-support-system.php:555
 msgid "New ticket"
 msgstr ""
 
-#: includes/class-wc-support-system.php:528
-#: includes/class-wc-support-system.php:551
+#: includes/class-wc-support-system.php:556
+#: includes/class-wc-support-system.php:579
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-wc-support-system.php:549
+#: includes/class-wc-support-system.php:577
 msgid "Back to tickets"
 msgstr ""
 
-#: includes/class-wc-support-system.php:550
-msgid "New thread"
+#: includes/class-wc-support-system.php:578
+msgid "New message"
 msgstr ""
 
-#: includes/class-wc-support-system.php:582
+#: includes/class-wc-support-system.php:618
 msgid "Open"
 msgstr ""
 
-#: includes/class-wc-support-system.php:585
+#: includes/class-wc-support-system.php:621
 msgid "Pending"
 msgstr ""
 
-#: includes/class-wc-support-system.php:588
+#: includes/class-wc-support-system.php:624
 msgid "Closed"
 msgstr ""
 
-#: includes/class-wc-support-system.php:700
+#: includes/class-wc-support-system.php:736
 msgid "Exit"
 msgstr ""
 
-#: includes/class-wc-support-system.php:724 includes/class-wss-table.php:157
+#: includes/class-wc-support-system.php:760 includes/class-wss-table.php:166
 msgid "Id"
 msgstr ""
 
-#: includes/class-wc-support-system.php:725
+#: includes/class-wc-support-system.php:761
 msgid "Subject"
 msgstr ""
 
-#: includes/class-wc-support-system.php:726
+#: includes/class-wc-support-system.php:762
 msgid "Creation time"
 msgstr ""
 
-#: includes/class-wc-support-system.php:727 includes/class-wss-table.php:165
+#: includes/class-wc-support-system.php:763 includes/class-wss-table.php:174
 msgid "Update time"
 msgstr ""
 
-#: includes/class-wc-support-system.php:728 includes/class-wss-table.php:162
+#: includes/class-wc-support-system.php:764 includes/class-wss-table.php:171
 msgid "Product"
 msgstr ""
 
-#: includes/class-wc-support-system.php:729 includes/class-wss-table.php:163
+#: includes/class-wc-support-system.php:765 includes/class-wss-table.php:172
 msgid "Status"
 msgstr ""
 
-#: includes/class-wc-support-system.php:760
+#: includes/class-wc-support-system.php:796
 msgid "It seems like you have no support tickets opened at the moment."
 msgstr ""
 
-#: includes/class-wc-support-system.php:768
+#: includes/class-wc-support-system.php:804
 msgid "It seems like you have not access to the support service at the moment."
 msgstr ""
 
-#: includes/class-wc-support-system.php:774
+#: includes/class-wc-support-system.php:810
 msgid "It seems like you haven't bought any productat the moment."
 msgstr ""
 
-#: includes/class-wc-support-system.php:779
+#: includes/class-wc-support-system.php:815
 msgid "Your name"
 msgstr ""
 
-#: includes/class-wc-support-system.php:780
+#: includes/class-wc-support-system.php:816
 msgid "Email (used for the order)"
 msgstr ""
 
-#: includes/class-wc-support-system.php:781
+#: includes/class-wc-support-system.php:817
 msgid "The order id"
 msgstr ""
 
-#: includes/class-wc-support-system.php:783
+#: includes/class-wc-support-system.php:819
 msgid "Access"
 msgstr ""
 
-#: includes/class-wc-support-system.php:804
+#: includes/class-wc-support-system.php:840
 msgid "Change the ticket status"
 msgstr ""
 
-#: includes/class-wc-support-system.php:814
+#: includes/class-wc-support-system.php:850
 msgid "Close"
 msgstr ""
 
-#: includes/class-wc-support-system.php:892
+#: includes/class-wc-support-system.php:950
 #, php-format
 msgid "%s - Update ticket #%d"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1097
-#: includes/class-wc-support-system.php:1285
+#: includes/class-wc-support-system.php:1159
+#: includes/class-wc-support-system.php:1348
 msgid "Settings"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1173
-msgid "Are you sure you want to delete this thread?"
+#: includes/class-wc-support-system.php:1201
+msgid "Search"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1204
-msgid "Are you sure you want to delete this ticket with all his threads?"
+#: includes/class-wc-support-system.php:1236
+msgid "Are you sure you want to delete this message?"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1290
+#: includes/class-wc-support-system.php:1267
+msgid "Are you sure you want to delete this ticket with all his messages?"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1353
 msgid "Premium Key"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1292
+#: includes/class-wc-support-system.php:1355
 msgid "Add your Premium Key"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1293
+#: includes/class-wc-support-system.php:1356
 msgid ""
 "Add your Premium Key and keep update your copy of <strong>Woocommerce "
 "Support System - Premium</strong>."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1297
+#: includes/class-wc-support-system.php:1360
 msgid "Save "
 msgstr ""
 
-#: includes/class-wc-support-system.php:1305
+#: includes/class-wc-support-system.php:1368
 msgid "Support page"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1315
+#: includes/class-wc-support-system.php:1378
 msgid "Create a new page"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1317
+#: includes/class-wc-support-system.php:1380
 msgid "Select a page for customer support or create a new one."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1323
+#: includes/class-wc-support-system.php:1386
 msgid "Page title"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1326
+#: includes/class-wc-support-system.php:1389
 msgid "Chose a title for your support page."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1332
+#: includes/class-wc-support-system.php:1395
 msgid "Page layout"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1335
+#: includes/class-wc-support-system.php:1398
 msgid "After"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1336
+#: includes/class-wc-support-system.php:1399
 msgid "Before"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1338
+#: includes/class-wc-support-system.php:1401
 msgid "Place the tickets table before or after the page content."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1344
-msgid "Admin threads colors"
+#: includes/class-wc-support-system.php:1407
+msgid "Admin messages colors"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1348
-msgid "Select the background color for the admin's threads."
+#: includes/class-wc-support-system.php:1411
+msgid "Select the background color for the admin's messages."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1357
-msgid "Select the text color for the admin's threads."
+#: includes/class-wc-support-system.php:1420
+msgid "Select the text color for the admin's messages."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1363
-msgid "User threads colors"
+#: includes/class-wc-support-system.php:1426
+msgid "User messages colors"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1366
-msgid "Select the background color for the user's threads."
+#: includes/class-wc-support-system.php:1429
+msgid "Select the background color for the user's messages."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1375
-msgid "Select the text color for the user's threads."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1381
-msgid "User email notification"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1385
-msgid "Send an email notifications to the user when an answer was published."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1392
-msgid "Admin email notification"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1396
-msgid ""
-"Send an email notifications to the admin when a new thread is published."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1403
-msgid "Support email"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1406
-msgid "The email address used to send and receive notifications."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1412
-msgid "\"From\" name"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1415
-msgid "The sender name for notifications."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1421
-msgid "Footer email text"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1424
-#, php-format
-msgid ""
-"Don't reply to this message, you can read all threads and update the ticket "
-"going to the page %s."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1427
-msgid "You can add some text after the email content."
-msgstr ""
-
-#: includes/class-wc-support-system.php:1433
-msgid "Upload files"
-msgstr ""
-
-#: includes/class-wc-support-system.php:1437
-msgid "Allow customers upload images and all the other permitted file types."
+#: includes/class-wc-support-system.php:1438
+msgid "Select the text color for the user's messages."
 msgstr ""
 
 #: includes/class-wc-support-system.php:1444
-msgid "Guest users"
+msgid "User email notification"
 msgstr ""
 
 #: includes/class-wc-support-system.php:1448
-msgid ""
-"Not logged in users can receive support providing the email and an order id."
+msgid "Send an email notifications to the user when an answer was published."
 msgstr ""
 
 #: includes/class-wc-support-system.php:1455
-msgid "Reopen ticket"
+msgid "Admin email notification"
 msgstr ""
 
 #: includes/class-wc-support-system.php:1459
 msgid ""
-"After sending a new thread, the admin can choose to left the specific ticket "
-"open and see all the threads in there."
+"Send an email notifications to the admin when a new message is published."
 msgstr ""
 
 #: includes/class-wc-support-system.php:1466
+msgid "Support email"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1469
+msgid "The email address used to send and receive notifications."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1475
+msgid "\"From\" name"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1478
+msgid "The sender name for notifications."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1484
+msgid "Footer email text"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1487
+#, php-format
+msgid ""
+"Don't reply to this email, you can read all messages and update the ticket "
+"going to the page %s."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1490
+msgid "You can add some text after the email content."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1496
+msgid "Upload files"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1500
+msgid "Allow customers upload images and all the other permitted file types."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1507
+msgid "Guest users"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1511
+msgid ""
+"Not logged in users can receive support providing the email and an order id."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1518
+msgid "Reopen ticket"
+msgstr ""
+
+#: includes/class-wc-support-system.php:1522
+msgid ""
+"After sending a new message, the admin can choose to left the specific "
+"ticket open and see the all thread."
+msgstr ""
+
+#: includes/class-wc-support-system.php:1529
 msgid "Auto close tickets"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1470
+#: includes/class-wc-support-system.php:1533
 msgid "Close tickets not updated for a specified period."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1477
+#: includes/class-wc-support-system.php:1540
 msgid "Notice period"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1480
+#: includes/class-wc-support-system.php:1543
 msgid "Days with no updates for sending a notice to the user."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1486
+#: includes/class-wc-support-system.php:1549
 msgid "User notice"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1491
+#: includes/class-wc-support-system.php:1554
 #, php-format
 msgid ""
 "Hi, we have not heard back from you in a few days.\n"
@@ -327,20 +331,20 @@ msgid ""
 "Thanks!"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1500
+#: includes/class-wc-support-system.php:1563
 msgid ""
 "Message to the user informing him that the ticket is going to be closed."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1506
+#: includes/class-wc-support-system.php:1569
 msgid "Closing delay"
 msgstr ""
 
-#: includes/class-wc-support-system.php:1509
+#: includes/class-wc-support-system.php:1572
 msgid "Days after the notice for closing the ticket definitely."
 msgstr ""
 
-#: includes/class-wc-support-system.php:1516
+#: includes/class-wc-support-system.php:1579
 msgid "Save"
 msgstr ""
 
@@ -352,35 +356,57 @@ msgstr ""
 msgid "Tickets"
 msgstr ""
 
-#: includes/class-wss-table.php:87
+#: includes/class-wss-table.php:96
 msgid "It seems like therea are no support tickets opened at the moment."
 msgstr ""
 
-#: includes/class-wss-table.php:158
+#: includes/class-wss-table.php:167
 msgid "Title"
 msgstr ""
 
-#: includes/class-wss-table.php:159
+#: includes/class-wss-table.php:168
 msgid "User id"
 msgstr ""
 
-#: includes/class-wss-table.php:160
+#: includes/class-wss-table.php:169
 msgid "User name"
 msgstr ""
 
-#: includes/class-wss-table.php:161
+#: includes/class-wss-table.php:170
 msgid "User email"
 msgstr ""
 
-#: includes/class-wss-table.php:164
+#: includes/class-wss-table.php:173
 msgid "Create time"
 msgstr ""
 
-#: includes/class-wss-table.php:200
+#: includes/class-wss-table.php:209
 msgid "Delete Permanently"
 msgstr ""
 
-#: wc-support-system.php:24
+#: plugin-update-checker/Puc/v4p5/Plugin/Ui.php:54
+msgid "View details"
+msgstr ""
+
+#: plugin-update-checker/Puc/v4p5/Plugin/Ui.php:77
+#, php-format
+msgid "More information about %s"
+msgstr ""
+
+#: plugin-update-checker/Puc/v4p5/Plugin/Ui.php:128
+msgid "Check for updates"
+msgstr ""
+
+#: plugin-update-checker/Puc/v4p5/Plugin/Ui.php:223
+#, php-format
+msgid "Unknown update checker status \"%s\""
+msgstr ""
+
+#: plugin-update-checker/Puc/v4p5/Vcs/PluginUpdateChecker.php:98
+msgid "There is no changelog available."
+msgstr ""
+
+#: wc-support-system.php:28
 msgid ""
 "<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="
 "\"https://it.wordpress.org/plugins/woocommerce/\" target=\"_blank"

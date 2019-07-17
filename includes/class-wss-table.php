@@ -3,7 +3,7 @@
  * Admin tickets table
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 0.9.4
+ * @since 1.0.3
  */
 
 /*The main calss is required*/
@@ -37,6 +37,15 @@ class wss_table extends WP_List_Table {
 		global $wpdb;
 		
 		$query  = "SELECT * FROM " . $wpdb->prefix . "wss_support_tickets";
+
+		/*Filtered by search term*/
+		if(isset($_REQUEST['s'])) {
+
+			$query .= " WHERE user_name LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR user_email LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+			$query .= " OR title LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+		
+		}
 		
 		/*If filtered by the admin*/
 		if(!empty( $_REQUEST['orderby'])) {

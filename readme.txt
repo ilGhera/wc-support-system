@@ -1,9 +1,9 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 1.0.2
+Version: 1.0.3
 Requires at least: 4.0
-Tested up to: 5.1
+Tested up to: 5.2
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
@@ -51,6 +51,14 @@ The ability to update the ticket with new messages, allows you to keep the logic
 
 
 == Changelog ==
+
+
+= 1.0.3 =
+Release Date: 17 July, 2019
+
+* Enhancement: Search tickets by title, user name and user email.
+* Enhancement: General improvements.
+* Bug Fix: Front-end tickets table not responsive.
 
 
 = 1.0.2 =
