@@ -1465,7 +1465,7 @@ class wc_support_system {
 			    		echo '<tr class="support-email-fields">';
 			    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
 			    			echo '<td>';
-			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreplay@example.com" value="' . $support_email . '">';
+			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreply@example.com" value="' . $support_email . '">';
 			    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
