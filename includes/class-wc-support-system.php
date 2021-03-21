@@ -717,7 +717,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br(wp_kses(wp_unslash($thread->content), 'post') . '</div>');
+							echo '<div class="thread-content">' . nl2br( wp_kses_post( $thread->content ) ) . '</div>';
 						echo '</div>';
 					}
 				}
@@ -733,7 +733,7 @@ class wc_support_system {
 	 */
 	public function support_exit_button() {
 		if(isset($_COOKIE['wss-support-access'])) {
-			echo '<button type="button" class="btn btn-default support-exit-button"><img src="' . plugin_dir_url(__DIR__) . '/images/exit.png">' . __('Exit', 'wss') . '</button>';
+			echo '<button type="button" class="btn btn-default support-exit-button">' . __('Exit', 'wss') . '</button>';
 		}
 	}
 
@@ -750,76 +750,80 @@ class wc_support_system {
 			$user_email = $userdata['email'];
 			$order_id = $userdata['order_id'];
 
-			$this->support_exit_button();
+            echo '<div id="support-tickets-container">';
 
-			$tickets = $this->get_user_tickets($user_email);
-			if($tickets) {
-				?>
-				<table class="table support-tickets-table">
-					<thead>
-						<th class="id" style="padding-right: 2rem;"><?php echo __('Id', 'wss'); ?></th>
-						<th class="subject"><?php echo __('Subject', 'wss'); ?></th>
-						<th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
-						<th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
-						<th><?php echo __('Product', 'wss'); ?></th>
-						<th><?php echo __('Status', 'wss'); ?></th>
-					</thead>
-					<tbody>
-					<?php
-					foreach ($tickets as $ticket) {
-						echo '<tr class="ticket-' . $ticket->id . '">';
-							echo '<td class="id">#' . $ticket->id . '</td>';
-							echo '<td class="subject ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
-							echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
-							echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
+                $this->support_exit_button();
 
-							/*Product image*/
-							$thumbnail = get_the_post_thumbnail($ticket->product_id, array(50,50));
-							if($thumbnail) {
-								$image = $thumbnail;
-							} else {
-								$image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
-							}
+                $tickets = $this->get_user_tickets($user_email);
+                if($tickets) {
+                    ?>
+                    <table class="table support-tickets-table">
+                        <thead>
+                            <th class="id" style="padding: 0.5em 1.5rem;"><?php echo __('ID', 'wss'); ?></th>
+                            <th class="subject"><?php echo __('Subject', 'wss'); ?></th>
+                            <th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
+                            <th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
+                            <th><?php echo __('Product', 'wss'); ?></th>
+                            <th><?php echo __('Status', 'wss'); ?></th>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($tickets as $ticket) {
+                            echo '<tr class="ticket-' . $ticket->id . '">';
+                                echo '<td class="id">#' . $ticket->id . '</td>';
+                                echo '<td class="subject ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
+                                echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
+                                echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
 
-							echo '<td class="product">' . $image . '</td>';
-							echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
-						echo '</tr>';
-					}
-					?>
-					</tbody>
-				</table>
-				<?php $this->create_new_thread(); ?>
-				<div class="single-ticket-content"></div>
-				<?php
-			} else {
-				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
-				echo '</div>';
-			}
-			$this->create_new_ticket($order_id, $user_email); 
+                                /*Product image*/
+                                $thumbnail = get_the_post_thumbnail($ticket->product_id, array(50,50));
+                                if($thumbnail) {
+                                    $image = $thumbnail;
+                                } else {
+                                    $image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
+                                }
 
-		/*Bad data provided or guest users not allowed from the plugin options*/
-		elseif( isset($_POST['wss-support-access']) && !$this->support_access_validation(false) || !get_option('wss-guest-users') ) :
-				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wss') . '</div>';
-				echo '</div>';
+                                echo '<td class="product">' . $image . '</td>';
+                                echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                    <?php $this->create_new_thread(); ?>
+                    <div class="single-ticket-content"></div>
+                    <?php
+                } else {
+                    echo '<div class="bootstrap-iso">';
+                        echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
+                    echo '</div>';
+                }
+                $this->create_new_ticket($order_id, $user_email); 
 
-		/*Logged in user but not a customer*/		
-		elseif(is_user_logged_in()) :
-			echo '<div class="bootstrap-iso">';
-				echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
-			echo '</div>';
-		else :
-			?>
-			<form id="wes-support-access" method="POST" action="">
-				<input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wss'); ?>" required="required">
-				<input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wss'); ?>" required="required">
-				<input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wss'); ?>" required="required">
-				<input type="hidden" name="wss-support-access" value="1">
-				<input type="submit" value="<?php echo __('Access', 'wss'); ?>">
-			</form>
-			<?php
-		endif;
+            /*Bad data provided or guest users not allowed from the plugin options*/
+            elseif( isset($_POST['wss-support-access']) && !$this->support_access_validation(false) || !get_option('wss-guest-users') ) :
+                    echo '<div class="bootstrap-iso">';
+                        echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wss') . '</div>';
+                    echo '</div>';
+
+            /*Logged in user but not a customer*/		
+            elseif(is_user_logged_in()) :
+                echo '<div class="bootstrap-iso">';
+                    echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
+                echo '</div>';
+            else :
+                ?>
+                <form id="wes-support-access" method="POST" action="">
+                    <input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wss'); ?>" required="required">
+                    <input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wss'); ?>" required="required">
+                    <input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wss'); ?>" required="required">
+                    <input type="hidden" name="wss-support-access" value="1">
+                    <input type="submit" value="<?php echo __('Access', 'wss'); ?>">
+                </form>
+                <?php
+            endif;
+
+        echo '</div>';
 	}
 
 
@@ -1673,3 +1677,4 @@ class wc_support_system {
 
 }
 new wc_support_system();
+
