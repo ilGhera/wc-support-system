@@ -2,7 +2,7 @@
  * Frontend style
  * @author ilGhera
  * @package wc-support-system-premium/css
- * @since 1.0.3
+ * @since 1.0.4
  */
 .single-product-support {
   display: block;
@@ -26,7 +26,8 @@
 .button.ticket-cancel {
   cursor: pointer;
   float: right;
-  margin-bottom: 2rem;
+  margin: 1rem 0 2rem;
+  max-width: 300px !important;
 }
 
 .thread-tools .button,
@@ -50,14 +51,22 @@
   display: none;
   width: 100%;
   text-align: right;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 
 .thread-tools .button {
-  padding: 0.5rem;
+  padding: 10px 20px;
   background: #CACACC;
   font-weight: normal;
   font-size: 80%;
+  color: #333;
+}
+
+.thread-tools .button:hover {
+    color: #333;
+    text-decoration: none !important;
+    padding: 9px 19px;
+    border: 1px solid #333;
 }
 
 .wss-ticket-container iframe,
@@ -72,17 +81,35 @@
   border: 1px solid #e5e5e5;
 }
 
+#support-tickets-container {
+    position: relative;
+    max-width: 100%;
+    width: 1200px;
+}
+
 .support-tickets-table {
-  font-size: 90%;
+  font-size: 15px;
+  color: #6d6d6d;
+  font-family: Source Sans Pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+}
+
+.support-tickets-table th {
+  text-align: center;
 }
 
 .support-tickets-table td {
   vertical-align: middle;
+  text-align: center;
+  right: 2rem;
 }
 
 .support-tickets-table td.product img {
   width: 50px;
-  margin-bottom: 0;
+  margin: 0 auto;
+}
+
+.ticket-toggle {
+   text-align: left !important; 
 }
 
 .ticket-toggle:hover {
@@ -99,11 +126,12 @@
   border-radius: 0.5rem;
   overflow: hidden;
   margin-bottom: 1rem;
-  font-size: 90%;
+  font-size: 16px;
+  font-family: Source Sans Pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
 }
 
 .thread-header {
-  padding: 1rem;
+  padding: 15px 20px;
   background: #D9D9D9;
 }
 
@@ -117,13 +145,14 @@
 
 .answer .thread-header .right {
   color: #fff;
+  line-height: 1.20;
 }
 
 .thread-header .left,
 .thread-header .right {
   float: left;
   text-transform: capitalize;
-  line-height: 1.2rem;
+  line-height: 1.20;
   font-weight: bold;
   color: #666;
 }
@@ -159,7 +188,9 @@ span.date {
 }
 
 .thread-content {
-  padding: 1rem;
+  padding: 20px;
+  color: #6d6d6d;
+  line-height: 1.6;
 }
 
 .support-exit-button {
@@ -167,7 +198,6 @@ span.date {
   right: 0;
   z-index: 99;
   display: none;
-  padding-left: 0.5rem;
 }
 
 .support-exit-button img {
@@ -181,6 +211,10 @@ span.date {
 .supports-drag-drop .uploader-inline .drop-instructions,
 .upload-message {
   text-align: center;
+}
+
+.clear {
+    clear: both;
 }
 
 @media only screen and (max-width: 640px) {

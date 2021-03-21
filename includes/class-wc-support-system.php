@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.3
+ * @since 1.0.4
  */
 class wc_support_system {
 
@@ -530,7 +530,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br(wp_kses(wp_unslash($thread->content), 'post') . '</div>');
+							echo '<div class="thread-content">' . nl2br( wp_kses_post( $thread->content ) ) . '</div>';
 						echo '</div>';
 					}
 				}
@@ -553,63 +553,67 @@ class wc_support_system {
 			$user_email = $userdata['email'];
 			$order_id = $userdata['order_id'];
 
-			$tickets = $this->get_user_tickets($user_email);
+            echo '<div id="support-tickets-container">';
 
-			if($tickets) {
-				?>
-				<table class="table support-tickets-table">
-					<thead>
-						<th class="id" style="padding-right: 2rem;"><?php echo __('Id', 'wss'); ?></th>
-						<th class="subject"><?php echo __('Subject', 'wss'); ?></th>
-						<th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
-						<th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
-						<th><?php echo __('Product', 'wss'); ?></th>
-						<th><?php echo __('Status', 'wss'); ?></th>
-					</thead>
-					<tbody>
-					<?php
-					foreach ($tickets as $ticket) {
-						echo '<tr class="ticket-' . $ticket->id . '">';
-							echo '<td class="id">#' . $ticket->id . '</td>';
-							echo '<td class="subject ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
-							echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
-							echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
+                $tickets = $this->get_user_tickets($user_email);
 
-							/*Product image*/
-							$thumbnail = get_the_post_thumbnail($ticket->product_id, array(50,50));
-							if($thumbnail) {
-								$image = $thumbnail;
-							} else {
-								$image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
-							}
+                if($tickets) {
+                    ?>
+                    <table class="table support-tickets-table">
+                        <thead>
+                            <th class="id" style="padding: 0.5em 1rem;"><?php echo __('ID', 'wss'); ?></th>
+                            <th class="subject"><?php echo __('Subject', 'wss'); ?></th>
+                            <th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
+                            <th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
+                            <th><?php echo __('Product', 'wss'); ?></th>
+                            <th><?php echo __('Status', 'wss'); ?></th>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($tickets as $ticket) {
+                            echo '<tr class="ticket-' . $ticket->id . '">';
+                                echo '<td class="id">#' . $ticket->id . '</td>';
+                                echo '<td class="subject ticket-toggle" data-ticket-id="' . $ticket->id . '">' . stripcslashes($ticket->title) . '</td>';
+                                echo '<td class="create-time">' . ($ticket->create_time ? date('d-m-Y H:i:s', strtotime($ticket->create_time)) : '') . '</td>';
+                                echo '<td class="update-time">' . ($ticket->update_time ? date('d-m-Y H:i:s', strtotime($ticket->update_time)) : '') . '</td>';
 
-							echo '<td class="product">' . $image . '</td>';
-							echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
-						echo '</tr>';
-					}
-					?>
-					</tbody>
-				</table>
-				<?php $this->create_new_thread(); ?>
-				<div class="single-ticket-content"></div>
-				<?php
-			} else {
-				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
-				echo '</div>';
-			}
-			$this->create_new_ticket($order_id, $user_email); 
+                                /*Product image*/
+                                $thumbnail = get_the_post_thumbnail($ticket->product_id, array(50,50));
+                                if($thumbnail) {
+                                    $image = $thumbnail;
+                                } else {
+                                    $image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
+                                }
 
-		/*Logged in user but not a customer*/		
-		elseif(is_user_logged_in()) :
-			echo '<div class="bootstrap-iso">';
-				echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
-			echo '</div>';
-		else :
-			echo '<div class="bootstrap-iso">';
-				echo '<div class="alert alert-danger">' . __('You must be logged in to access support service.', 'wss') . '</div>';
-			echo '</div>';
-		endif;
+                                echo '<td class="product">' . $image . '</td>';
+                                echo '<td class="status" data-status-id="' . $ticket->status . '">' . self::get_ticket_status_label($ticket->status) . '</td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                    <?php $this->create_new_thread(); ?>
+                    <div class="single-ticket-content"></div>
+                    <?php
+                } else {
+                    echo '<div class="bootstrap-iso">';
+                        echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
+                    echo '</div>';
+                }
+                $this->create_new_ticket($order_id, $user_email); 
+
+                /*Logged in user but not a customer*/		
+                elseif(is_user_logged_in()) :
+                    echo '<div class="bootstrap-iso">';
+                        echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
+                    echo '</div>';
+                else :
+                    echo '<div class="bootstrap-iso">';
+                        echo '<div class="alert alert-danger">' . __('You must be logged in to access support service.', 'wss') . '</div>';
+                    echo '</div>';
+                endif;
+
+            echo '</div>';
 	}
 
 
@@ -1224,7 +1228,7 @@ class wc_support_system {
 			    		echo '<tr class="support-email-fields">';
 			    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
 			    			echo '<td>';
-			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreplay@example.com" value="' . $support_email . '">';
+			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreply@example.com" value="' . $support_email . '">';
 			    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
@@ -1411,3 +1415,4 @@ class wc_support_system {
 
 }
 new wc_support_system();
+
