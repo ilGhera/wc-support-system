@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.4
+ * @since 1.0.5
  */
 class wc_support_system {
 

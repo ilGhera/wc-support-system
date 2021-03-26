@@ -1,7 +1,7 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 1.0.4
+Version: 1.0.5
 Requires at least: 4.0
 Tested up to: 5.7
 
@@ -51,6 +51,12 @@ The ability to update the ticket with new messages, allows you to keep the logic
 
 
 == Changelog ==
+
+
+= 1.0.5 =
+Release Date: 26 March, 2021
+
+* Bug Fix: wp_unslash missed in ticket text
 
 
 = 1.0.4 =
