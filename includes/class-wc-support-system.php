@@ -530,7 +530,7 @@ class wc_support_system {
 								echo '<div class="clear"></div>';
 								echo '<img class="delete-thread" data-thread-id="' . $thread->id . '" src="' . plugin_dir_url(__DIR__) . '/images/dustbin.png">';									
 							echo '</div>';
-							echo '<div class="thread-content">' . nl2br( wp_kses_post( $thread->content ) ) . '</div>';
+							echo '<div class="thread-content">' . nl2br( wp_kses_post( wp_unslash( $thread->content ) ) ) . '</div>';
 						echo '</div>';
 					}
 				}
