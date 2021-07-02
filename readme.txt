@@ -23,6 +23,7 @@ The ability to update the ticket with new messages, allows you to keep the logic
 * Support service for not logged in users (Premium)
 * Auto-close tickets after a specified period of time (Premium)
 
+https://youtu.be/XUtmBvoPwkI
 
 == Installation ==
 **From your WordPress dashboard**
