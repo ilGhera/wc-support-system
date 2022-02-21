@@ -30,8 +30,8 @@ https://youtu.be/XUtmBvoPwkI
 
 * Visit Plugins > Add New.
 * Search for WooCommerce Support System and download it.
-* Activate JW Player 7 for Wordpress from your Plugins page.
-* Once Activated, go to <strong>JW Player</strong> menu and set you preferences.
+* Activate WooCommerce Support System from your Plugins page.
+* Once Activated, go to <strong>WC Support</strong> menu and set you preferences.
 
 **From WordPress.org**
 
