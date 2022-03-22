@@ -72,7 +72,9 @@ class wc_support_system {
 	public function admin_bar_for_customer() {
 		if('1' === get_option('wss-customer-uploads') && (current_user_can('customer') || current_user_can('subscriber'))) {
 			return false;
-		}
+        } else {
+            return true;
+        }
 	}
 
 
