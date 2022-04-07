@@ -273,17 +273,19 @@ jQuery(document).ready(function($){
 	})
 
 	/*Add support email if notifications are selected*/
-	if( $('.user-notification').attr('checked') == 'checked' || $('.admin-notification').attr('checked') == 'checked' ) {
+	if( $('.user-notification-field .tzCheckBox').hasClass('checked') || $('.admin-notification-field .tzCheckBox').hasClass('checked') ) {
 		$('.support-email-fields').show();
 		$('.support-email').attr('required', 'required');
 		$('.support-email-name').attr('required', 'required');
 	}
 
 	/*Show/ Hide support email fields on single notification change*/
-	$('.user-notification, .admin-notification').on('change', function(){
-		var other = $(this).hasClass('user-notification') ? $('.admin-notification') : $('.user-notification');  
-		if( $(this).attr('checked') == 'checked' || $(other).attr('checked') == 'checked' ) {
-			$('.support-email-fields').show();
+	$('.notifications-fields .tzCheckBox').on('click', function(){
+
+        var field = $(this).closest('.notifications-fields');
+		var other = $(field).hasClass('user-notification-field') ? $('.admin-notification-field .tzCheckBox') : $('.user-notification-field .tzCheckBox');  
+		if( $(this).hasClass('checked') || $(other).hasClass('checked') ) {
+			$('.support-email-fields').show('slow');
 			$('.support-email').attr('required', 'required');
 			$('.support-email-name').attr('required', 'required');
 		} else {
@@ -294,14 +296,14 @@ jQuery(document).ready(function($){
 	})
 
 	/*Show auto close fields if activated*/
-	if( $('.auto-close-tickets').attr('checked') == 'checked' ) {
+	if( $('.auto-close-tickets-field .tzCheckBox').hasClass('checked') ) {
 		$('.auto-close-fields').show();
 		$('.auto-close-notice-text').attr('required', 'required');
 	}
 
 	/*Show/ Hide auto close ticket on change*/
-	$('.auto-close-tickets').on('change', function(){
-		if( $(this).attr('checked') == 'checked' ) {
+	$('.auto-close-tickets-field .tzCheckBox').on('click', function(){
+		if( $(this).hasClass('checked') ) {
 			$('.auto-close-fields').fadeIn();
 		} else {
 			$('.auto-close-fields').fadeOut();

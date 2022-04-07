@@ -155,7 +155,16 @@ class wc_support_system {
 	 */
 	public function wss_admin_scripts() {
 		$admin_page = get_current_screen();
+
 		if( in_array($admin_page->base, array('toplevel_page_wc-support-system', 'wc-support_page_wss-settings')) ) {
+
+            if( 'wc-support_page_wss-settings' === $admin_page->base ) {
+
+           		wp_enqueue_style( 'tzcheckbox-style', plugin_dir_url(__DIR__) . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.css' );
+        		wp_enqueue_script( 'tzcheckbox', plugin_dir_url(__DIR__) . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.js', array( 'jquery' ) );
+		        wp_enqueue_script( 'tzcheckbox-script', plugin_dir_url(__DIR__) . 'js/tzCheckbox/js/script.js', array( 'jquery' ) );
+
+            }
 
 			/*js*/
 		    wp_enqueue_script('bootstrap-js', plugin_dir_url(__DIR__) . 'js/bootstrap.min.js');
@@ -167,7 +176,7 @@ class wc_support_system {
 		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . 'css/wss-admin-style.css');    
             wp_enqueue_style('wp-color-picker' );          
 
-		} elseif('plugins' === $admin_page->base) {
+        } elseif('plugins' === $admin_page->base) {
 			
 			/*css*/
 		    wp_enqueue_style('wss-plugins-style', plugin_dir_url(__DIR__) . 'css/wss-plugins-style.css');    
@@ -1446,7 +1455,7 @@ class wc_support_system {
 			    		echo '</tr>';
 
 			    		/*User email notification*/
-			    		echo '<tr>';
+			    		echo '<tr class="user-notification-field notifications-fields">';
 			    			echo '<th scope="row">' . __('User email notification', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="user-notification">';
@@ -1457,7 +1466,7 @@ class wc_support_system {
 			    		echo '</tr>';
 
 			    		/*Admin email notification*/
-			    		echo '<tr>';
+			    		echo '<tr class="admin-notification-field notifications-fields">';
 			    			echo '<th scope="row">' . __('Admin email notification', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="admin-notification">';
@@ -1531,7 +1540,7 @@ class wc_support_system {
 			    		echo '</tr>';
 
 			    		/*Close not updated tickets after a specified period*/
-			    		echo '<tr>';
+			    		echo '<tr class="auto-close-tickets-field">';
 			    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="">';

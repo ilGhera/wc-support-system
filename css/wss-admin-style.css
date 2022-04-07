@@ -252,6 +252,13 @@ span.date {
   padding-top: 3rem;
 }
 
+.tzCheckBox {
+  margin-right: 6px;
+}
+
+.tzCheckBox.checked {
+  margin-right: 20px !important;
+}
 
 @media only screen and (max-width: 790px) {
   
