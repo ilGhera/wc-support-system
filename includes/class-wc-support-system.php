@@ -1114,7 +1114,7 @@ class wc_support_system {
 		if(isset($_POST['ticket-sent'])) {
 			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
 			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
-			$content 	= isset($_POST['wss-ticket']) ? sanitize_textarea_field($_POST['wss-ticket']) : '';
+			$content 	= isset($_POST['wss-ticket']) ? wp_filter_post_kses($_POST['wss-ticket']) : '';
 			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
