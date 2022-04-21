@@ -119,12 +119,14 @@ class wss_table extends WP_List_Table {
 		switch ( $column_name ) {
 			
 			case 'product_id':
-				$thumbnail = get_the_post_thumbnail($item['product_id'], array(40,40));
+                $title     = get_the_title( $item['product_id'] );
+                $title     = $title ? $title : __( 'This product doesn\'t exist anymore' );
+				$thumbnail = get_the_post_thumbnail( $item['product_id'], array( 40,40 ), array( 'title' => $title ) );
 				
 				if($thumbnail) {
 					$image = $thumbnail;
 				} else {
-					$image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png">';
+					$image = '<img src="' . home_url() . '/wp-content/plugins/woocommerce/assets/images/placeholder.png" title="' . $title . '">';
 				}
 
 				return $image;
