@@ -44,6 +44,13 @@ class wss_table extends WP_List_Table {
 			$query .= " WHERE user_name LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
 			$query .= " OR user_email LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
 			$query .= " OR title LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+
+            if ( 0 === strpos( $_REQUEST['s'], '#' ) ) {
+
+                $ticket_id = substr( $_REQUEST['s'], 1 );
+                $query    .= " OR id LIKE '%" . esc_sql( $ticket_id ) . "%'";
+
+            }
 		
 		}
 		
