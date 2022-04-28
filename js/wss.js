@@ -295,6 +295,21 @@ jQuery(document).ready(function($){
 		}	
 	})
 
+    /*Display additional recipients field if user notification is selected*/
+	if( $('.user-notification-field .tzCheckBox').hasClass('checked') ) {
+		$('.wss-additional-recipients-field').show();
+	}
+
+	$('.user-notification-field .tzCheckBox').on('click', function(){
+
+		if( $(this).hasClass('checked') ) {
+            $('.wss-additional-recipients-field').show('slow');
+        } else {
+            $('.wss-additional-recipients-field').hide();
+        }
+
+    })
+
 	/*Show auto close fields if activated*/
 	if( $('.auto-close-tickets-field .tzCheckBox').hasClass('checked') ) {
 		$('.auto-close-fields').show();

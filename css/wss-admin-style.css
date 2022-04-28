@@ -221,7 +221,8 @@ span.date {
 
 .create-support-page,
 .support-email-fields,
-.auto-close-fields {
+.auto-close-fields,
+.wss-additional-recipients-field {
   display: none;
 }
 

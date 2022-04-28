@@ -47,7 +47,7 @@ class wc_support_system {
 		add_filter('the_content', array($this, 'page_class_instance'), 999);
 
 		add_filter('set-screen-option', array($this, 'set_screen'), 10, 3);
-		add_filter('show_admin_bar', array($this, 'admin_bar_for_customer'));
+		/* add_filter('show_admin_bar', array($this, 'admin_bar_for_customer')); */
 		add_filter('parse_query', array($this, 'filter_media_files'));
 
 	}
@@ -232,16 +232,24 @@ class wc_support_system {
 		
 			dbDelta( $sql );
 		
-		} elseif( '1.0.2' > get_option('wss-db-version') ) {
+		} elseif( '1.1.0' > get_option('wss-db-version') ) {
 
-			error_log('DB VERSION: ' . get_option('wss-db-version'));
- 
-            $sql = "ALTER TABLE $wss_tickets ADD notified INT(11) NOT NULL DEFAULT 0";
- 
-	        $wpdb->query($sql);
+            error_log('DB VERSION: ' . get_option('wss-db-version'));
 
-			update_option('wss-db-version', '1.0.2');
+            if( '1.0.2' > get_option('wss-db-version') ) {
+
+                $sql = "ALTER TABLE $wss_tickets ADD notified INT(11) NOT NULL DEFAULT 0";
+
+                $wpdb->query($sql);
+
+            }
  
+            $sql = "ALTER TABLE $wss_tickets ADD recipients longtext";
+
+            $wpdb->query($sql);
+
+            update_option('wss-db-version', '1.1.0');
+
  		}
 
 		if($wpdb->get_var("SHOW TABLES LIKE '$wss_threads'") != $wss_threads) {
@@ -540,6 +548,8 @@ class wc_support_system {
 	 * @param  string $user_email the user email
 	 */
     public function create_new_ticket($order_id, $user_email) {
+
+        $additional_recipients = get_option('wss-additional-recipients');
 		?>
 		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
@@ -556,6 +566,9 @@ class wc_support_system {
 					}
 					?>
 				</select>
+                <?php if ( $additional_recipients ) { ?>
+                    <input type="text" name="additional-recipients" placeholder="<?php echo __('Additional recipients (email addresses divided by commas)'); ?>">
+                <?php } ?>
 				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
 				<?php wp_editor('', 'wss-ticket'); ?>
 				<input type="hidden" name="ticket-sent" value="1">
@@ -962,6 +975,8 @@ class wc_support_system {
 			$to = $support_email;
 		}
 
+        error_log( 'NOTIFICATION TO: ' . $to );
+
 		$subject = sprintf(__('%s - Update ticket #%d'), $user_name, $ticket_id);
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
@@ -974,7 +989,8 @@ class wc_support_system {
 			$message .= '</p>';
 		}
 
-		wp_mail($to, $subject, $message, $headers);
+		$test = wp_mail($to, $subject, $message, $headers);
+        error_log( 'WP MAIL RESULT: ' . print_r( $test, true ) );
 
 		if($notification) {
 			$this->notification_sent($ticket_id);
@@ -990,9 +1006,10 @@ class wc_support_system {
 	 * @param  int 		$user_id 	
 	 * @param  string 	$user_name  
 	 * @param  string 	$user_email 
+	 * @param  string 	$recipients the customer email(s) 
 	 * @param  int 		$status     the ticket status after the update 
 	 */
-	public function save_new_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $customer_email=null, $status=1) {
+	public function save_new_ticket_thread($ticket_id, $content, $date, $user_id, $user_name, $user_email, $recipients=null, $status=1) {
 		global $wpdb;
 		$wpdb->insert(
 			$wpdb->prefix . 'wss_support_threads',
@@ -1020,10 +1037,10 @@ class wc_support_system {
 		$user_notification	= get_option('wss-user-notification');
 		$admin_notification	= get_option('wss-admin-notification');
 
-
 		if(user_can($user_id, 'administrator')) {
 			if($user_notification) {
-				$this->support_notification($ticket_id, null, $content, $customer_email);					
+                error_log( 'RECIPIENTS: ' . $recipients );
+				$this->support_notification($ticket_id, null, $content, $recipients);	
 			}
 		} else {
 			if($admin_notification) {
@@ -1062,24 +1079,70 @@ class wc_support_system {
 	}
 
 
+    /**
+     * Get the list of recipients of a specific ticket
+     *
+     * @param int $ticket_id the ticket id.
+     *
+     * @return string
+     */
+    public function get_ticket_recipients( $ticket_id ) {
+
+        $additional_recipients_option = get_option( 'wss-additional-recipients' );
+        $output                       = null;
+
+        if ( $additional_recipients_option ) {
+
+            global $wpdb;
+
+            $query = "
+                SELECT recipients FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = $ticket_id
+            ";
+
+            $results = $wpdb->get_col( $query );
+
+            error_log( 'QUERY RESULT: ' . print_r( $results, true ) );
+
+            $output = isset( $results[0] ) ? $results[0] : null;
+
+        }
+
+        return $output;
+
+    }
+
+
 	/**
 	 * Add a new thread to a ticket
 	 */
 	public function save_new_thread() {
 		if(isset($_POST['thread-sent'])){
-			$ticket_id = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 
+			$ticket_id      = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
+            $recipients     = $this->get_ticket_recipients( $ticket_id );
+
+            if ( $recipients ) {
+
+                /* Translator: 1: other recipients 2: customer email */
+                $recipients = sprintf( '%1$s, %2$s', $recipients, $customer_email );
+
+                error_log( 'THREAD - ELENCO EMAIL: ' . $recipients );
+
+            } else {
+
+                $recipients = $customer_email;
+
+            } 
 
 			$content = isset($_POST['wss-thread']) ? wp_filter_post_kses($_POST['wss-thread']) : '';
-
-			$date = date('Y-m-d H:i:s');
+			$date    = date('Y-m-d H:i:s');
 
 			/*User info*/
 			$user = $this->user_data();
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
-			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $customer_email, $ticket_status);
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $recipients, $ticket_status);
 
 			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
 				add_action('admin_head', array($this, 'auto_open_ticket'));
@@ -1112,13 +1175,28 @@ class wc_support_system {
 	public function save_new_ticket(){
 
 		if(isset($_POST['ticket-sent'])) {
-			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
-			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
-			$content 	= isset($_POST['wss-ticket']) ? wp_filter_post_kses($_POST['wss-ticket']) : '';
-			$date = date('Y-m-d H:i:s');
 
 			/*User info*/
 			$user = $this->user_data();
+
+			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
+			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
+			$content 	= isset($_POST['wss-ticket']) ? wp_filter_post_kses($_POST['wss-ticket']) : '';
+			$recipients = isset($_POST['additional-recipients']) ? wp_filter_post_kses($_POST['additional-recipients']) : '';
+
+            if ( $recipients ) {
+
+                /* Translator: 1: other recipients 2: customer email */
+                $recipients = sprintf( '%1$s, %2$s', $recipients, $user['email'] );
+                error_log( 'TICKET - ELENCO EMAIL: ' . $recipients );
+
+            } else {
+
+                $recipients = $user['email'];
+
+            }
+
+			$date = date('Y-m-d H:i:s');
 
 			global $wpdb;
 			$wpdb->insert(
@@ -1131,7 +1209,8 @@ class wc_support_system {
 					'product_id'  => $product_id,
 					'status'	  => 1,
 					'create_time' => $date,
-					'update_time' => $date
+					'update_time' => $date,
+					'recipients'  => $recipients
 				),
 				array(
 					'%s',
@@ -1142,12 +1221,13 @@ class wc_support_system {
 					'%d',
 					'%s',
 					'%s',
+					'%s',
 				)
 			);
 
 			$ticket_id = $wpdb->insert_id;
 
-			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email']);
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $recipients);
 		}
 	}
 
@@ -1349,6 +1429,7 @@ class wc_support_system {
 		$user_color_background  = get_option('wss-user-color-background');
 		$user_color_text 	    = get_option('wss-user-color-text');
 		$user_notification		= get_option('wss-user-notification');
+		$additional_recipients  = get_option('wss-additional-recipients');
 		$admin_notification		= get_option('wss-admin-notification');
 		$support_email			= get_option('wss-support-email');
 		$support_email_name		= get_option('wss-support-email-name');
@@ -1461,6 +1542,17 @@ class wc_support_system {
 			    				echo '<label for="user-notification">';
 				    				echo '<input type="checkbox" class="user-notification" name="user-notification" value="1"' . ($user_notification == 1 ? ' checked="checked"' : '') . '>';
 				    				echo __('Send an email notifications to the user when an answer was published.', 'wss');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
+
+			    		/*Additional recipients*/
+			    		echo '<tr class="wss-additional-recipients-field notifications-fields">';
+			    			echo '<th scope="row">' . __('Additional recipients', 'wss') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="wss-additional-recipients">';
+				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1"' . ($additional_recipients == 1 ? ' checked="checked"' : '') . '>';
+				    				echo __('Allow the user to specify multiple email addresses for receiving notifications', 'wss');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
@@ -1646,9 +1738,11 @@ class wc_support_system {
 			update_option('wss-user-color-text', $user_color_text);
 
 			/*Notifications*/
-			$user_notification = isset($_POST['user-notification']) ? sanitize_text_field($_POST['user-notification']) : 0;
-			$admin_notification = isset($_POST['admin-notification']) ? sanitize_text_field($_POST['admin-notification']) : 0;
+			$user_notification     = isset($_POST['user-notification']) ? sanitize_text_field($_POST['user-notification']) : 0;
+			$additional_recipients = isset($_POST['wss-additional-recipients']) ? sanitize_text_field($_POST['wss-additional-recipients']) : 0;
+			$admin_notification    = isset($_POST['admin-notification']) ? sanitize_text_field($_POST['admin-notification']) : 0;
 			update_option('wss-user-notification', $user_notification);
+			update_option('wss-additional-recipients', $additional_recipients);
 			update_option('wss-admin-notification', $admin_notification);			
 
 			/*Support email/ email name*/
