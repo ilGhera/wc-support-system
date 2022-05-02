@@ -192,12 +192,14 @@ class wc_support_system {
 
 			/*js*/
 			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));	
+			wp_enqueue_script('tagify-script', plugin_dir_url(__DIR__) . 'js/tagify/dist/jQuery.tagify.min.js', array('jquery'));			
 		    
 			/*css*/
 			wp_enqueue_style('wss-tinymce-style', includes_url() . 'css/editor.min.css');
 	        wp_enqueue_style('wss-dashicons-style', includes_url() . 'css/dashicons.min.css');
 		    wp_enqueue_style('wss-style', plugin_dir_url(__DIR__) . 'css/wss-style.css');
 		    wp_enqueue_style('bootstrap-iso', plugin_dir_url(__DIR__) . 'css/bootstrap-iso.css');    
+		    wp_enqueue_style('tagify-style', plugin_dir_url(__DIR__) . 'js/tagify/dist/tagify.css');    
 		}
 	}
 
@@ -567,7 +569,7 @@ class wc_support_system {
 					?>
 				</select>
                 <?php if ( $additional_recipients ) { ?>
-                    <input type="text" name="additional-recipients" placeholder="<?php echo __('Additional recipients (email addresses divided by commas)'); ?>">
+                    <input type="text" name="additional-recipients" class="additional-recipients" placeholder="<?php echo __('Additional recipients (email addresses divided by commas)'); ?>">
                 <?php } ?>
 				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
 				<?php wp_editor('', 'wss-ticket'); ?>

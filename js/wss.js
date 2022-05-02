@@ -310,6 +310,8 @@ jQuery(document).ready(function($){
 
     })
 
+   $('[name=additional-recipients]').tagify();
+
 	/*Show auto close fields if activated*/
 	if( $('.auto-close-tickets-field .tzCheckBox').hasClass('checked') ) {
 		$('.auto-close-fields').show();
