@@ -556,6 +556,30 @@ class wc_support_system {
 	}
 
 	
+    /**
+     * Check if the additional recipients option is activated
+     *
+     * @return bool
+     */
+    public function is_additional_recipients_on() {
+
+        $output = false;
+
+        if ( get_option('wss-user-notification') ) {
+
+            if ( get_option('wss-additional-recipients') ) {
+
+                $output = true;
+
+            }
+
+        }
+        
+        return $output;
+
+    }
+
+
 	/**
 	 * New ticket form
 	 * @param  int    $order_id   the order id if the user is not logged in
@@ -563,7 +587,6 @@ class wc_support_system {
 	 */
     public function create_new_ticket($order_id, $user_email) {
 
-        $additional_recipients = get_option('wss-additional-recipients');
 		?>
 		<div class="wss-ticket-container" style="display: none;">
 			<form method="POST" class="create-new-ticket" action="">
@@ -580,7 +603,7 @@ class wc_support_system {
 					}
 					?>
 				</select>
-                <?php if ( $additional_recipients ) { ?>
+                <?php if ( $this->is_additional_recipients_on() ) { ?>
                     <input type="text" name="additional-recipients" class="additional-recipients" placeholder="<?php echo __('Add one or more email addresses'); ?>">
                 <?php } ?>
 				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
@@ -723,8 +746,7 @@ class wc_support_system {
 	 */
 	public function get_ticket_content_callback() {
 
-        $additional_recipients = get_option('wss-additional-recipients');
-		$ticket_id            = $_POST['ticket_id'];
+		$ticket_id = $_POST['ticket_id'];
 
 		global $wpdb;
 		$query = "
@@ -736,7 +758,7 @@ class wc_support_system {
 			$ticket = $results[0];
 			echo '<div id="wss-ticket" class="ticket-' . $ticket_id . '">';
                 
-                if ( $additional_recipients ) {
+                if ( $this->is_additional_recipients_on() ) {
 
                     echo '<form>'; 
                         echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
@@ -1239,7 +1261,7 @@ class wc_support_system {
 			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
 			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
 			$content 	= isset($_POST['wss-ticket']) ? wp_filter_post_kses($_POST['wss-ticket']) : '';
-			$recipients = isset($_POST['additional-recipients']) ? wp_filter_post_kses($_POST['additional-recipients']) : null;
+			$recipients = isset($_POST['additional-recipients']) ? sanitize_text_field($_POST['additional-recipients']) : null;
 			$date       = date('Y-m-d H:i:s');
 
 			global $wpdb;
@@ -1271,21 +1293,10 @@ class wc_support_system {
 
 			$ticket_id = $wpdb->insert_id;
 
-            /* Get all the email addresse for notifications */
-            if ( $recipients ) {
-
-                /* Translator: 1: other recipients 2: customer email */
-                $recipients = sprintf( '%1$s,%2$s', $recipients, $user['email'] );
-                error_log( 'TICKET - ELENCO EMAIL: ' . $recipients );
-
-            } else {
-
-                $recipients = $user['email'];
-
-            }
+            error_log( 'TICKET - ELENCO EMAIL: ' . $recipients );
 
             /* Save the new ticket thread */
-			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $recipients);
+			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $recipients);
 		}
 	}
 
