@@ -35,6 +35,30 @@
   cursor: pointer;
 }
 
+.tagify {
+  margin-bottom: 0.5rem !important;
+}
+
+#wss-ticket label {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+#wss-ticket .description {
+    margin: 0;
+    padding: 0;
+}
+
+.additional-recipients {
+    background-color: white;
+    margin-bottom: 1rem;
+}
+
+.tagify.additional-recipients {
+    padding: .3rem;
+    margin: .5rem 0 3rem;
+}
+
 .create-new-ticket input[type="text"],
 #wes-support-access input[type="text"],
 #wes-support-access input[type="email"] {

@@ -28,12 +28,40 @@ var check_ticket_product = function(){
 
 
 /**
+ * Update the additional recipients using Ajax
+ *
+ * @param {int}    ticket_id  the ticket id.
+ * @param {string} recipients the list of recipients.
+ *
+ * @return void
+ */
+var update_additional_recipients = function(ticket_id, recipients) {
+	jQuery(function($){
+        console.log( 'TICKET ID: ' + ticket_id );
+
+        var data = {
+            'action': 'update-additional-recipients',
+            'ticket-id': ticket_id,
+            'recipients': recipients
+        }
+
+        $.post(ajaxurl, data, function(response) {
+            console.log('RECIPIENTS UPDATED: ' + response);
+        })
+
+    })
+}
+
+
+/**
  * Clicking on a ticket, all his threads are shown and all the other tickets hidden
  */
 var get_ticket_content = function() {
 	jQuery(function($){
 		$('.ticket-toggle').on('click', function(){
-			var ticket_id = $(this).data('ticket-id');
+			var ticket_id  = $(this).data('ticket-id'); 
+            var user_email = $('.user_email', 'tr.ticket-' + ticket_id).text();
+            console.log( 'USER EMAIL: ' + user_email );
 
 			/*Nascondo gli altri ticket*/
 
@@ -56,7 +84,33 @@ var get_ticket_content = function() {
 				'ticket_id': ticket_id
 			}
 			$.post(ajaxurl, data, function(response){
+
 				$('.single-ticket-content').html(response);
+
+                var recipients_field = $('.additional-recipients-' + ticket_id);
+                var value;
+                console.log('USER EMAIL: ' + data.userEmail);
+
+                $('[name=additional-recipients-' + ticket_id + ']').tagify({
+                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+                    blacklist: [user_email],
+                    validate: function(tag){
+                        console.log('TAG: ' + tag.value);
+                        value = tag.value;
+                        
+                        if ( value.includes('@') && value.includes('.') ) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+
+                    }
+                });
+
+                $(recipients_field).on('change', function(){
+                    update_additional_recipients( ticket_id, $(this).val() );
+                })
+
 			})
 		})
 	})
@@ -310,7 +364,33 @@ jQuery(document).ready(function($){
 
     })
 
-   $('[name=additional-recipients]').tagify();
+    /*Use tagify plugin with the additional recipients field*/
+    $('[name=additional-recipients]').tagify({
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+        blacklist: [data.userEmail],
+        validate: function(tag){
+            console.log('TAG: ' + tag.value);
+            value = tag.value;
+            
+            if ( value.includes('@') && value.includes('.') ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+    });
+
+    /*Change Tagify input format*/
+    var addRecipients = $('.additional-recipients');
+    // var tagify = new Tagify ('[name=additional-recipients]');
+    // var tagify = new Tagify (addRecipients);
+
+    $(addRecipients).on('change', function(){
+        console.log( 'TEST: ' + $(this).val() );       
+        console.log( 'USER EMAIL: ' + data.userEmail );
+    })
+
 
 	/*Show auto close fields if activated*/
 	if( $('.auto-close-tickets-field .tzCheckBox').hasClass('checked') ) {
