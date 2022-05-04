@@ -37,7 +37,6 @@ var check_ticket_product = function(){
  */
 var update_additional_recipients = function(ticket_id, recipients) {
 	jQuery(function($){
-        console.log( 'TICKET ID: ' + ticket_id );
 
         var data = {
             'action': 'update-additional-recipients',
@@ -45,9 +44,7 @@ var update_additional_recipients = function(ticket_id, recipients) {
             'recipients': recipients
         }
 
-        $.post(ajaxurl, data, function(response) {
-            console.log('RECIPIENTS UPDATED: ' + response);
-        })
+        $.post(ajaxurl, data);
 
     })
 }
@@ -61,7 +58,6 @@ var get_ticket_content = function() {
 		$('.ticket-toggle').on('click', function(){
 			var ticket_id  = $(this).data('ticket-id'); 
             var user_email = $('.user_email', 'tr.ticket-' + ticket_id).text();
-            console.log( 'USER EMAIL: ' + user_email );
 
 			/*Nascondo gli altri ticket*/
 
@@ -89,13 +85,11 @@ var get_ticket_content = function() {
 
                 var recipients_field = $('.additional-recipients-' + ticket_id);
                 var value;
-                console.log('USER EMAIL: ' + data.userEmail);
 
                 $('[name=additional-recipients-' + ticket_id + ']').tagify({
                     originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
                     blacklist: [user_email],
                     validate: function(tag){
-                        console.log('TAG: ' + tag.value);
                         value = tag.value;
                         
                         if ( value.includes('@') && value.includes('.') ) {
@@ -369,7 +363,6 @@ jQuery(document).ready(function($){
         originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
         blacklist: [data.userEmail],
         validate: function(tag){
-            console.log('TAG: ' + tag.value);
             value = tag.value;
             
             if ( value.includes('@') && value.includes('.') ) {
@@ -382,15 +375,7 @@ jQuery(document).ready(function($){
     });
 
     /*Change Tagify input format*/
-    var addRecipients = $('.additional-recipients');
-    // var tagify = new Tagify ('[name=additional-recipients]');
-    // var tagify = new Tagify (addRecipients);
-
-    $(addRecipients).on('change', function(){
-        console.log( 'TEST: ' + $(this).val() );       
-        console.log( 'USER EMAIL: ' + data.userEmail );
-    })
-
+    // var addRecipients = $('.additional-recipients');
 
 	/*Show auto close fields if activated*/
 	if( $('.auto-close-tickets-field .tzCheckBox').hasClass('checked') ) {
