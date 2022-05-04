@@ -604,7 +604,7 @@ class wc_support_system {
 					?>
 				</select>
                 <?php if ( $this->is_additional_recipients_on() ) { ?>
-                    <input type="text" name="additional-recipients" class="additional-recipients" placeholder="<?php echo __('Add one or more email addresses'); ?>">
+                    <input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo __('Send notifications to other email addresses'); ?>">
                 <?php } ?>
 				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
 				<?php wp_editor('', 'wss-ticket'); ?>
