@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Support System\n"
-"POT-Creation-Date: 2022-05-05 10:06+0200\n"
+"POT-Creation-Date: 2022-05-05 14:54+0200\n"
 "PO-Revision-Date: 2018-03-27 11:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: ilGhera\n"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: includes/class-wc-support-system.php:764
 msgid ""
-"These email address will receive notifications about this ticket updates."
+"These email addresses will receive notifications about this ticket updates."
 msgstr ""
 
 #: includes/class-wc-support-system.php:765

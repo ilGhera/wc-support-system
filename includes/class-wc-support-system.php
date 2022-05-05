@@ -761,7 +761,7 @@ class wc_support_system {
 
                     echo '<form>'; 
                         echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
-                        echo '<p class="description">' . esc_html__( 'These email address will receive notifications about this ticket updates.', 'wss' ) . '</p>';
+                        echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
                         echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wss' ) . '" value="' . esc_attr( $ticket->recipients ) . '">';
                     echo '</form>'; 
 
