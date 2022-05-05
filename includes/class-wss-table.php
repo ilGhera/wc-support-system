@@ -127,7 +127,7 @@ class wss_table extends WP_List_Table {
 			
 			case 'product_id':
                 $title     = get_the_title( $item['product_id'] );
-                $title     = $title ? $title : __( 'This product doesn\'t exist anymore' );
+                $title     = $title ? $title : __( 'This product doesn\'t exist anymore', 'wss' );
 				$thumbnail = get_the_post_thumbnail( $item['product_id'], array( 40,40 ), array( 'title' => $title ) );
 				
 				if($thumbnail) {
