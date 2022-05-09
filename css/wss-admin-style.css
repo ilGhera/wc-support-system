@@ -104,6 +104,21 @@
   margin: 3rem 0 1rem;
 }
 
+#wss-ticket label {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.additional-recipients {
+    background-color: white;
+    margin-bottom: 1rem;
+}
+
+.tagify.additional-recipients {
+    padding: .3rem;
+    margin: .5rem 0 2rem;
+}
+
 .single-thread {
   border: 1px solid #D9D9D9;
   border-radius: 0.5rem;
@@ -236,7 +251,8 @@ span.date {
 
 .create-support-page,
 .support-email-fields,
-.auto-close-fields {
+.auto-close-fields,
+.wss-additional-recipients-field {
   display: none;
 }
 
@@ -267,6 +283,13 @@ span.date {
   padding-top: 3rem;
 }
 
+.tzCheckBox {
+  margin-right: 6px;
+}
+
+.tzCheckBox.checked {
+  margin-right: 20px !important;
+}
 
 @media only screen and (max-width: 790px) {
   

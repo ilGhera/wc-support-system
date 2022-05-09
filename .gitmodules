@@ -1,1 +1,3 @@
-
+[submodule "js/tagify"]
+	path = js/tagify
+	url = https://github.com/yairEO/tagify.git
