@@ -1009,6 +1009,10 @@ class wc_support_system {
 	 */
 	public function support_notification($ticket_id, $user_name='', $content, $to='', $notification=false) {
 
+        if ( ! $ticket_id ) {
+            return;
+        }
+
 		$support_email        = get_option('wss-support-email'); 
 		$support_email_name   = get_option('wss-support-email-name');
 		$support_email_footer = get_option('wss-support-email-footer');
