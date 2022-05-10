@@ -1608,7 +1608,7 @@ class wc_support_system {
 			    			echo '<td>';
 			    				echo '<label for="wss-additional-recipients">';
 				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1"' . ($additional_recipients == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Allow the user to specify multiple email addresses for receiving notifications', 'wss');
+				    				echo __('Allow the user to specify multiple email addresses for receiving notifications.', 'wss');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
