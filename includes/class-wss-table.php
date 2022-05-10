@@ -3,7 +3,7 @@
  * Admin tickets table
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.0.3
+ * @since 1.1.0
  */
 
 /*The main calss is required*/

@@ -2,7 +2,7 @@
  * WSS js scripts
  * @author ilGhera
  * @package wc-support-system-premium/js
- * @since 0.9.4
+ * @since 1.1.0
  */
 
 /**

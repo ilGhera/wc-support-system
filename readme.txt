@@ -1,9 +1,9 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 1.0.5
+Version: 1.1.0
 Requires at least: 4.0
-Tested up to: 5.7
+Tested up to: 5.9
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
@@ -52,6 +52,16 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+
+= 1.1.0 =
+Release Date: 10 May, 2022
+
+* Enhancement (Premium): Send notifications to additional recipients about the ticket updates
+* Enhancement: Search ticket by id using an hash followed the number
+* Enhancement: Display the product name in mouse hover on the ticket product image
+* Enhancement: Better user interface
+* Bug Fix: Media not added in the first message of the ticket
 
 
 = 1.0.5 =
