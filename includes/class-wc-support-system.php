@@ -789,7 +789,7 @@ class wc_support_system {
 			$message .= '</p>';
 		}
 
-		$test = wp_mail($to, $subject, $message, $headers);
+		wp_mail($to, $subject, $message, $headers);
 
 		if($notification) {
 			$this->notification_sent($ticket_id);
@@ -845,7 +845,7 @@ class wc_support_system {
 				$this->support_notification($ticket_id, $user_name, $content);					
 			}
 
-            /* Send even user ticket update to the othe recipients */
+            /* Send even user ticket update to the other recipients */
             if($user_notification && $recipients) {
 				$this->support_notification($ticket_id, $user_name, $content, $recipients);
             }
@@ -1027,7 +1027,6 @@ class wc_support_system {
 			<h1>Woocommerce Support System</h1>
 			<form id="wss-support-tickets" name="wss-support-tickets" method="post">
 				<?php
-				// $test = new wss_table();
 				$this->tickets_obj->prepare_items();
                 $this->tickets_obj->search_box(__( 'Search', 'wss' ), 'wss-search');
 				$this->tickets_obj->display(); 
