@@ -207,6 +207,11 @@ span.date {
   padding: 0.35rem 0;
 }
 
+.bootstrap-iso.inline {
+  display: inline-block;
+  margin-left: 0.6rem;
+}
+
 .label.premium {
   display: inline-block;
   margin-top: 1rem;

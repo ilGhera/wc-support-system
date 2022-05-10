@@ -28,29 +28,6 @@ var check_ticket_product = function(){
 
 
 /**
- * Update the additional recipients using Ajax
- *
- * @param {int}    ticket_id  the ticket id.
- * @param {string} recipients the list of recipients.
- *
- * @return void
- */
-var update_additional_recipients = function(ticket_id, recipients) {
-	jQuery(function($){
-
-        var data = {
-            'action': 'update-additional-recipients',
-            'ticket-id': ticket_id,
-            'recipients': recipients
-        }
-
-        $.post(ajaxurl, data);
-
-    })
-}
-
-
-/**
  * Clicking on a ticket, all his threads are shown and all the other tickets hidden
  */
 var get_ticket_content = function() {
@@ -100,10 +77,6 @@ var get_ticket_content = function() {
 
                     }
                 });
-
-                $(recipients_field).on('change', function(){
-                    update_additional_recipients( ticket_id, $(this).val() );
-                })
 
 			})
 		})

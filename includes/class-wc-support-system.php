@@ -36,8 +36,6 @@ class wc_support_system {
 		add_action('wp_ajax_nopriv_get_ticket_content', array($this, 'get_ticket_content_callback'));
 		add_action('wp_ajax_product-select-warning', array($this, 'product_select_warning_callback'));
 		add_action('wp_ajax_nopriv_product-select-warning', array($this, 'product_select_warning_callback'));
-		add_action('wp_ajax_update-additional-recipients', array($this, 'update_additional_recipients'));
-		add_action('wp_ajax_nopriv_update-additional-recipients', array($this, 'update_additional_recipients'));
 
 		add_action('wp_footer', array($this, 'ajax_get_ticket_content'));
 
@@ -364,30 +362,6 @@ class wc_support_system {
 		exit;
 	}
 
-	
-    /**
-     * Check if the additional recipients option is activated
-     *
-     * @return bool
-     */
-    public function is_additional_recipients_on() {
-
-        $output = false;
-
-        if ( get_option('wss-user-notification') ) {
-
-            if ( get_option('wss-additional-recipients') ) {
-
-                $output = true;
-
-            }
-
-        }
-        
-        return $output;
-
-    }
-
 
 	/**
 	 * New ticket form
@@ -412,9 +386,6 @@ class wc_support_system {
 					}
 					?>
 				</select>
-                <?php if ( $this->is_additional_recipients_on() ) { ?>
-                    <input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo __('Send notifications to other email addresses'); ?>">
-                <?php } ?>
 				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
 				<?php wp_editor('', 'wss-ticket'); ?>
 				<input type="hidden" name="ticket-sent" value="1">
@@ -568,15 +539,12 @@ class wc_support_system {
 
 			echo '<div id="wss-ticket" class="ticket-' . $ticket_id . '">';
                 
-                if ( $this->is_additional_recipients_on() ) {
-
-                    echo '<form>'; 
-                        echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
-                        echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
-                        echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wss' ) . '" value="' . esc_attr( $ticket->recipients ) . '">';
-                    echo '</form>'; 
-
-                }
+                echo '<form>'; 
+                    echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
+                    $this->go_premium( true );
+                    echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
+                    echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wss' ) . '">';
+                echo '</form>'; 
 
 				$threads = self::get_ticket_threads($ticket_id);
 				if($threads) {
@@ -914,70 +882,16 @@ class wc_support_system {
 	}
 
 
-    /**
-     * Get the list of recipients of a specific ticket
-     *
-     * @param int $ticket_id the ticket id.
-     *
-     * @return string
-     */
-    public function get_ticket_recipients( $ticket_id ) {
-
-        $additional_recipients_option = get_option( 'wss-additional-recipients' );
-        $output                       = null;
-
-        if ( $additional_recipients_option ) {
-
-            global $wpdb;
-
-            $query = "
-                SELECT recipients FROM " . $wpdb->prefix . "wss_support_tickets WHERE id = $ticket_id
-            ";
-
-            $results = $wpdb->get_col( $query );
-            $output  = isset( $results[0] ) ? $results[0] : null;
-
-        }
-
-        return $output;
-
-    }
-
-
-    /**
-     * Update the additional recipients of a ticket with Ajax
-     *
-     */
-    public function update_additional_recipients() {
-
-        $ticket_id  = isset( $_POST['ticket-id'] ) ? sanitize_text_field( $_POST['ticket-id'] ) : null; 
-        $recipients = isset( $_POST['recipients'] ) ? sanitize_text_field( $_POST['recipients'] ) : null;
-
-        if ( $ticket_id ) {
-
-            global $wpdb;
-
-            $wpdb->update( $wpdb->prefix . 'wss_support_tickets', array( 'recipients' => $recipients ), array( 'id' => $ticket_id ) );
-
-        }
-
-        exit;
-
-    }
-
-
 	/**
 	 * Add a new thread to a ticket
 	 */
 	public function save_new_thread() {
 
-        $test = $this->get_ticket_recipients( 21 );
-
 		if(isset($_POST['thread-sent'])){
 
 			$ticket_id      = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
-            $recipients     = $this->get_ticket_recipients( $ticket_id );
+            $recipients     = null; 
 
             if ( $recipients ) {
 
@@ -1016,7 +930,7 @@ class wc_support_system {
 			$title		= isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
 			$product_id = isset($_POST['product-id']) ? sanitize_text_field($_POST['product-id']) : '';
 			$content 	= isset($_POST['wss-ticket']) ? wp_filter_post_kses($_POST['wss-ticket']) : '';
-			$recipients = isset($_POST['additional-recipients']) ? sanitize_text_field($_POST['additional-recipients']) : null;
+			$recipients = null; 
 			$date       = date('Y-m-d H:i:s');
 
 			global $wpdb;
@@ -1235,11 +1149,17 @@ class wc_support_system {
 
 
 	/**
-	 * Button premium call to action
+     * Button premium call to action
+     *
+     * @param bool $inline inline with true.
+     *
 	 * @return mixed
 	 */
-	public function go_premium() {
-		echo '<div class="bootstrap-iso">';
+	public function go_premium( $inline = false ) {
+
+        $class = $inline ? ' inline' : null;
+
+        echo '<div class="bootstrap-iso' . esc_attr( $class ) . '">';
 			echo '<span class="label label-warning premium"><a href="https://www.ilghera.com/product/woocommerce-support-system-premium" target="_blank">Premium</a></label>';
 		echo '</div>';
 	}
@@ -1259,7 +1179,6 @@ class wc_support_system {
 		$user_color_background  = get_option('wss-user-color-background');
 		$user_color_text 	    = get_option('wss-user-color-text');
 		$user_notification		= get_option('wss-user-notification');
-		$additional_recipients  = get_option('wss-additional-recipients');
 		$admin_notification		= get_option('wss-admin-notification');
 		$support_email			= get_option('wss-support-email');
 		$support_email_name		= get_option('wss-support-email-name');
@@ -1363,9 +1282,10 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Additional recipients', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="wss-additional-recipients">';
-				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1"' . ($additional_recipients == 1 ? ' checked="checked"' : '') . '>';
+				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="0" disabled>';
 				    				echo __('Allow the user to specify multiple email addresses for receiving notifications', 'wss');
 			    				echo '</label>';
+			    				$this->go_premium();
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1415,7 +1335,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Upload files', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="customer-uploads">';
-				    				echo '<input type="checkbox" name="customer-uploads" value="1" checked="checked" disabled="disabled">';
+				    				echo '<input type="checkbox" name="customer-uploads" value="0" disabled="disabled">';
 				    				echo __('Allow customers upload images and all the other permitted file types.', 'wss');
 			    				echo '</label>';
 			    				$this->go_premium();
@@ -1427,7 +1347,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="guest-users">';
-				    				echo '<input type="checkbox" name="guest-users" value="1" checked="checked" disabled="disabled">';
+				    				echo '<input type="checkbox" name="guest-users" value="0" disabled="disabled">';
 				    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
 			    				echo '</label>';
 			    				$this->go_premium();
@@ -1439,7 +1359,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
 			    			echo '<td>';
 				    			echo '<label for="reopen-ticket">';
-				    				echo '<input type="checkbox" name="reopen-ticket" value="1" checked="checked" disabled="disabled">';
+				    				echo '<input type="checkbox" name="reopen-ticket" value="0" disabled="disabled">';
 					    			echo __('After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wss');
 				    			echo '</label>'; 
 								$this->go_premium();
@@ -1451,7 +1371,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="">';
-			    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1" checked="checked" disabled="disabled">';
+			    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="0" disabled="disabled">';
 				    				echo  __('Close tickets not updated for a specified period.', 'wss');
 			    				echo '</label>';
 								$this->go_premium();
@@ -1491,7 +1411,7 @@ class wc_support_system {
 			    		echo '<tr class="auto-close-fields">';
 			    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
 			    			echo '<td>';
-			    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="1" disabled="disabled">';
+			    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="0" disabled="disabled">';
 			    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
 								$this->go_premium();
 			    			echo '</td>';
@@ -1554,7 +1474,6 @@ class wc_support_system {
 
 			/*Notifications*/
 			$user_notification     = isset($_POST['user-notification']) ? sanitize_text_field($_POST['user-notification']) : 0;
-			$additional_recipients = isset($_POST['wss-additional-recipients']) ? sanitize_text_field($_POST['wss-additional-recipients']) : 0;
 			$admin_notification    = isset($_POST['admin-notification']) ? sanitize_text_field($_POST['admin-notification']) : 0;
 			update_option('wss-user-notification', $user_notification);
 			update_option('wss-additional-recipients', $additional_recipients);
