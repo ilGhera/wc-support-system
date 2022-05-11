@@ -3,7 +3,7 @@
  * Main plugin class
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.1.0
+ * @since 1.1.1
  */
 class wc_support_system {
 
@@ -770,6 +770,10 @@ class wc_support_system {
 	 */
 	public function support_notification($ticket_id, $user_name='', $content, $to='', $notification=false) {
 
+        if ( ! $ticket_id ) {
+            return;
+        }
+
 		$support_email        = get_option('wss-support-email'); 
 		$support_email_name   = get_option('wss-support-email-name');
 		$support_email_footer = get_option('wss-support-email-footer');
@@ -1287,7 +1291,7 @@ class wc_support_system {
 			    			echo '<td>';
 			    				echo '<label for="wss-additional-recipients">';
 				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="0" disabled>';
-				    				echo __('Allow the user to specify multiple email addresses for receiving notifications', 'wss');
+				    				echo __('Allow the user to specify multiple email addresses for receiving notifications.', 'wss');
 			    				echo '</label>';
 			    				$this->go_premium();
 			    			echo '</td>';

@@ -1,7 +1,7 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
-Version: 1.1.0
+Version: 1.1.1
 Requires at least: 4.0
 Tested up to: 5.9
 
@@ -52,6 +52,14 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+
+= 1.1.1 =
+Release Date: 11 May, 2022
+
+* Bug Fix: Empty email notification sent after performing a ticket search in back-end
+* Bug Fix: Trim missed in ticket search field value
+* Bug Fix: Missing translations
 
 
 = 1.1.0 =

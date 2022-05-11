@@ -3,7 +3,7 @@
  * Admin tickets table
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.1.0
+ * @since 1.1.1
  */
 
 /*The main calss is required*/
@@ -41,13 +41,14 @@ class wss_table extends WP_List_Table {
 		/*Filtered by search term*/
 		if(isset($_REQUEST['s'])) {
 
-			$query .= " WHERE user_name LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
-			$query .= " OR user_email LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
-			$query .= " OR title LIKE '%" . esc_sql($_REQUEST['s']) . "%'";
+            $s      = trim( $_REQUEST['s'] );
+			$query .= " WHERE user_name LIKE '%" . esc_sql( $s ) . "%'";
+			$query .= " OR user_email LIKE '%" . esc_sql( $s ) . "%'";
+			$query .= " OR title LIKE '%" . esc_sql( $s ) . "%'";
 
-            if ( 0 === strpos( $_REQUEST['s'], '#' ) ) {
+            if ( 0 === strpos( $s, '#' ) ) {
 
-                $ticket_id = substr( $_REQUEST['s'], 1 );
+                $ticket_id = substr( $s, 1 );
                 $query    .= " OR id LIKE '%" . esc_sql( $ticket_id ) . "%'";
 
             }
