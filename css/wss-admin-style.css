@@ -117,6 +117,7 @@
 .tagify.additional-recipients {
     padding: .3rem;
     margin: .5rem 0 2rem;
+    width: 100%;
 }
 
 .single-thread {
