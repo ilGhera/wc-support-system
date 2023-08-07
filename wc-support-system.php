@@ -9,7 +9,7 @@
  * Requires at least: 4.0
  * Tested up to: 6.1
  * WC tested up to: 7
- * Text Domain: wss
+ * Text Domain: wc-support-system
  * Domain Path: /languages
  */
 
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 /*Admin notice for WooCommerce not installed*/
 function wss_wc_not_installed() {
 	echo '<div class="notice notice-error is-dismissible">';
-        echo '<p>' . __( '<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wss' ) . '</p>';
+        echo '<p>' . __( '<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wc-support-system' ) . '</p>';
     echo '</div>';
 }
 
@@ -48,7 +48,7 @@ function wss_premium_activation() {
     } else {
 
 		/*Internalization*/
-		load_plugin_textdomain('wss', false, basename( dirname( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain('wc-support-system', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 
 		/*Files required*/

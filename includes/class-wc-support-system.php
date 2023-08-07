@@ -549,7 +549,7 @@ class wc_support_system {
 	 * @return mixed
 	 */
 	public function product_select_warning_callback() {
-		echo '<div class="alert alert-warning">' . __('Please, choose a product for your support request.', 'wss') . '</div>';
+		echo '<div class="alert alert-warning">' . __('Please, choose a product for your support request.', 'wc-support-system') . '</div>';
 		exit;
 	}
 
@@ -592,7 +592,7 @@ class wc_support_system {
 					<?php 
 					$products = $this->get_user_products($order_id, $user_email);
 					if($products) {
-						echo '<option value="null">' . __('Select a product', 'wss') . '</option>';
+						echo '<option value="null">' . __('Select a product', 'wc-support-system') . '</option>';
 						foreach($products as $product) {
 							if($product) {
 								echo '<option value="' . $product . '">' . get_the_title($product) . '</option>';								
@@ -602,17 +602,17 @@ class wc_support_system {
 					?>
 				</select>
                 <?php if ( $this->is_additional_recipients_on() ) { ?>
-                    <input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo __('Send notifications to other email addresses', 'wss'); ?>">
+                    <input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo __('Send notifications to other email addresses', 'wc-support-system'); ?>">
                 <?php } ?>
-				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wss'); ?>" required="required">
+				<input type="text" name="title" placeholder="<?php echo __('Ticket subject', 'wc-support-system'); ?>" required="required">
 				<?php wp_editor('', 'wss-ticket'); ?>
 				<input type="hidden" name="ticket-sent" value="1">
-				<input type="submit" class="send-new-ticket" value="<?php echo __('Send', 'wss'); ?>" style="margin-top: 1rem;">
+				<input type="submit" class="send-new-ticket" value="<?php echo __('Send', 'wc-support-system'); ?>" style="margin-top: 1rem;">
 			</form>
 			<div class="bootstrap-iso product-alert"></div>
 		</div>
-		<a class="button new-ticket"><?php echo __('New ticket', 'wss'); ?></a>
-		<a class="button ticket-cancel" style="display: none;"><?php echo __('Cancel', 'wss'); ?></a>
+		<a class="button new-ticket"><?php echo __('New ticket', 'wc-support-system'); ?></a>
+		<a class="button ticket-cancel" style="display: none;"><?php echo __('Cancel', 'wc-support-system'); ?></a>
 		<?php
 	}
 
@@ -633,9 +633,9 @@ class wc_support_system {
 			<div class="bootstrap-iso"></div>
 		</div>
 		<div class="thread-tools">
-			<a class="button back-to-tickets"><?php echo __('Back to tickets', 'wss'); ?></a>
-			<a class="button new-thread button-primary" style="display: none;"><?php echo __('New message', 'wss'); ?></a>
-			<a class="button thread-cancel" style="display: none;"><?php echo __('Cancel', 'wss'); ?></a>
+			<a class="button back-to-tickets"><?php echo __('Back to tickets', 'wc-support-system'); ?></a>
+			<a class="button new-thread button-primary" style="display: none;"><?php echo __('New message', 'wc-support-system'); ?></a>
+			<a class="button thread-cancel" style="display: none;"><?php echo __('Cancel', 'wc-support-system'); ?></a>
 		</div>
 		<?php	
 	}
@@ -674,13 +674,13 @@ class wc_support_system {
 		$output = null;
 		switch ($status_id) {
 			case 1:
-				$output = '<span class="label label-danger toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Open', 'wss') . '</span>'; 
+				$output = '<span class="label label-danger toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Open', 'wc-support-system') . '</span>'; 
 				break;
 			case 2:
-				$output = '<span class="label label-warning toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Pending', 'wss') . '</span>';
+				$output = '<span class="label label-warning toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Pending', 'wc-support-system') . '</span>';
 				break;
 			case 3:
-				$output = '<span class="label label-success toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Closed', 'wss') . '</span>';
+				$output = '<span class="label label-success toggle" data-toggle="modal" data-status="' . $status_id . '" data-target="#ticket-status-modal">' . __('Closed', 'wc-support-system') . '</span>';
 				break;			
 		}
 		
@@ -760,9 +760,9 @@ class wc_support_system {
                 if ( $this->is_additional_recipients_on() ) {
 
                     echo '<form>'; 
-                        echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
-                        echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
-                        echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wss' ) . '" value="' . esc_attr( $ticket->recipients ) . '">';
+                        echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wc-support-system' ) . '</label>';
+                        echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wc-support-system' ) . '</p>';
+                        echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wc-support-system' ) . '" value="' . esc_attr( $ticket->recipients ) . '">';
                     echo '</form>'; 
 
                 }
@@ -803,7 +803,7 @@ class wc_support_system {
 	 */
 	public function support_exit_button() {
 		if(isset($_COOKIE['wss-support-access'])) {
-			echo '<button type="button" class="btn btn-default support-exit-button">' . __('Exit', 'wss') . '</button>';
+			echo '<button type="button" class="btn btn-default support-exit-button">' . __('Exit', 'wc-support-system') . '</button>';
 		}
 	}
 
@@ -829,12 +829,12 @@ class wc_support_system {
                     ?>
                     <table class="table support-tickets-table">
                         <thead>
-                            <th class="id" style="padding: 0.5em 1.5rem;"><?php echo __('ID', 'wss'); ?></th>
-                            <th class="subject"><?php echo __('Subject', 'wss'); ?></th>
-                            <th class="create-time"><?php echo __('Creation time', 'wss'); ?></th>
-                            <th class="update-time"><?php echo __('Update time', 'wss'); ?></th>
-                            <th><?php echo __('Product', 'wss'); ?></th>
-                            <th><?php echo __('Status', 'wss'); ?></th>
+                            <th class="id" style="padding: 0.5em 1.5rem;"><?php echo __('ID', 'wc-support-system'); ?></th>
+                            <th class="subject"><?php echo __('Subject', 'wc-support-system'); ?></th>
+                            <th class="create-time"><?php echo __('Creation time', 'wc-support-system'); ?></th>
+                            <th class="update-time"><?php echo __('Update time', 'wc-support-system'); ?></th>
+                            <th><?php echo __('Product', 'wc-support-system'); ?></th>
+                            <th><?php echo __('Status', 'wc-support-system'); ?></th>
                         </thead>
                         <tbody>
                         <?php
@@ -865,7 +865,7 @@ class wc_support_system {
                     <?php
                 } else {
                     echo '<div class="bootstrap-iso">';
-                        echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wss') . '</div>';
+                        echo '<div class="alert alert-info">' . __('It seems like you have no support tickets opened at the moment.', 'wc-support-system') . '</div>';
                     echo '</div>';
                 }
                 $this->create_new_ticket($order_id, $user_email); 
@@ -873,22 +873,22 @@ class wc_support_system {
             /*Bad data provided or guest users not allowed from the plugin options*/
             elseif( isset($_POST['wss-support-access']) && !$this->support_access_validation(false) || !get_option('wss-guest-users') ) :
                     echo '<div class="bootstrap-iso">';
-                        echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wss') . '</div>';
+                        echo '<div class="alert alert-danger">' . __('It seems like you have not access to the support service at the moment.', 'wc-support-system') . '</div>';
                     echo '</div>';
 
             /*Logged in user but not a customer*/		
             elseif(is_user_logged_in()) :
                 echo '<div class="bootstrap-iso">';
-                    echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wss') . '</div>';
+                    echo '<div class="alert alert-danger">' . __('It seems like you haven\'t bought any productat the moment.', 'wc-support-system') . '</div>';
                 echo '</div>';
             else :
                 ?>
                 <form id="wes-support-access" method="POST" action="">
-                    <input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wss'); ?>" required="required">
-                    <input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wss'); ?>" required="required">
-                    <input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wss'); ?>" required="required">
+                    <input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo __('Your name', 'wc-support-system'); ?>" required="required">
+                    <input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo __('Email (used for the order)', 'wc-support-system'); ?>" required="required">
+                    <input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo __('The order id', 'wc-support-system'); ?>" required="required">
                     <input type="hidden" name="wss-support-access" value="1">
-                    <input type="submit" value="<?php echo __('Access', 'wss'); ?>">
+                    <input type="submit" value="<?php echo __('Access', 'wc-support-system'); ?>">
                 </form>
                 <?php
             endif;
@@ -911,7 +911,7 @@ class wc_support_system {
 						<div class="modal-content">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title"><?php echo __('Change the ticket status', 'wss'); ?><span></span></h4>
+								<h4 class="modal-title"><?php echo __('Change the ticket status', 'wc-support-system'); ?><span></span></h4>
 							</div>
 							<div class="modal-body">
 								<div class="row status-selector">
@@ -921,7 +921,7 @@ class wc_support_system {
 								</div>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close', 'wss'); ?></button>
+								<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close', 'wc-support-system'); ?></button>
 							</div>
 						</div>
 					</div>
@@ -1308,7 +1308,7 @@ class wc_support_system {
 		add_action( 'load-' . $hook, array($this, 'screen_options'));
 	    
 	    /*Options*/
-	    add_submenu_page( 'wc-support-system', __('Settings', 'wss'), __('Settings', 'wss'), 'manage_options', 'wss-settings', array($this, 'wss_settings'));
+	    add_submenu_page( 'wc-support-system', __('Settings', 'wc-support-system'), __('Settings', 'wc-support-system'), 'manage_options', 'wss-settings', array($this, 'wss_settings'));
 
 	}
 
@@ -1349,7 +1349,7 @@ class wc_support_system {
 			<form id="wss-support-tickets" name="wss-support-tickets" method="post">
 				<?php
 				$this->tickets_obj->prepare_items();
-                $this->tickets_obj->search_box(__( 'Search', 'wss' ), 'wss-search');
+                $this->tickets_obj->search_box(__( 'Search', 'wc-support-system' ), 'wss-search');
 				$this->tickets_obj->display(); 
 				$this->create_new_thread();
 				?>
@@ -1384,7 +1384,7 @@ class wc_support_system {
 	public function ajax_delete_single_thread() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
-			$alert_message = __('Are you sure you want to delete this message?', 'wss');
+			$alert_message = __('Are you sure you want to delete this message?', 'wc-support-system');
 			?>
 			<script>
 				jQuery(document).ready(function($){
@@ -1415,7 +1415,7 @@ class wc_support_system {
 	public function ajax_delete_single_ticket() {
 		$admin_page = get_current_screen();
 		if($admin_page->base == 'toplevel_page_wc-support-system') {
-			$alert_message = __('Are you sure you want to delete this ticket with all his messages?', 'wss');
+			$alert_message = __('Are you sure you want to delete this ticket with all his messages?', 'wc-support-system');
 			?>
 			<script>
 				jQuery(document).ready(function($){
@@ -1497,19 +1497,19 @@ class wc_support_system {
 
 	    echo '<div class="wrap">';
 	    	echo '<div class="wrap-left">';
-			    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wss') . '</h1>';
+			    echo '<h1>Woocommerce Support System - ' . __('Settings', 'wc-support-system') . '</h1>';
 
 			    /*Premium key form*/
 			    echo '<form name="wss-options" class="wss-options one-of" method="post" action="">';
 			    	echo '<table class="form-table">';
-						echo '<th scope="row">' . __('Premium Key', 'wss') . '</th>';
+						echo '<th scope="row">' . __('Premium Key', 'wc-support-system') . '</th>';
 						echo '<td>';
-							echo '<input type="text" class="regular-text" name="wss-premium-key" id="wss-premium-key" placeholder="' . __('Add your Premium Key', 'wss' ) . '" value="' . $premium_key . '" />';
-							echo '<p class="description">' . __('Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wss') . '</p>';
+							echo '<input type="text" class="regular-text" name="wss-premium-key" id="wss-premium-key" placeholder="' . __('Add your Premium Key', 'wc-support-system' ) . '" value="' . $premium_key . '" />';
+							echo '<p class="description">' . __('Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wc-support-system') . '</p>';
 						echo '</td>';
 					echo '</table>';
 					echo '<input type="hidden" name="premium-key-sent" value="1" />';
-					echo '<input type="submit" class="button button-primary" value="' . __('Save ', 'wss') . '" />';
+					echo '<input type="submit" class="button button-primary" value="' . __('Save ', 'wc-support-system') . '" />';
 				echo '</form>';
 
 			    echo '<form name="wss-options" class="wss-options" method="post" action="">';
@@ -1517,7 +1517,7 @@ class wc_support_system {
 
 			    		/*Choose the support page*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Support page', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Support page', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				$pages = get_posts('post_type=page&posts_per_page=-1');
 			    				echo '<select id="support-page" name="support-page">';
@@ -1527,40 +1527,40 @@ class wc_support_system {
 			    						echo ' value="' . $page->ID . '"' . ($support_page == $page->ID ? ' selected="selected"' : '') . '>';
 			    						echo $page->post_title . '</option>';
 			    					}
-			    					echo '<option value="new">' . __('Create a new page', 'wss') . '</option>';
+			    					echo '<option value="new">' . __('Create a new page', 'wc-support-system') . '</option>';
 			    				echo '</select>';
-	    						echo '<p class="description">' . __('Select a page for customer support or create a new one.', 'wss') . '</div>';
+	    						echo '<p class="description">' . __('Select a page for customer support or create a new one.', 'wc-support-system') . '</div>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Create a new page*/
 			    		echo '<tr class="create-support-page">';
-			    			echo '<th scope="row">' . __('Page title', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Page title', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="text" name="support-page-title" value="">';
-			    				echo '<p class="description">' . __('Chose a title for your support page.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Chose a title for your support page.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Tickets table position in the page*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Page layout', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Page layout', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<select id="page-layout" name="page-layout">';
-			    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wss') . '</option>';
-			    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wss') . '</option>';
+			    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wc-support-system') . '</option>';
+			    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wc-support-system') . '</option>';
 			    				echo '</select>';
-			    				echo '<p class="description">' . __('Place the tickets table before or after the page content.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Place the tickets table before or after the page content.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Admin threads color background*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Admin messages colors', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Admin messages colors', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				/*Background*/
 			    				echo '<input type="text" class="wss-color-field" name="admin-color-background" value="' . $admin_color_background . '">';
-			    				echo '<p class="description">' . __('Select the background color for the admin\'s messages.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the background color for the admin\'s messages.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1569,16 +1569,16 @@ class wc_support_system {
 			    			echo '<th scope="row"></th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="admin-color-text" value="' . $admin_color_text . '">';
-			    				echo '<p class="description">' . __('Select the text color for the admin\'s messages.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the text color for the admin\'s messages.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*User threads color background*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('User messages colors', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('User messages colors', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="user-color-background" value="' . $user_color_background . '">';
-			    				echo '<p class="description">' . __('Select the background color for the user\'s messages.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the background color for the user\'s messages.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
@@ -1587,129 +1587,129 @@ class wc_support_system {
 			    			echo '<th scope="row"></th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="wss-color-field" name="user-color-text" value="' . $user_color_text . '">';
-			    				echo '<p class="description">' . __('Select the text color for the user\'s messages.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Select the text color for the user\'s messages.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*User email notification*/
 			    		echo '<tr class="user-notification-field notifications-fields">';
-			    			echo '<th scope="row">' . __('User email notification', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('User email notification', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="user-notification">';
 				    				echo '<input type="checkbox" class="user-notification" name="user-notification" value="1"' . ($user_notification == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Send an email notifications to the user when an answer was published.', 'wss');
+				    				echo __('Send an email notifications to the user when an answer was published.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Additional recipients*/
 			    		echo '<tr class="wss-additional-recipients-field notifications-fields">';
-			    			echo '<th scope="row">' . __('Additional recipients', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Additional recipients', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="wss-additional-recipients">';
 				    				echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1"' . ($additional_recipients == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Allow the user to specify multiple email addresses for receiving notifications.', 'wss');
+				    				echo __('Allow the user to specify multiple email addresses for receiving notifications.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Admin email notification*/
 			    		echo '<tr class="admin-notification-field notifications-fields">';
-			    			echo '<th scope="row">' . __('Admin email notification', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Admin email notification', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="admin-notification">';
 				    				echo '<input type="checkbox" class="admin-notification" name="admin-notification" value="1"' . ($admin_notification == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Send an email notifications to the admin when a new message is published.', 'wss');
+				    				echo __('Send an email notifications to the admin when a new message is published.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Support email*/
 			    		echo '<tr class="support-email-fields">';
-			    			echo '<th scope="row">' . __('Support email', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Support email', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="email" class="support-email regular-text" name="support-email" placeholder="noreply@example.com" value="' . $support_email . '">';
-			    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('The email address used to send and receive notifications.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Support email "from" name*/
 			    		echo '<tr class="support-email-fields">';
-			    			echo '<th scope="row">' . __('"From" name', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('"From" name', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="text" class="support-email-name regular-text" name="support-email-name" placeholder="Example Support" value="' . $support_email_name . '">';
-			    				echo '<p class="description">' . __('The sender name for notifications.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('The sender name for notifications.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Footer email text*/
 			    		echo '<tr class="support-email-fields">';
-			    			echo '<th scope="row">' . __('Footer email text', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Footer email text', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 
-			    				$placeholder = sprintf( __('Don\'t reply to this email, you can read all messages and update the ticket going to the page %s.', 'wss'), get_the_title($this->support_page) );
+			    				$placeholder = sprintf( __('Don\'t reply to this email, you can read all messages and update the ticket going to the page %s.', 'wc-support-system'), get_the_title($this->support_page) );
 
 			    				echo '<textarea class="support-email-footer" name="support-email-footer" placeholder="' . $placeholder . '" cols="60" rows="3">' . esc_html(wp_unslash($support_email_footer)) . '</textarea>';
-			    				echo '<p class="description">' . __('You can add some text after the email content.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('You can add some text after the email content.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Uploads available for customers*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Upload files', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Upload files', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="customer-uploads">';
 				    				echo '<input type="checkbox" name="customer-uploads" value="1"' . ($customer_uploads == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Allow customers upload images and all the other permitted file types.', 'wss');
+				    				echo __('Allow customers upload images and all the other permitted file types.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Support for not logged in users*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Guest users', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Guest users', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="guest-users">';
 				    				echo '<input type="checkbox" name="guest-users" value="1"' . ($guest_users == 1 ? ' checked="checked"' : '') . '>';
-				    				echo __('Not logged in users can receive support providing the email and an order id.', 'wss');
+				    				echo __('Not logged in users can receive support providing the email and an order id.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Reopen a ticket after a new thread is sent in back-end*/
 			    		echo '<tr>';
-			    			echo '<th scope="row">' . __('Reopen ticket', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Reopen ticket', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 				    			echo '<label for="reopen-ticket">';
 				    				echo '<input type="checkbox" name="reopen-ticket" value="1"' . ($reopen_ticket == 1 ? ' checked="checked"' : '') . '>';
-					    			echo __('After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wss');
+					    			echo __('After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wc-support-system');
 				    			echo '</label>'; 
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Close not updated tickets after a specified period*/
 			    		echo '<tr class="auto-close-tickets-field">';
-			    			echo '<th scope="row">' . __('Auto close tickets', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Auto close tickets', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="">';
 			    					echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ($auto_close_tickets == 1 ? ' checked="checked"' : '') . '>';
-				    				echo  __('Close tickets not updated for a specified period.', 'wss');
+				    				echo  __('Close tickets not updated for a specified period.', 'wc-support-system');
 			    				echo '</label>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Days of no updates for sending a notice to the user*/
 			    		echo '<tr class="auto-close-fields">';
-			    			echo '<th scope="row">' . __('Notice period', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Notice period', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . $auto_close_days_notice . '">';
-			    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Days with no updates for sending a notice to the user.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Closing ticket user notification*/
 			    		echo '<tr class="auto-close-fields">';
-			    			echo '<th scope="row">' . __('User notice', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('User notice', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 
 								$default_text = sprintf( 
@@ -1723,23 +1723,23 @@ class wc_support_system {
 								$notice = $auto_close_notice_text ? esc_html(wp_unslash($auto_close_notice_text)) : $default_text;
 
 			    				echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . $notice . '</textarea>';
-			    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Message to the user informing him that the ticket is going to be closed.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Days after the notice for closing the ticket defintely*/
 			    		echo '<tr class="auto-close-fields">';
-			    			echo '<th scope="row">' . __('Closing delay', 'wss') . '</th>';
+			    			echo '<th scope="row">' . __('Closing delay', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . $auto_close_days . '">';
-			    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wss') . '</p>';
+			    				echo '<p class="description">' . __('Days after the notice for closing the ticket definitely.', 'wc-support-system') . '</p>';
 			    			echo '</td>';
 			    		echo '</tr>';
 
 			    		/*Reopen ticket after a thread is published*/
 			    	echo '</table>';
 			    	echo '<input type="hidden" name="wss-options-hidden" value="1">';
-			    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wss') . '">';
+			    	echo '<input type="submit" class="button button-primary" value="' . __('Save', 'wc-support-system') . '">';
 			    echo '</form>';
 			echo '</div>';
 			echo '<div class="wrap-right">';
