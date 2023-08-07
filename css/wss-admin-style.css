@@ -257,6 +257,10 @@ span.date {
   min-width: 180px;
 }
 
+.wss-options input[type="submit"] {
+    margin-top: 2rem;
+}
+
 .wrap-left {
   float: left;
   width: 70%;
