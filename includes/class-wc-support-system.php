@@ -628,7 +628,7 @@ class wc_support_system {
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
-				<input type="submit" class="send-new-thread button-primary" value="Send" style="margin-top: 1rem;">
+                <input type="submit" class="send-new-thread button-primary" value="<?php esc_attr_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
 			</form>
 			<div class="bootstrap-iso"></div>
 		</div>
