@@ -4,321 +4,243 @@
  * @package wc-support-system-premium/css
  * @since 1.1.0
  */
-
-.wp-list-table.tickets td,
-.wp-list-table.tickets th {
-	vertical-align: middle;
-  color: #666a76;
+ .wp-list-table.tickets td, .wp-list-table.tickets th {
+    vertical-align: middle;
+    color: #666a76;
 }
-
 .wp-list-table.tickets .check-column {
-  width: 3%;
+    width: 3%;
 }
-
 .wp-list-table.tickets .column-id {
-  width: 5%;
+    width: 5%;
 }
-
 .wp-list-table.tickets .column-title {
-  width: 26%;
+    width: 26%;
 }
-
 .wp-list-table.tickets .column-user_id {
-  width: 7%;
+    width: 7%;
 }
-
 .wp-list-table.tickets .column-user_name {
-  width: 10%;
+    width: 10%;
 }
-
 .wp-list-table.tickets .column-user_email {
-  width: 13%;
+    width: 13%;
 }
-
 .wp-list-table.tickets .column-product_id {
-  width: 7%;
+    width: 7%;
 }
-
 .wp-list-table.tickets .column-status {
-  width: 10%;
+    width: 10%;
 }
-
 .wp-list-table.tickets .column-create_time {
-  width: 10%;
+    width: 10%;
 }
-
 .wp-list-table.tickets .column-update_time {
-  width: 10%;
+    width: 10%;
 }
-
 .wp-list-table.tickets .column-delete {
-  width: 2%;
+    width: 2%;
 }
-
 .wp-list-table.tickets .column-product_id img {
-  width: 40px;
-  height: 40px;
+    width: 40px;
+    height: 40px;
 }
-
 .ticket-toggle {
-  cursor: pointer;
+    cursor: pointer;
 }
-
 .ticket-toggle.bold {
-  font-weight: bold;
+    font-weight: bold;
 }
-
 .ticket-toggle:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
-
 .thread-tools {
-	display: none;
+    display: none;
 }
-
 .thread-tools {
-  display: none;
-  width: 100%;
-  text-align: right;
-  margin-bottom: 1rem;
+    display: none;
+    width: 100%;
+    text-align: right;
+    margin-bottom: 1rem;
 }
-
 .thread-tools .button {
-  cursor: pointer;
+    cursor: pointer;
 }
-
 .button.thread-cancel {
-	background: #d9534f;
-	border: 1px solid #d9534f;
-	color: white;
+    background: #d9534f;
+    border: 1px solid #d9534f;
+    color: white;
 }
-
 .single-ticket-content {
-  display: block;
+    display: block;
 }
-
 .thread-tools {
-  display: none;
-  width: 100%;
-  text-align: right;
-  margin: 3rem 0 1rem;
+    display: none;
+    width: 100%;
+    text-align: right;
+    margin: 3rem 0 1rem;
 }
-
 #wss-ticket label {
     font-size: 120%;
     font-weight: bold;
 }
-
 .additional-recipients {
     background-color: white;
     margin-bottom: 1rem;
 }
-
 .tagify.additional-recipients {
     padding: .3rem;
     margin: .5rem 0 2rem;
 }
-
 .single-thread {
-  border: 1px solid #D9D9D9;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin-bottom: 1rem;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
 }
-
 .thread-header {
-  padding: 0.5rem 0.5rem 0.2rem;
-  background: #D9D9D9;
-  position: relative;
+    padding: 0.5rem 0.5rem 0.2rem;
+    background: #D9D9D9;
+    position: relative;
 }
-
 .answer {
-  border: 1px solid #2fbfb0;
+    border: 1px solid #2fbfb0;
 }
-
 .answer .thread-header {
-  background: #2fbfb0;
+    background: #2fbfb0;
 }
-
 .answer .thread-header .right {
-  color: #fff;
+    color: #fff;
 }
-
-.thread-header .left,
-.thread-header .right {
-  float: left;
-  text-transform: capitalize;
-  line-height: 1.2rem;
-  font-weight: bold;
-  color: #666;
+.thread-header .left, .thread-header .right {
+    float: left;
+    text-transform: capitalize;
+    line-height: 1.2rem;
+    font-weight: bold;
+    color: #666;
 }
-
 span.date {
-  font-size: 90%;
-  font-weight: normal;
+    font-size: 90%;
+    font-weight: normal;
 }
-
 .thread-header .left img {
-  border-radius: 50%;
-  margin-right: 1rem;
+    border-radius: 50%;
+    margin-right: 1rem;
 }
-
 .thread-content {
-  padding: 1rem;
-  color: #666a76;
-  font-size: 110%;
-  background: #fff;
+    padding: 1rem;
+    color: #666a76;
+    font-size: 110%;
+    background: #fff;
 }
-
 .thread-content img {
-  /*width: 800px;*/
-  height: auto;
-  max-width: 90%;
-  display: block;
-  margin: 1.5rem auto;
+    /*width: 800px;*/
+    height: auto;
+    max-width: 90%;
+    display: block;
+    margin: 1.5rem auto;
 }
-
 .wss-thread-container {
-	margin-top: 3rem;
+    margin-top: 3rem;
 }
-
-.wss-thread-container iframe,
-.wss-thread-container textarea#wss-thread {
-  height: 300px !important;
+.wss-thread-container iframe, .wss-thread-container textarea#wss-thread {
+    height: 300px !important;
 }
-
 .column-delete img {
-  cursor: pointer;
+    cursor: pointer;
 }
-
 .delete-thread {
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
 }
-
 .label.toggle {
-  cursor: pointer;
-  width: 100%;
-  max-width: 50px;
-  text-align: center;
-  display: block;
-  padding: 0.35rem 0;
-}
-
-.bootstrap-iso.inline {
-  display: inline-block;
-  margin-left: 0.6rem;
-}
-
-.label.premium {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.4rem;
-}
-
-.label.premium a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.label.premium a:hover {
-  color: #0073aa;
-}
-
-.bootstrap-iso .modal-dialog {
-  width: 400px;
-}
-
-#ticket-status-modal {
-  margin-top: 10rem;
-}
-
-.status-selector {
-  font-size: 140%;
-}
-
-.status-selector .label {
-  opacity: 0.3;
-  max-width: 80px;
-  margin: 0 auto; 
-}
-
-.status-selector .label:hover,
-.status-selector .active .label {
-  opacity: 1;
-}
-
-.status-selector div {
-  text-align: center;
-}
-
-.create-support-page,
-.support-email-fields,
-.auto-close-fields,
-.wss-additional-recipients-field {
-  display: none;
-}
-
-.wss-options,
-#wss-support-tickets {
-  margin-top: 2rem;
-}
-
-.wss-options.one-of {
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #ccc;
-}
-
-.wss-options input[type="text"],
-.wss-options select {
-  min-width: 180px;
-}
-
-.wrap-left {
-  float: left;
-  width: 70%;
-}
-
-.wrap-right {
-  float: left;
-  width: 30%;
-  text-align: center;
-  padding-top: 3rem;
-}
-
-.tzCheckBox {
-  margin-right: 6px;
-}
-
-.tzCheckBox.checked {
-  margin-right: 20px !important;
-}
-
-@media only screen and (max-width: 790px) {
-  
-  th.column-id, 
-  td.column-id {
-    display: none !important;
-    padding: 3px 8px 3px 35%;
-  }
-
-  .wrap-left, .wrap-right {
-    float: none;
+    cursor: pointer;
     width: 100%;
-  }
-
+    max-width: 50px;
+    text-align: center;
+    display: block;
+    padding: 0.35rem 0;
 }
-
-
-@media only screen and (max-width: 1200px) {
-  
-  th.column-create_time, 
-  td.column-create_time,
-  th.column-user_email,
-  td.column-user_email {
+.bootstrap-iso.inline {
+    display: inline-block;
+    margin-left: 0.6rem;
+}
+.label.premium {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.4rem;
+}
+.label.premium a {
+    color: inherit;
+    text-decoration: none;
+}
+.label.premium a:hover {
+    color: #0073aa;
+}
+.bootstrap-iso .modal-dialog {
+    width: 400px;
+}
+#ticket-status-modal {
+    margin-top: 10rem;
+}
+.status-selector {
+    font-size: 140%;
+}
+.status-selector .label {
+    opacity: 0.3;
+    max-width: 80px;
+    margin: 0 auto;
+}
+.status-selector .label:hover, .status-selector .active .label {
+    opacity: 1;
+}
+.status-selector div {
+    text-align: center;
+}
+.create-support-page, .support-email-fields, .auto-close-fields, .wss-additional-recipients-field {
     display: none;
-  }
-
 }
+.wss-options, #wss-support-tickets {
+    margin-top: 2rem;
+}
+.wss-options.one-of {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #ccc;
+}
+.wss-options input[type="text"], .wss-options select {
+    min-width: 180px;
+}
+.wrap-left {
+    float: left;
+    width: 70%;
+}
+.wrap-right {
+    float: left;
+    width: 30%;
+    text-align: center;
+    padding-top: 3rem;
+}
+.tzCheckBox {
+    margin-right: 6px;
+}
+.tzCheckBox.checked {
+    margin-right: 20px !important;
+}
+@media only screen and (max-width: 790px) {
+    th.column-id, td.column-id {
+        display: none !important;
+        padding: 3px 8px 3px 35%;
+    }
+    .wrap-left, .wrap-right {
+        float: none;
+        width: 100%;
+    }
+}
+@media only screen and (max-width: 1200px) {
+    th.column-create_time, td.column-create_time, th.column-user_email, td.column-user_email {
+        display: none;
+    }
+}
+
