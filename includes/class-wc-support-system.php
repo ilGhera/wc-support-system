@@ -1392,7 +1392,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('User closing tickets', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="">';
-			    					echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="1">';
+			    					echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="0" disabled="disabled">';
 				    				echo  __('Allow user to close tickets.', 'wc-support-system');
 			    				echo '</label>';
 								$this->go_premium();
