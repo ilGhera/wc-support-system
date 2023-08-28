@@ -518,7 +518,7 @@ class wc_support_system {
 					if(0 == $this->get_ticket($ticket->id, 'notified')) {
 
 						/*Send user notification*/
-						$this->support_notification($ticket->id, null, $auto_close_notice_text, $ticket->user_email, true);
+						$this->support_notification($ticket->id, $auto_close_notice_text, null, $ticket->user_email, true);
 
 					}
 
@@ -1012,12 +1012,12 @@ class wc_support_system {
 	/**
 	 * New thread notification used both to user and admin
 	 * @param  int 	  $ticket_id 	ticket id of the new thread
-	 * @param  string $user_name 	if not specified, the support email name is used
 	 * @param  string $content   	thread content
+	 * @param  string $user_name 	if not specified, the support email name is used
 	 * @param  string $to 		 	if not specified, the support email is used 
 	 * @param  bool   $notification is it a notification before closing the ticket?
 	 */
-	public function support_notification($ticket_id, $user_name='', $content, $to='', $notification=false) {
+	public function support_notification($ticket_id, $content, $user_name='', $to='', $notification=false) {
 
         if ( ! $ticket_id ) {
             return;
@@ -1096,16 +1096,16 @@ class wc_support_system {
 
 		if(user_can($user_id, 'administrator')) {
 			if($user_notification) {
-				$this->support_notification($ticket_id, null, $content, $recipients);	
+				$this->support_notification($ticket_id,$content, null, $recipients);	
 			}
 		} else {
 			if($admin_notification) {
-				$this->support_notification($ticket_id, $user_name, $content);					
+				$this->support_notification($ticket_id, $content, $user_name);					
 			}
 
             /* Send even user ticket update to the other recipients */
             if($user_notification && $recipients) {
-				$this->support_notification($ticket_id, $user_name, $content, $recipients);
+				$this->support_notification($ticket_id, $content, $user_name, $recipients);
             }
 		}
 		add_action('wp_footer', array($this, 'wss_avoid_resend_footer_script'));
