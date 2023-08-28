@@ -419,9 +419,7 @@ class wc_support_system {
                 <input type="hidden" class="close-ticket" name="close-ticket" value="0">
                 <input type="submit" class="send-new-thread button-primary" value="<?php esc_attr_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
                 <?php
-                $user_closing_tickets = get_option( 'wss-user-closing-tickets' );
-
-                if ( $is_admin || $user_closing_tickets ) {
+                if ( $is_admin ) {
                     echo '<input type="submit" class="send-new-thread-and-close button green" value="' . esc_attr__( 'Send and Close', 'wc-support-system' ) . '" style="margin-top: 1rem;">';
                 }
                 ?>
@@ -937,7 +935,6 @@ class wc_support_system {
 
 			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $recipients, $ticket_status);
 
-			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $customer_email, $ticket_status);
 		}
 	}
 
@@ -1395,9 +1392,10 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('User closing tickets', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				echo '<label for="">';
-			    					echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="1"' . ($user_closing_tickets == 1 ? ' checked="checked"' : '') . '>';
+			    					echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="1">';
 				    				echo  __('Allow user to close tickets.', 'wc-support-system');
 			    				echo '</label>';
+								$this->go_premium();
 			    			echo '</td>';
 			    		echo '</tr>';
 
