@@ -45,7 +45,6 @@ function wss_activation() {
 
 
 		/*Files required*/
-		include( plugin_dir_path( __FILE__ ) . 'includes/ilghera-notice/class-ilghera-notice.php');
 		include( plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php');
 		include( plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php');
 
