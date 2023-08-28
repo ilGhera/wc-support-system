@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Support System\n"
-"POT-Creation-Date: 2022-05-10 18:39+0200\n"
+"POT-Creation-Date: 2023-08-07 14:55+0200\n"
 "PO-Revision-Date: 2018-03-27 11:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: ilGhera\n"
@@ -11,10 +11,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;esc_html__;esc_html_e\n"
+"X-Poedit-KeywordsList: __;esc_html__;esc_html_e;_e;esc_attr__;esc_attr_e\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: js\n"
+"X-Poedit-SearchPathExcluded-1: css\n"
+"X-Poedit-SearchPathExcluded-2: images\n"
 
 #: includes/class-wc-support-system.php:552
 msgid "Please, choose a product for your support request."
@@ -416,25 +419,47 @@ msgstr ""
 msgid "Delete Permanently"
 msgstr ""
 
-#: plugin-update-checker/Puc/v4p11/Plugin/Ui.php:54
+#: includes/ilghera-notice/class-ilghera-notice.php:66
+msgid "Renew now"
+msgstr ""
+
+#: includes/ilghera-notice/class-ilghera-notice.php:66
+msgid "Get a license"
+msgstr ""
+
+#: includes/ilghera-notice/class-ilghera-notice.php:107
+msgid "Your license is <u>expired</u> and you're unable to receive updates."
+msgstr ""
+
+#: includes/ilghera-notice/class-ilghera-notice.php:123
+msgid ""
+"It seems like your license is <u>not valid</u> and you're unable to receive "
+"updates."
+msgstr ""
+
+#: includes/ilghera-notice/class-ilghera-notice.php:139
+msgid "You have not set up a license key and you cannot receive updates."
+msgstr ""
+
+#: plugin-update-checker/Puc/v5p1/Plugin/Ui.php:56
 msgid "View details"
 msgstr ""
 
-#: plugin-update-checker/Puc/v4p11/Plugin/Ui.php:77
+#: plugin-update-checker/Puc/v5p1/Plugin/Ui.php:79
 #, php-format
 msgid "More information about %s"
 msgstr ""
 
-#: plugin-update-checker/Puc/v4p11/Plugin/Ui.php:128
+#: plugin-update-checker/Puc/v5p1/Plugin/Ui.php:130
 msgid "Check for updates"
 msgstr ""
 
-#: plugin-update-checker/Puc/v4p11/Plugin/Ui.php:224
+#: plugin-update-checker/Puc/v5p1/Plugin/Ui.php:227
 #, php-format
 msgid "Unknown update checker status \"%s\""
 msgstr ""
 
-#: plugin-update-checker/Puc/v4p11/Vcs/PluginUpdateChecker.php:100
+#: plugin-update-checker/Puc/v5p1/Vcs/PluginUpdateChecker.php:98
 msgid "There is no changelog available."
 msgstr ""
 

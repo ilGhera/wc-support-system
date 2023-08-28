@@ -207,7 +207,6 @@ var modal_change_ticket_status = function(){
 	})
 }
 
-
 jQuery(document).ready(function($){
 	
 	/*New ticket form*/
@@ -223,7 +222,7 @@ jQuery(document).ready(function($){
 		$('.new-ticket').show();
 	})
 
-	/*New thread form*/
+	/*New thread*/
 	$('.new-thread').on('click', function(){
 		var ticket_id = $('.opened .ticket-toggle').data('ticket-id');
 		$('.wss-thread-container input.ticket-id').attr('value', ticket_id);
@@ -235,6 +234,11 @@ jQuery(document).ready(function($){
 		$('.wss-thread-container').show();
 		$(this).hide();
 		$('.thread-cancel').show();
+	})	
+
+	/*New thread and close ticket*/
+	$('.send-new-thread-and-close').on('click', function(){
+		$('.wss-thread-container input.close-ticket').attr('value', '1');
 	})	
 
 	$('.thread-cancel').on('click', function(){

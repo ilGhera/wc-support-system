@@ -46,6 +46,7 @@
 .tagify.additional-recipients {
     padding: .3rem;
     margin: .5rem 0 3rem;
+    width: 100%;
 }
 .create-new-ticket input[type="text"], #wes-support-access input[type="text"], #wes-support-access input[type="email"] {
     display: block;

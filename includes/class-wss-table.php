@@ -18,8 +18,8 @@ class wss_table extends WP_List_Table {
 
 	public function __construct() {
 		parent::__construct( [
-			'singular' => __( 'Ticket', 'wss' ), //singular name of the listed records
-			'plural'   => __( 'Tickets', 'wss' ), //plural name of the listed records
+			'singular' => __( 'Ticket', 'wc-support-system' ), //singular name of the listed records
+			'plural'   => __( 'Tickets', 'wc-support-system' ), //plural name of the listed records
 			'ajax'     => false //should this table support ajax?
 
 		] );
@@ -101,7 +101,7 @@ class wss_table extends WP_List_Table {
 	 * @return string
 	 */
 	public function no_items() {
-		echo __( 'It seems like therea are no support tickets opened at the moment.', 'wss' );
+		echo __( 'It seems like therea are no support tickets opened at the moment.', 'wc-support-system' );
 	}
 
 
@@ -128,7 +128,7 @@ class wss_table extends WP_List_Table {
 			
 			case 'product_id':
                 $title     = get_the_title( $item['product_id'] );
-                $title     = $title ? $title : __( 'This product doesn\'t exist anymore', 'wss' );
+                $title     = $title ? $title : __( 'This product doesn\'t exist anymore', 'wc-support-system' );
 				$thumbnail = get_the_post_thumbnail( $item['product_id'], array( 40,40 ), array( 'title' => $title ) );
 				
 				if($thumbnail) {
@@ -173,15 +173,15 @@ class wss_table extends WP_List_Table {
 	function get_columns() {
 		$columns = array(
 			'cb' 		  => '<input type="checkbox" />',
-			'id' 		  => __('Id', 'wss'),
-			'title' 	  => __('Title', 'wss'),
-			'user_id' 	  => __('User id', 'wss'),
-			'user_name'   => __('User name', 'wss'),
-			'user_email'  => __('User email', 'wss'),
-			'product_id'  => __('Product', 'wss'),
-			'status'	  => __('Status', 'wss'),
-			'create_time' => __('Create time', 'wss'),
-			'update_time' => __('Update time', 'wss'),
+			'id' 		  => __('Id', 'wc-support-system'),
+			'title' 	  => __('Title', 'wc-support-system'),
+			'user_id' 	  => __('User id', 'wc-support-system'),
+			'user_name'   => __('User name', 'wc-support-system'),
+			'user_email'  => __('User email', 'wc-support-system'),
+			'product_id'  => __('Product', 'wc-support-system'),
+			'status'	  => __('Status', 'wc-support-system'),
+			'create_time' => __('Create time', 'wc-support-system'),
+			'update_time' => __('Update time', 'wc-support-system'),
 			'delete'	  => ''
 		);
 
@@ -216,7 +216,7 @@ class wss_table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => __('Delete Permanently', 'wss')
+			'delete' => __('Delete Permanently', 'wc-support-system')
 		);
 
 		return $actions;

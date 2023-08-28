@@ -71,6 +71,11 @@
     border: 1px solid #d9534f;
     color: white;
 }
+.button.green {
+    background: #5cb85c;
+    border: 1px solid #5cb85c;
+    color: white;
+}
 .single-ticket-content {
     display: block;
 }
@@ -211,6 +216,9 @@ span.date {
 }
 .wss-options input[type="text"], .wss-options select {
     min-width: 180px;
+}
+.wss-options input[type="submit"] {
+    margin-top: 2rem;
 }
 .wrap-left {
     float: left;
