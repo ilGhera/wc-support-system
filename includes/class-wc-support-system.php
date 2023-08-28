@@ -619,8 +619,12 @@ class wc_support_system {
 
 	/**
 	 * New thread form
+     *
+     * @param bool $is_admin admin area with true
+     *
+     * @return void
 	 */
-	public function create_new_thread() {
+	public function create_new_thread( $is_admin = false ) {
 		?>
 		<div class="wss-thread-container" style="display: none;">
 			<form method="POST" action="">
@@ -628,7 +632,13 @@ class wc_support_system {
 				<input type="hidden" class="ticket-id" name="ticket-id" value="">
 				<input type="hidden" class="customer-email" name="customer-email" value="">
 				<input type="hidden" name="thread-sent" value="1">
+                <input type="hidden" class="close-ticket" name="close-ticket" value="0">
                 <input type="submit" class="send-new-thread button-primary" value="<?php esc_attr_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
+                <?php
+                if ( $is_admin ) {
+                    echo '<input type="submit" class="send-new-thread-and-close button green" value="' . esc_attr__( 'Send and Close', 'wc-support-system' ) . '" style="margin-top: 1rem;">';
+                }
+                ?>
 			</form>
 			<div class="bootstrap-iso"></div>
 		</div>
@@ -1191,6 +1201,7 @@ class wc_support_system {
 
 			$ticket_id      = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
+            $close_ticket   = isset($_POST['close-ticket']) ? sanitize_text_field($_POST['close-ticket']) : '';
             $recipients     = $this->get_ticket_recipients( $ticket_id );
 
             if ( $recipients ) {
@@ -1211,6 +1222,12 @@ class wc_support_system {
 			$user = $this->user_data();
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
+
+            /* Close the ticket if set by the admin */
+            if ( $close_ticket ) {
+                $ticket_status = 3;
+            }
+
 			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $recipients, $ticket_status);
 
 			if(user_can($user['id'], 'administrator') && get_option('wss-reopen-ticket')) {
@@ -1351,7 +1368,7 @@ class wc_support_system {
 				$this->tickets_obj->prepare_items();
                 $this->tickets_obj->search_box(__( 'Search', 'wc-support-system' ), 'wss-search');
 				$this->tickets_obj->display(); 
-				$this->create_new_thread();
+				$this->create_new_thread( true );
 				?>
 			</form>
 			<div class="single-ticket-content"></div>
