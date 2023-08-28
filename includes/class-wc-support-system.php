@@ -636,7 +636,9 @@ class wc_support_system {
                 <input type="hidden" class="close-ticket" name="close-ticket" value="0">
                 <input type="submit" class="send-new-thread button-primary" value="<?php esc_attr_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
                 <?php
-                if ( $is_admin ) {
+                $user_closing_tickets = get_option( 'wss-user-closing-tickets' );
+
+                if ( $is_admin || $user_closing_tickets ) {
                     echo '<input type="submit" class="send-new-thread-and-close button green" value="' . esc_attr__( 'Send and Close', 'wc-support-system' ) . '" style="margin-top: 1rem;">';
                 }
                 ?>
@@ -1508,6 +1510,7 @@ class wc_support_system {
 		$support_email			= get_option('wss-support-email');
 		$support_email_name		= get_option('wss-support-email-name');
 		$support_email_footer   = get_option('wss-support-email-footer');
+		$user_closing_tickets   = get_option('wss-user-closing-tickets');
 		$auto_close_tickets		= get_option('wss-auto-close-tickets');		
 		$auto_close_days_notice = get_option('wss-auto-close-days-notice') ? get_option('wss-auto-close-days-notice') : 7;
 		$auto_close_notice_text = get_option('wss-auto-close-notice-text');
@@ -1705,6 +1708,17 @@ class wc_support_system {
 			    			echo '</td>';
 			    		echo '</tr>';
 
+			    		/*Let user close tickets*/
+			    		echo '<tr class="user-closing-tickets-field">';
+			    			echo '<th scope="row">' . __('User closing tickets', 'wc-support-system') . '</th>';
+			    			echo '<td>';
+			    				echo '<label for="">';
+			    					echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="1"' . ($user_closing_tickets == 1 ? ' checked="checked"' : '') . '>';
+				    				echo  __('Allow user to close tickets.', 'wc-support-system');
+			    				echo '</label>';
+			    			echo '</td>';
+			    		echo '</tr>';
+
 			    		/*Close not updated tickets after a specified period*/
 			    		echo '<tr class="auto-close-tickets-field">';
 			    			echo '<th scope="row">' . __('Auto close tickets', 'wc-support-system') . '</th>';
@@ -1839,6 +1853,10 @@ class wc_support_system {
 			/*Reopen ticket*/
 			$reopen_ticket = isset($_POST['reopen-ticket']) ? sanitize_text_field($_POST['reopen-ticket']) : 0;
 			update_option('wss-reopen-ticket', $reopen_ticket);
+
+			/*User closing tickets*/
+			$user_closing_ticket = isset($_POST['user-closing-tickets']) ? sanitize_text_field($_POST['user-closing-tickets']) : 0;
+			update_option('wss-user-closing-tickets', $user_closing_ticket);
 
 			/*Auto close tickets*/
 			$auto_close_tickets		= isset($_POST['auto-close-tickets']) ? sanitize_text_field($_POST['auto-close-tickets']) : 0;		
