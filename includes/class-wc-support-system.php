@@ -175,7 +175,8 @@ class wc_support_system {
 			wp_enqueue_script('tagify-script', plugin_dir_url(__DIR__) . 'js/tagify/dist/jQuery.tagify.min.js', array('jquery'));			
 
             /* Pass user email to the script to be excluded from the additional recipients field */
-		    $user = get_currentuserinfo();
+		    $user = wp_get_current_user();
+
             wp_localize_script( 'wss-script', 'data', array( 'userEmail' => $user->user_email ) );
 
 			/*css*/
@@ -203,7 +204,7 @@ class wc_support_system {
 			wp_enqueue_script('tagify-script', plugin_dir_url(__DIR__) . 'js/tagify/dist/jQuery.tagify.min.js', array('jquery'));			
 
             /* Pass user email to the script to be excluded from the additional recipients field */
-		    $user_data = get_currentuserinfo();
+		    $user_data = wp_get_current_user();
             wp_localize_script( 'wss-script', 'data', array( 'userEmail' => $user_data->user_email ) );
 
 			/*css*/
