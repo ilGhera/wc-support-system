@@ -96,6 +96,7 @@
 .tagify.additional-recipients {
     padding: .3rem;
     margin: .5rem 0 2rem;
+    width: 100%;
 }
 .single-thread {
     border: 1px solid #D9D9D9;
@@ -150,6 +151,12 @@ span.date {
 }
 .wss-thread-container iframe, .wss-thread-container textarea#wss-thread {
     height: 300px !important;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #666 !important;
+    background-color: #fff;
+    line-height: 1.7em;
+    font-weight: 500;
 }
 .column-delete img {
     cursor: pointer;

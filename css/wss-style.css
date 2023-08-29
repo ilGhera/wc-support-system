@@ -77,6 +77,12 @@
 }
 .wss-ticket-container iframe, .wss-ticket-container textarea#wss-ticket, .wss-thread-container iframe, .wss-thread-container textarea#wss-thread {
     height: 300px !important;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #666 !important;
+    background-color: #fff;
+    line-height: 1.7em;
+    font-weight: 500;
 }
 .wss-ticket-container form input[type="text"] {
     background: #fff;
