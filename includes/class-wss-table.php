@@ -4,7 +4,7 @@
  *
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.1.1
+ * @since 1.2.0
  */
 
 /*The main calss is required*/
