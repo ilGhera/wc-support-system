@@ -112,7 +112,6 @@ class wc_support_system {
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_style( 'tagify-style', plugin_dir_url( __DIR__ ) . 'js/tagify/dist/tagify.css' );
 			wp_enqueue_style( 'chosen-style', plugin_dir_url( __DIR__ ) . '/vendor/harvesthq/chosen/chosen.min.css' );
-
 		}
 	}
 
