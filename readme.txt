@@ -53,6 +53,21 @@ https://youtu.be/XUtmBvoPwkI
 
 == Changelog ==
 
+= 1.2.0 =
+Release Date: 29 August 2023
+
+* Enhancement: Send the last thread and close the ticket in one shot 
+* Enhancement: (Premium) New option to give the ability to close tickets to the user 
+* Enhancement: (Premium) Admin notice for premium key
+* Enhancement: Better user interface 
+* Enhancement: WP coding standards 
+* Update: (Premium) Plugin Update Checker 
+* Update: Tagify 
+* Update: Translations 
+* Bug Fix: PHP Notice on declaring a function and its properties 
+* Bug Fix: Function get_currentuserinfo() replaced because deprecated 
+
+
 = 1.1.2 =
 Release Date: 10 November 2022
 
