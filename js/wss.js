@@ -207,7 +207,38 @@ var modal_change_ticket_status = function(){
 	})
 }
 
+/**
+ * Fires Chosen
+ *
+ * @param  {bool} destroy method distroy
+ *
+ * @return void
+ */
+var chosen = function(destroy = false) {
+
+    jQuery(function($){
+
+        $('.wss-select').chosen({
+    
+            disable_search_threshold: 10,
+            width: '200px'
+        
+        });
+
+        $('.wss-select-large').chosen({
+    
+            disable_search_threshold: 10,
+            width: '290px'
+        
+        });
+
+    })
+
+}
+
 jQuery(document).ready(function($){
+
+    chosen();
 	
 	/*New ticket form*/
 	$('.new-ticket').on('click', function(){

@@ -97,6 +97,8 @@ class wc_support_system {
 			wp_enqueue_script('wss-script', plugin_dir_url(__DIR__) . 'js/wss.js', array('jquery'));			
 	        wp_enqueue_script('wp-color-picker', array('jquery'), '', true ); 
 			wp_enqueue_script('tagify-script', plugin_dir_url(__DIR__) . 'js/tagify/dist/jQuery.tagify.min.js', array('jquery'));			
+			wp_enqueue_script('chosen-script', plugin_dir_url(__DIR__) . '/vendor/harvesthq/chosen/chosen.jquery.min.js', array('jquery'));			
+
 
             /* Pass user email to the script to be excluded from the additional recipients field */
 		    $user = wp_get_current_user();
@@ -108,6 +110,7 @@ class wc_support_system {
 		    wp_enqueue_style('wss-admin-style', plugin_dir_url(__DIR__) . 'css/wss-admin-style.css');    
             wp_enqueue_style('wp-color-picker' );          
 		    wp_enqueue_style('tagify-style', plugin_dir_url(__DIR__) . 'js/tagify/dist/tagify.css');    
+		    wp_enqueue_style('chosen-style', plugin_dir_url(__DIR__) . '/vendor/harvesthq/chosen/chosen.min.css');    
 
 		} 
 	}
@@ -1222,7 +1225,7 @@ class wc_support_system {
 			    			echo '<th scope="row">' . __('Support page', 'wc-support-system') . '</th>';
 			    			echo '<td>';
 			    				$pages = get_posts('post_type=page&posts_per_page=-1');
-			    				echo '<select id="support-page" name="support-page">';
+			    				echo '<select id="support-page" class="wss-select" name="support-page">';
 			    					echo '<option>-</option>';
 			    					foreach ($pages as $page) {
 			    						echo '<option name="' . $page->post_name . '" class="' . $page->post_name . '"';
@@ -1248,7 +1251,7 @@ class wc_support_system {
 			    		echo '<tr>';
 			    			echo '<th scope="row">' . __('Page layout', 'wc-support-system') . '</th>';
 			    			echo '<td>';
-			    				echo '<select id="page-layout" name="page-layout">';
+			    				echo '<select id="page-layout" class="wss-select" name="page-layout">';
 			    					echo '<option name="after" value="after"' . ($page_layout == 'after' ? ' selected="selected"' : '') . '>' . __('After', 'wc-support-system') . '</option>';
 			    					echo '<option name="before" value="before"' . ($page_layout == 'before' ? ' selected="selected"' : '') . '>' . __('Before', 'wc-support-system') . '</option>';
 			    				echo '</select>';
