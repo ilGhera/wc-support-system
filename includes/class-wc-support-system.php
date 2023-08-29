@@ -912,6 +912,7 @@ class wc_support_system {
 
 			$ticket_id      = isset($_POST['ticket-id']) ? sanitize_text_field($_POST['ticket-id']) : '';
 			$customer_email = isset($_POST['customer-email']) ? sanitize_email($_POST['customer-email']) : '';
+            $close_ticket   = isset($_POST['close-ticket']) ? sanitize_text_field($_POST['close-ticket']) : '';
             $recipients     = null; 
 
             if ( $recipients ) {
@@ -933,12 +934,17 @@ class wc_support_system {
 
 			$ticket_status = user_can($user['id'], 'administrator') ? 2 : 1;
 
+            /* Close the ticket if set by the admin */
+            if ( $close_ticket ) {
+                $ticket_status = 3;
+            }
+
 			$this->save_new_ticket_thread($ticket_id, $content, $date, $user['id'], $user['name'], $user['email'], $recipients, $ticket_status);
 
 		}
 	}
-
 	
+
 	/**
 	 * Insert a new ticket into the db
 	 */
