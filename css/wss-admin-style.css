@@ -1,8 +1,10 @@
 /**
  * Admin style
+ *
  * @author ilGhera
  * @package wc-support-system-premium/css
- * @since 1.2.0
+ *
+ * @since 1.2.1
  */
  .wp-list-table.tickets td, .wp-list-table.tickets th {
     vertical-align: middle;
