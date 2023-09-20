@@ -150,8 +150,9 @@ span.date {
     margin-top: 3rem;
 }
 .wss-thread-container iframe, .wss-thread-container textarea#wss-thread {
+    width: 98% !important;
     height: 300px !important;
-    padding: 10px 20px;
+    padding: 1%;
     font-size: 14px;
     color: #666 !important;
     background-color: #fff;

@@ -125,6 +125,7 @@ class wc_support_system {
 			/*js*/
 			wp_enqueue_script( 'wss-script', plugin_dir_url( __DIR__ ) . 'js/wss.js', array( 'jquery' ) );
 			wp_enqueue_script( 'tagify-script', plugin_dir_url( __DIR__ ) . 'js/tagify/dist/jQuery.tagify.min.js', array( 'jquery' ) );
+			wp_enqueue_script( 'chosen-script', plugin_dir_url( __DIR__ ) . '/vendor/harvesthq/chosen/chosen.jquery.min.js', array( 'jquery' ) );
 
 			/* Pass user email to the script to be excluded from the additional recipients field */
 			$user_data = wp_get_current_user();
@@ -136,6 +137,7 @@ class wc_support_system {
 			wp_enqueue_style( 'wss-style', plugin_dir_url( __DIR__ ) . 'css/wss-style.css' );
 			wp_enqueue_style( 'bootstrap-iso', plugin_dir_url( __DIR__ ) . 'css/bootstrap-iso.css' );
 			wp_enqueue_style( 'tagify-style', plugin_dir_url( __DIR__ ) . 'js/tagify/dist/tagify.css' );
+			wp_enqueue_style( 'chosen-style', plugin_dir_url( __DIR__ ) . '/vendor/harvesthq/chosen/chosen.min.css' );
 		}
 	}
 
