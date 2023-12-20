@@ -410,9 +410,10 @@ class wc_support_system {
 
 		} elseif ( $order_id && $user_email ) {
 
+            $order = wc_get_order( $order_id );
+
 			/*User not logged in*/
-			if ( get_post_meta( $order_id, '_billing_email', true ) == $user_email ) {
-				$order = new WC_Order( $order_id );
+			if ( $order->get_meta( '_billing_email' ) === $user_email ) {
 				$items = $order->get_items();
 				foreach ( $items as $item ) {
 					$item_data = $item->get_data();
