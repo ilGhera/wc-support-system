@@ -59,10 +59,15 @@ function wss_premium_activation() {
 		/*Internalization*/
 		load_plugin_textdomain( 'wc-support-system', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
+		/*Define constants*/
+		define( 'WSS_DIR', plugin_dir_path( __FILE__ ) );
+		define( 'WSS_INCLUDES', WSS_DIR . 'includes/' );
+		define( 'WSS_VERSION', '1.0.4' );
+
 		/*Files required*/
-		include plugin_dir_path( __FILE__ ) . 'includes/ilghera-notice/class-ilghera-notice.php';
-		include plugin_dir_path( __FILE__ ) . 'includes/class-wc-support-system.php';
-		include plugin_dir_path( __FILE__ ) . 'includes/class-wss-table.php';
+		require WSS_INCLUDES . 'includes/ilghera-notice/class-ilghera-notice.php';
+		require WSS_INCLUDES . 'includes/class-wc-support-system.php';
+		require WSS_INCLUDES . 'includes/class-wss-table.php';
 
 		wc_support_system::wss_tables();
 
