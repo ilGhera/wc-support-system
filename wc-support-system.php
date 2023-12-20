@@ -11,8 +11,9 @@
  * WC tested up to: 7
  * Text Domain: wc-support-system
  * Domain Path: /languages
+ *
+ * @package wc-support-system-premium
  */
-
 
 /*Exit if accessed directly*/
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,31 +21,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-/*
-Update database version*/
-// update_option('wss-db-version', '1.0.2');
-
-
-/*Admin notice for WooCommerce not installed*/
+/**
+ * Admin notice for WooCommerce not installed
+ *
+ * @return void
+ */
 function wss_wc_not_installed() {
 	echo '<div class="notice notice-error is-dismissible">';
-		echo '<p>' . __( '<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wc-support-system' ) . '</p>';
+		echo '<p>';
+		echo wp_kses_post( __( '<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wc-support-system' ) );
+		echo '</p>';
 	echo '</div>';
 }
 
 
-/*Activation*/
+/**
+ * Plutin activation
+ *
+ * @return void
+ */
 function wss_premium_activation() {
 
 	/*Deactivate the free version if present*/
 	if ( function_exists( 'wss_activation' ) ) {
 		deactivate_plugins( 'wc-support-system/wc-support-system.php' );
 		remove_action( 'plugins_loaded', 'wss_activation' );
-		wp_redirect( admin_url( 'plugins.php?plugin_status=all&paged=1&s' ) );
+		wp_safe_redirect( admin_url( 'plugins.php?plugin_status=all&paged=1&s' ) );
 	}
 
 	/*WooCommerce must be installed*/
-	if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+	if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
 
 		add_action( 'admin_notices', 'wss_wc_not_installed' );
 
@@ -62,10 +68,14 @@ function wss_premium_activation() {
 
 		/*Cron*/
 		if ( ! wp_next_scheduled( 'wss_cron_tickets_action' ) ) {
-			wp_schedule_event( time(), 'daily', 'wss_cron_tickets_action' );// temp
+			wp_schedule_event( time(), 'daily', 'wss_cron_tickets_action' );
 		}
 
-		/*Deactivation*/
+		/**
+		 * Deactivation
+		 *
+		 * @return void
+		 */
 		function wss_deactivation() {
 			$timestamp = wp_next_scheduled( 'wss_cron_tickets_action' );
 			wp_unschedule_event( $timestamp, 'wss_cron_tickets_action' );
@@ -92,6 +102,8 @@ add_action(
 
 /**
  * Update checker
+ *
+ * @return void
  */
 require plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
@@ -102,19 +114,33 @@ $wss_update_checker = PucFactory::buildUpdateChecker(
 	'wc-support-system-premium'
 );
 
+
 $wss_update_checker->addQueryArgFilter( 'wss_secure_update_check' );
-function wss_secure_update_check( $queryArgs ) {
+
+/**
+ * PUC Secure update check
+ *
+ * @param array $query_args the parameters.
+ *
+ * @return array
+ */
+function wss_secure_update_check( $query_args ) {
 	$key = base64_encode( get_option( 'wss-premium-key' ) );
 
 	if ( $key ) {
-		$queryArgs['premium-key'] = $key;
+		$query_args['premium-key'] = $key;
 	}
-	return $queryArgs;
+	return $query_args;
 }
 
 
 /**
  * Update message
+ *
+ * @param array  $plugin_data the plugin metadata.
+ * @param object $response    metadata about the available plugin update.
+ *
+ * @return void
  */
 function wss_update_message( $plugin_data, $response ) {
 
@@ -136,11 +162,21 @@ function wss_update_message( $plugin_data, $response ) {
 
 		if ( $limit < $now ) {
 			$message = 'It seems like your <strong>Premium Key</strong> is expired. Please, click <a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank">here</a> for prices and details.';
-		} elseif ( $decoded_key[2] != 3292 ) {
+		} elseif ( 3292 !== intval( $decoded_key[2] ) ) {
 			$message = 'It seems like your <strong>Premium Key</strong> is not valid. Please, click <a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank">here</a> for prices and details.';
 		}
 	}
-	echo $message ? '<br><span class="wss-alert">' . $message . '</span>' : '';
+
+	$allowed = array(
+		'b' => array(),
+		'a' => array(
+			'href'   => array(),
+			'target' => array(),
+		),
+	);
+
+	echo $message ? '<br><span class="wss-alert">' . wp_kses( $message, $allowed ) . '</span>' : '';
 
 }
 add_action( 'in_plugin_update_message-wc-support-system-premium/wc-support-system.php', 'wss_update_message', 10, 2 );
+
