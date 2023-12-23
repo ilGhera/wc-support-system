@@ -61,13 +61,14 @@ function wss_premium_activation() {
 
 		/*Define constants*/
 		define( 'WSS_DIR', plugin_dir_path( __FILE__ ) );
+		define( 'WSS_URI', plugin_dir_url( __FILE__ ) );
 		define( 'WSS_INCLUDES', WSS_DIR . 'includes/' );
 		define( 'WSS_VERSION', '1.0.4' );
 
 		/*Files required*/
-		require WSS_INCLUDES . 'includes/ilghera-notice/class-ilghera-notice.php';
-		require WSS_INCLUDES . 'includes/class-wc-support-system.php';
-		require WSS_INCLUDES . 'includes/class-wss-table.php';
+		require WSS_INCLUDES . 'ilghera-notice/class-ilghera-notice.php';
+		require WSS_INCLUDES . 'class-wc-support-system.php';
+		require WSS_INCLUDES . 'class-wss-table.php';
 
 		wc_support_system::wss_tables();
 
