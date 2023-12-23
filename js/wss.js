@@ -40,6 +40,7 @@ var update_additional_recipients = function(ticket_id, recipients) {
 
         var data = {
             'action': 'update-additional-recipients',
+            'wss-update-additional-recipients-nonce': wssData.updateAdditionalRecipientsNonce,
             'ticket-id': ticket_id,
             'recipients': recipients
         }
@@ -77,6 +78,7 @@ var get_ticket_content = function() {
 
 			var data = {
 				'action': 'get_ticket_content',
+                'wss-get-ticket-nonce': wssData.getTicketNonce, 
 				'ticket_id': ticket_id
 			}
 			$.post(ajaxurl, data, function(response){
@@ -131,7 +133,7 @@ var auto_open_ticket = function(ticket_id){
 var avoid_resend = function(){
 	jQuery(function($){
 		setTimeout(function(){
-		    var url = window.location.href + '?sent=1';
+		    var url = window.location.href + '?sent=1&wss-avoid-resend=' + wssData.avoidResendNonce;
 		    window.history.pushState({}, '', url);
 		}, 1000);
 	})
@@ -149,6 +151,7 @@ var delete_single_ticket = function(alert_message){
 				var ticket_id = $(this).data('ticket-id');
 				var data = {
 					'action': 'delete-ticket',
+                    'wss-delete-single-ticket-nonce': wssData.deleteSingleTicketNonce,
 					'ticket_id': ticket_id
 				}
 				$.post(ajaxurl, data, function(response){
@@ -171,6 +174,7 @@ var delete_single_thread = function(alert_message){
 				var thread_id = $(this).data('thread-id');
 				var data = {
 					'action': 'delete-thread',
+                    'wss-delete-single-thread-nonce': wssData.deleteSingleThreadNonce,
 					'thread_id': thread_id
 				}
 				$.post(ajaxurl, data, function(response){
@@ -194,6 +198,7 @@ var change_ticket_status = function(ticket_id, update_time){
 
 			var data = {
 				'action': 'change-ticket-status',
+                'wss-change-ticket-status-nonce': wssData.changeTicketStatusNonce,
 				'ticket_id': ticket_id,
 				'update_time': update_time,
 				'new_status': status
@@ -396,7 +401,7 @@ jQuery(document).ready(function($){
     /*Use tagify plugin with the additional recipients field*/
     $('[name=additional-recipients]').tagify({
         originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-        blacklist: [data.userEmail],
+        blacklist: [wssData.userEmail],
         validate: function(tag){
             value = tag.value;
             
