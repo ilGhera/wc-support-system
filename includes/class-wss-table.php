@@ -151,7 +151,7 @@ class wss_table extends WP_List_Table {
 				break;
 
 			case 'status':
-				return wc_support_system::get_ticket_status_label( $item['status'] );
+				return WC_Support_System::get_ticket_status_label( $item['status'] );
 				break;
 
 			case 'delete':
@@ -242,7 +242,7 @@ class wss_table extends WP_List_Table {
 			$delete_ids = esc_sql( $_POST['delete'] );
 
 			foreach ( $delete_ids as $id ) {
-				wc_support_system::delete_single_ticket( $id );
+				WC_Support_System::delete_single_ticket( $id );
 			}
 		}
 	}
