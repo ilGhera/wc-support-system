@@ -79,6 +79,7 @@ class WC_Support_System {
 		add_shortcode( 'support-tickets-table', array( $this, 'support_tickets_table' ) );
 
 		add_filter( 'the_content', array( $this, 'page_class_instance' ), 999 );
+		add_filter( 'set-screen-option', array( $this, 'set_screen' ), 10, 3 );
 		add_filter( 'parse_query', array( $this, 'filter_media_files' ) );
 
 	}
@@ -1579,6 +1580,18 @@ class WC_Support_System {
 		add_screen_option( $option, $args );
 
 		$this->tickets_obj = new WSS_Table();
+	}
+
+
+	/**
+	 * Display the number of tickets set by the admin
+	 *
+	 * @return int
+	 */
+	public function set_screen( $status, $option, $value ) {
+
+		return $value;
+
 	}
 
 
