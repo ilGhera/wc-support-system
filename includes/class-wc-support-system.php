@@ -1109,9 +1109,9 @@ class WC_Support_System {
 							</div>
 							<div class="modal-body">
 								<div class="row status-selector">
-									<div class="col-xs-4 status status-1" data-status="1"><?php echo esc_html( self::get_ticket_status_label( 1 ) ); ?></div>
-									<div class="col-xs-4 status status-2" data-status="2"><?php echo esc_html( self::get_ticket_status_label( 2 ) ); ?></div>
-									<div class="col-xs-4 status status-3" data-status="3"><?php echo esc_html( self::get_ticket_status_label( 3 ) ); ?></div>
+									<div class="col-xs-4 status status-1" data-status="1"><?php echo wp_kses_post( self::get_ticket_status_label( 1 ) ); ?></div>
+									<div class="col-xs-4 status status-2" data-status="2"><?php echo wp_kses_post( self::get_ticket_status_label( 2 ) ); ?></div>
+									<div class="col-xs-4 status status-3" data-status="3"><?php echo wp_kses_post( self::get_ticket_status_label( 3 ) ); ?></div>
 								</div>
 							</div>
 							<div class="modal-footer">
@@ -1179,7 +1179,7 @@ class WC_Support_System {
 				$this->update_ticket( $ticket_id, $update_time, $new_status );
 				$new_label = self::get_ticket_status_label( $new_status );
 
-				echo esc_html( $new_label );
+				echo wp_kses_post( $new_label );
 			}
 		}
 
@@ -1792,7 +1792,7 @@ class WC_Support_System {
 						echo '<th scope="row">' . esc_html__( 'Premium Key', 'wc-support-system' ) . '</th>';
 						echo '<td>';
 							echo '<input type="text" class="regular-text" name="wss-premium-key" id="wss-premium-key" placeholder="' . esc_html__( 'Add your Premium Key', 'wc-support-system' ) . '" value="' . esc_attr( $premium_key ) . '" />';
-							echo '<p class="description">' . esc_html__( 'Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wc-support-system' ) . '</p>';
+							echo '<p class="description">' . wp_kses_post( __( 'Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wc-support-system' ) ) . '</p>';
 						echo '</td>';
 					echo '</table>';
 					wp_nonce_field( 'wss-premium-key-sent', 'wss-premium-key-sent-nonce' );
