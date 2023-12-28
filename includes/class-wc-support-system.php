@@ -1372,12 +1372,11 @@ class WC_Support_System {
 
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
-					'
+					"
                     SELECT recipients
-                    FROM %swss_support_tickets
+                    FROM {$wpdb->prefix}wss_support_tickets
                     WHERE id = %d 
-                    ',
-					$wpdb->prefix,
+                    ",
 					$ticket_id
 				)
 			);
@@ -1579,7 +1578,7 @@ class WC_Support_System {
 
 		add_screen_option( $option, $args );
 
-		$this->tickets_obj = new wss_table();
+		$this->tickets_obj = new WSS_Table();
 	}
 
 
