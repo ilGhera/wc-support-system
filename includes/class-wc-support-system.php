@@ -226,11 +226,11 @@ class WC_Support_System {
 
 			/* More data to script */
 			$get_ticket_nonce                   = wp_create_nonce( 'wss-get-ticket' );
-			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status-nonce' );
-			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend-nonce' );
-			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients-nonce' );
-			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread-nonce' );
-			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket-nonce' );
+			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status' );
+			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend' );
+			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients' );
+			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread' );
+			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket' );
 
 			wp_localize_script(
 				'wss-script',
@@ -277,11 +277,11 @@ class WC_Support_System {
 
 			/* More data to script */
 			$get_ticket_nonce                   = wp_create_nonce( 'wss-get-ticket' );
-			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status-nonce' );
-			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend-nonce' );
-			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients-nonce' );
-			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread-nonce' );
-			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket-nonce' );
+			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status' );
+			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend' );
+			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients' );
+			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread' );
+			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket' );
 			/* wp_localize_script( 'wss-script', 'data', array( 'userEmail' => $user_data->user_email ) ); */
 
 			wp_localize_script(
@@ -1168,7 +1168,7 @@ class WC_Support_System {
 	 */
 	public function change_ticket_status_callback() {
 
-		if ( isset( $_POST['wss-change-ticket-status-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-change-ticket-status-nonce'] ) ), 'wss-change-ticket-status-nonce' ) ) {
+		if ( isset( $_POST['wss-change-ticket-status-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-change-ticket-status-nonce'] ) ), 'wss-change-ticket-status' ) ) {
 
 			$ticket_id   = isset( $_POST['ticket_id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket_id'] ) ) : '';
 			$update_time = isset( $_POST['update_time'] ) ? sanitize_text_field( wp_unslash( $_POST['update_time'] ) ) : '';
@@ -1344,7 +1344,7 @@ class WC_Support_System {
 		$this->support_page     = get_option( 'wss-page' );
 		$this->support_page_url = get_the_permalink( $this->support_page );
 
-		if ( isset( $_GET['sent'], $_GET['wss-avoid-resend'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['wss-avoid-resend'] ) ) ) ) {
+		if ( isset( $_GET['sent'], $_GET['wss-avoid-resend-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['wss-avoid-resend-nonce'] ) ), 'wss-avoid-resend' ) ) {
 			header( 'Location: ' . $this->support_page_url );
 			exit;
 		}

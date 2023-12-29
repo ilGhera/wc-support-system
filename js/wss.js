@@ -133,7 +133,7 @@ var auto_open_ticket = function(ticket_id){
 var avoid_resend = function(){
 	jQuery(function($){
 		setTimeout(function(){
-		    var url = window.location.href + '?sent=1&wss-avoid-resend=' + wssData.avoidResendNonce;
+		    var url = window.location.href + '?sent=1&wss-avoid-resend-nonce=' + wssData.avoidResendNonce;
 		    window.history.pushState({}, '', url);
 		}, 1000);
 	})
