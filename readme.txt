@@ -53,6 +53,14 @@ https://youtu.be/XUtmBvoPwkI
 
 == Changelog ==
 
+= 1.2.2 =
+Release date: 31 December 2023
+
+    * Enhancement: HPOS compatibility 
+    * Enhancement: WP coding standards 
+    * Update: (Premium) Plugin Update Checker 
+
+
 = 1.2.1 =
 Release Date: 20 September 2023
 
