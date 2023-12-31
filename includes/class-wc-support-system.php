@@ -313,7 +313,7 @@ class WC_Support_System {
 		$output['admin'] = false;
 		$roles           = $userdata->roles;
 
-		if ( in_array( 'administrator', $roles ) ) {
+		if ( in_array( 'administrator', $roles, true ) ) {
 			$output['admin'] = true;
 		}
 
@@ -480,16 +480,16 @@ class WC_Support_System {
 				}
 				?>
 				</select>
-				<input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo __( 'Send notifications to other email addresses', 'wc-support-system' ); ?>">
-				<input type="text" name="title" placeholder="<?php echo __( 'Ticket subject', 'wc-support-system' ); ?>" required="required">
+				<input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php esc_html_e( 'Send notifications to other email addresses', 'wc-support-system' ); ?>">
+				<input type="text" name="title" placeholder="<?php echo esc_html_e( 'Ticket subject', 'wc-support-system' ); ?>" required="required">
 				<?php wp_editor( '', 'wss-ticket' ); ?>
 				<input type="hidden" name="ticket-sent" value="1">
-				<input type="submit" class="send-new-ticket" value="<?php echo esc_html__( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
+				<input type="submit" class="send-new-ticket" value="<?php esc_html_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
 			</form>
 			<div class="bootstrap-iso product-alert"></div>
 		</div>
 		<a class="button new-ticket"><?php echo esc_html__( 'New ticket', 'wc-support-system' ); ?></a>
-		<a class="button ticket-cancel" style="display: none;"><?php echo esc_html__( 'Cancel', 'wc-support-system' ); ?></a>
+		<a class="button ticket-cancel" style="display: none;"><?php echo esc_html_e( 'Cancel', 'wc-support-system' ); ?></a>
 			<?php
 	}
 
@@ -694,7 +694,7 @@ class WC_Support_System {
 					echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
 					$this->go_premium( true );
 					echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
-					echo '<input type="text" name="additional-recipients-' . $ticket_id . '" class="additional-recipients additional-recipients-' . $ticket_id . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . __( 'Add one or more email addresses', 'wss' ) . '">';
+					echo '<input type="text" name="additional-recipients-' . intval( $ticket_id ) . '" class="additional-recipients additional-recipients-' . intval( $ticket_id ) . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . esc_html__( 'Add one or more email addresses', 'wss' ) . '">';
 				echo '</form>';
 
 			}
@@ -796,11 +796,11 @@ class WC_Support_System {
 				/*Logged in user but not a customer*/
 				elseif ( is_user_logged_in() ) :
 					echo '<div class="bootstrap-iso">';
-						echo '<div class="alert alert-danger">' . __( 'It seems like you haven\'t bought any productat the moment.', 'wc-support-system' ) . '</div>';
+						echo '<div class="alert alert-danger">' . esc_html__( 'It seems like you haven\'t bought any productat the moment.', 'wc-support-system' ) . '</div>';
 					echo '</div>';
 				else :
 					echo '<div class="bootstrap-iso">';
-						echo '<div class="alert alert-danger">' . __( 'You must be logged in to access support service.', 'wss' ) . '</div>';
+						echo '<div class="alert alert-danger">' . esc_html__( 'You must be logged in to access support service.', 'wss' ) . '</div>';
 					echo '</div>';
 				endif;
 
@@ -1077,9 +1077,9 @@ class WC_Support_System {
 
 		if ( isset( $_POST['thread-sent'], $_POST['wss-thread-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-thread-sent-nonce'] ) ), 'wss-thread-sent' ) ) {
 
-			$ticket_id      = isset( $_POST['ticket-id'] ) ? sanitize_text_field( $_POST['ticket-id'] ) : '';
-			$customer_email = isset( $_POST['customer-email'] ) ? sanitize_email( $_POST['customer-email'] ) : '';
-			$close_ticket   = isset( $_POST['close-ticket'] ) ? sanitize_text_field( $_POST['close-ticket'] ) : '';
+			$ticket_id      = isset( $_POST['ticket-id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket-id'] ) ) : '';
+			$customer_email = isset( $_POST['customer-email'] ) ? sanitize_email( wp_unslash( $_POST['customer-email'] ) ) : '';
+			$close_ticket   = isset( $_POST['close-ticket'] ) ? sanitize_text_field( wp_unslash( $_POST['close-ticket'] ) ) : '';
 			$recipients     = null;
 
 			if ( $recipients ) {
@@ -1124,9 +1124,9 @@ class WC_Support_System {
 			/*User info*/
 			$user = $this->user_data();
 
-			$title      = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
-			$product_id = isset( $_POST['product-id'] ) ? sanitize_text_field( $_POST['product-id'] ) : '';
-			$content    = isset( $_POST['wss-ticket'] ) ? wp_filter_post_kses( $_POST['wss-ticket'] ) : '';
+			$title      = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+			$product_id = isset( $_POST['product-id'] ) ? sanitize_text_field( wp_unslash( $_POST['product-id'] ) ) : '';
+			$content    = isset( $_POST['wss-ticket'] ) ? wp_filter_post_kses( wp_unslash( $_POST['wss-ticket'] ) ) : '';
 			$recipients = null;
 			$date       = date( 'Y-m-d H:i:s' );
 
@@ -1277,11 +1277,10 @@ class WC_Support_System {
 	public function ajax_delete_single_thread() {
 		$admin_page = get_current_screen();
 		if ( 'toplevel_page_wc-support-system' === $admin_page->base ) {
-			$alert_message = __( 'Are you sure you want to delete this message?', 'wc-support-system' );
 			?>
 			<script>
 				jQuery(document).ready(function($){
-					var alert_message = '<?php esc_html_e( $alert_message ); ?>';
+					var alert_message = '<?php esc_html_e( 'Are you sure you want to delete this message?', 'wc-support-system' ); ?>';
 					delete_single_thread(alert_message);
 				})
 			</script>
@@ -1322,12 +1321,10 @@ class WC_Support_System {
 		$admin_page = get_current_screen();
 
 		if ( 'toplevel_page_wc-support-system' === $admin_page->base ) {
-
-			$alert_message = __( 'Are you sure you want to delete this ticket with all his messages?', 'wc-support-system' );
 			?>
 			<script>
 				jQuery(document).ready(function($){
-					var alert_message = '<?php esc_html_e( $alert_message ); ?>';
+					var alert_message = '<?php esc_html_e( 'Are you sure you want to delete this ticket with all his messages?', 'wc-support-system' ); ?>';
 					delete_single_ticket(alert_message);
 				})
 			</script>
@@ -1424,7 +1421,7 @@ class WC_Support_System {
 
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
-				echo '<h1>Woocommerce Support System - ' . __( 'Settings', 'wc-support-system' ) . '</h1>';
+				echo '<h1>Woocommerce Support System - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
 				echo '<form name="wss-options" class="wss-options" method="post" action="">';
 					echo '<table class="form-table">';
 
@@ -1521,7 +1518,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="wss-additional-recipients">';
 									echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="0" disabled>';
-									echo __( 'Allow the user to specify multiple email addresses for receiving notifications.', 'wc-support-system' );
+									echo esc_html__( 'Allow the user to specify multiple email addresses for receiving notifications.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1575,7 +1572,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="customer-uploads">';
 									echo '<input type="checkbox" name="customer-uploads" value="0" disabled="disabled">';
-									echo __( 'Allow customers upload images and all the other permitted file types.', 'wc-support-system' );
+									echo esc_html__( 'Allow customers upload images and all the other permitted file types.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1587,7 +1584,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="guest-users">';
 									echo '<input type="checkbox" name="guest-users" value="0" disabled="disabled">';
-									echo __( 'Not logged in users can receive support providing the email and an order id.', 'wc-support-system' );
+									echo esc_html__( 'Not logged in users can receive support providing the email and an order id.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1599,7 +1596,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="reopen-ticket">';
 									echo '<input type="checkbox" name="reopen-ticket" value="0" disabled="disabled">';
-									echo __( 'After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wc-support-system' );
+									echo esc_html__( 'After sending a new message, the admin can choose to left the specific ticket open and see the all thread.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1611,7 +1608,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="">';
 									echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="0" disabled="disabled">';
-									echo __( 'Allow user to close tickets.', 'wc-support-system' );
+									echo esc_html__( 'Allow user to close tickets.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1623,7 +1620,7 @@ class WC_Support_System {
 							echo '<td>';
 								echo '<label for="">';
 									echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="0" disabled="disabled">';
-									echo __( 'Close tickets not updated for a specified period.', 'wc-support-system' );
+									echo esc_html__( 'Close tickets not updated for a specified period.', 'wc-support-system' );
 								echo '</label>';
 								$this->go_premium();
 							echo '</td>';
@@ -1634,7 +1631,7 @@ class WC_Support_System {
 							echo '<th scope="row">' . esc_html__( 'Notice period', 'wc-support-system' ) . '</th>';
 							echo '<td>';
 								echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="7" disabled="disabled">';
-								echo '<p class="description">' . __( 'Days with no updates for sending a notice to the user.', 'wc-support-system' ) . '</p>';
+								echo '<p class="description">' . esc_html__( 'Days with no updates for sending a notice to the user.', 'wc-support-system' ) . '</p>';
 								$this->go_premium();
 							echo '</td>';
 						echo '</tr>';
@@ -1644,14 +1641,14 @@ class WC_Support_System {
 							echo '<th scope="row">' . esc_html__( 'User notice', 'wc-support-system' ) . '</th>';
 							echo '<td>';
 
-								/* Translators: the website name */
 								$default_text = sprintf(
+									/* Translators: the website name */
 									__( "Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 'wss' ),
 									get_bloginfo()
 								);
 
-								echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6" disabled="disabled">' . $default_text . '</textarea>';
-								echo '<p class="description">' . __( 'Message to the user informing him that the ticket is going to be closed.', 'wc-support-system' ) . '</p>';
+								echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6" disabled="disabled">' . esc_html( $default_text ) . '</textarea>';
+								echo '<p class="description">' . esc_html__( 'Message to the user informing him that the ticket is going to be closed.', 'wc-support-system' ) . '</p>';
 								$this->go_premium();
 							echo '</td>';
 						echo '</tr>';
@@ -1722,8 +1719,8 @@ class WC_Support_System {
 			update_option( 'wss-user-color-text', $user_color_text );
 
 			/*Notifications*/
-			$user_notification  = isset( $_POST['user-notification'] ) ? sanitize_text_field( $_POST['user-notification'] ) : 0;
-			$admin_notification = isset( $_POST['admin-notification'] ) ? sanitize_text_field( $_POST['admin-notification'] ) : 0;
+			$user_notification  = isset( $_POST['user-notification'] ) ? sanitize_text_field( wp_unslash( $_POST['user-notification'] ) ) : 0;
+			$admin_notification = isset( $_POST['admin-notification'] ) ? sanitize_text_field( wp_unslash( $_POST['admin-notification'] ) ) : 0;
 			update_option( 'wss-user-notification', $user_notification );
 			update_option( 'wss-admin-notification', $admin_notification );
 

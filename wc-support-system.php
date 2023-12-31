@@ -15,11 +15,7 @@
  * @package wc-support-system-premium
  */
 
-/*Exit if accessed directly*/
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin notice for WooCommerce not installed
@@ -35,7 +31,11 @@ function wss_wc_not_installed() {
 }
 
 
-/*Activation*/
+/**
+ * Plugin activation
+ *
+ * @return void
+ */
 function wss_activation() {
 
 	/*WooCommerce must be installed*/
@@ -82,6 +82,8 @@ add_action( 'plugins_loaded', 'wss_activation', 100 );
 
 /**
  * HPOS compatibility
+ *
+ * @return void
  */
 add_action(
 	'before_woocommerce_init',
