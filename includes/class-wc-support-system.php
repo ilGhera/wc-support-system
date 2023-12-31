@@ -484,6 +484,7 @@ class WC_Support_System {
 				<input type="text" name="title" placeholder="<?php echo esc_html_e( 'Ticket subject', 'wc-support-system' ); ?>" required="required">
 				<?php wp_editor( '', 'wss-ticket' ); ?>
 				<input type="hidden" name="ticket-sent" value="1">
+				<?php wp_nonce_field( 'wss-ticket-sent', 'wss-ticket-sent-nonce' ); ?>
 				<input type="submit" class="send-new-ticket" value="<?php esc_html_e( 'Send', 'wc-support-system' ); ?>" style="margin-top: 1rem;">
 			</form>
 			<div class="bootstrap-iso product-alert"></div>
@@ -1119,7 +1120,7 @@ class WC_Support_System {
 	 */
 	public function save_new_ticket() {
 
-		if ( isset( $_POST['ticket-sent'], $_POST['wss-thread-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-thread-sent-nonce'] ) ), 'wss-thread-sent' ) ) {
+		if ( isset( $_POST['ticket-sent'], $_POST['wss-ticket-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-ticket-sent-nonce'] ) ), 'wss-ticket-sent' ) ) {
 
 			/*User info*/
 			$user = $this->user_data();
