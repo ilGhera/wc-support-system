@@ -1658,7 +1658,7 @@ class WC_Support_System {
 							echo '<th scope="row">' . esc_html__( 'Closing delay', 'wc-support-system' ) . '</th>';
 							echo '<td>';
 								echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="0" disabled="disabled">';
-								echo '<p class="description">' . __( 'Days after the notice for closing the ticket definitely.', 'wc-support-system' ) . '</p>';
+								echo '<p class="description">' . esc_html__( 'Days after the notice for closing the ticket definitely.', 'wc-support-system' ) . '</p>';
 								$this->go_premium();
 							echo '</td>';
 						echo '</tr>';
