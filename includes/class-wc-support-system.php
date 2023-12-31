@@ -1438,8 +1438,7 @@ class WC_Support_System {
 
 			}
 
-			/* $content = isset( $_POST['wss-thread'] ) ? wp_filter_post_kses( $_POST['wss-thread'] ) : ''; */
-			$content = isset( $_POST['wss-thread'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-thread'] ) ) : '';
+			$content = isset( $_POST['wss-thread'] ) ? wp_filter_post_kses( wp_unslash( $_POST['wss-thread'] ) ) : null;
 			$date    = date( 'Y-m-d H:i:s' );
 
 			/*User info*/
@@ -1585,6 +1584,10 @@ class WC_Support_System {
 
 	/**
 	 * Display the number of tickets set by the admin
+	 *
+	 * @param mixed  $status the ticket status.
+	 * @param string $option the option name.
+	 * @param int    $value  the option value.
 	 *
 	 * @return int
 	 */
