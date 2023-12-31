@@ -1,12 +1,16 @@
 /**
  * WSS js scripts
+ *
  * @author ilGhera
  * @package wc-support-system-premium/js
- * @since 1.2.0
+ *
+ * @since 1.2.2
  */
 
 /**
  * A product must be selected for opening a ticket
+ *
+ * @return void
  */
 var check_ticket_product = function(){
 	jQuery(function($){
@@ -29,6 +33,8 @@ var check_ticket_product = function(){
 
 /**
  * Clicking on a ticket, all his threads are shown and all the other tickets hidden
+ *
+ * @return void
  */
 var get_ticket_content = function() {
 	jQuery(function($){
@@ -87,7 +93,10 @@ var get_ticket_content = function() {
 
 /**
  * If set in the plugin options, the ticket is reopened after a new thread was sent
- * @param  {int} ticket_id
+ *
+ * @param {int} ticket_id
+ * 
+ * @return void
  */
 var auto_open_ticket = function(ticket_id){
 	jQuery(function($){
@@ -101,6 +110,8 @@ var auto_open_ticket = function(ticket_id){
 
 /**
  * Avoids to send the same ticket/ thread on page reload
+ *
+ * @return void
  */
 var avoid_resend = function(){
 	jQuery(function($){
@@ -114,6 +125,8 @@ var avoid_resend = function(){
 
 /**
  * Fires the delete of a specific ticket with all his threads - back-end
+ *
+ * @return void
  */
 var delete_single_ticket = function(alert_message){
 	jQuery(function($){
@@ -137,6 +150,8 @@ var delete_single_ticket = function(alert_message){
 
 /**
  * Fires the delete of a specific thread - back-end
+ *
+ * @return void
  */
 var delete_single_thread = function(alert_message){
 	jQuery(function($){
@@ -160,7 +175,10 @@ var delete_single_thread = function(alert_message){
 
 /**
  * Send the new ticket status for being saved in the db
- * @param  {int} ticket_id
+ *
+ * @param {int} ticket_id
+ *
+ * @return void
  */
 var change_ticket_status = function(ticket_id, update_time){
 	jQuery(function($){
@@ -185,6 +203,8 @@ var change_ticket_status = function(ticket_id, update_time){
 
 /**
  * Show the modal window for changing the tickets status in back-end
+ *
+ * @return void
  */
 var modal_change_ticket_status = function(){
 	jQuery(function($){
@@ -211,10 +231,11 @@ var modal_change_ticket_status = function(){
 	})
 }
 
+
 /**
  * Fires Chosen
  *
- * @param  {bool} destroy method distroy
+ * @param {bool} destroy method distroy
  *
  * @return void
  */
