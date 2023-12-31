@@ -4,26 +4,33 @@
  *
  * @author ilGhera
  * @package wc-support-system-premium/includes
- * @since 1.2.0
+ *
+ * @since 1.2.2
  */
 
-/*The main calss is required*/
+/*The main class is required*/
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 /**
- * WSS Table
+ * WSS Table class
+ *
+ * @since 0.9.4
  */
-class wss_table extends WP_List_Table {
+class WSS_Table extends WP_List_Table {
 
+	/**
+	 * The constructor
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 		parent::__construct(
 			array(
-				'singular' => __( 'Ticket', 'wc-support-system' ), // singular name of the listed records
-				'plural'   => __( 'Tickets', 'wc-support-system' ), // plural name of the listed records
-				'ajax'     => false, // should this table support ajax?
-
+				'singular' => __( 'Ticket', 'wc-support-system' ),
+				'plural'   => __( 'Tickets', 'wc-support-system' ),
+				'ajax'     => false,
 			)
 		);
 	}
@@ -32,28 +39,41 @@ class wss_table extends WP_List_Table {
 	/**
 	 * Get all tickets from the db
 	 *
-	 * @param  integer $per_page    tickets per page, dwfault 12
-	 * @param  integer $page_number the current page, default 1
+	 * @param  integer $per_page    tickets per page, default 12.
+	 * @param  integer $page_number the current page, default 1.
+	 *
 	 * @return array
 	 */
 	public static function get_tickets( $per_page = 12, $page_number = 1 ) {
 
 		global $wpdb;
 
-		$query = 'SELECT * FROM ' . $wpdb->prefix . 'wss_support_tickets';
+		$args     = array();
+		$where    = null;
+		$order_by = null;
+		$limit    = null;
+		$offset   = null;
 
 		/*Filtered by search term*/
-		if ( isset( $_REQUEST['s'] ) ) {
+		if ( isset( $_REQUEST['s'], $_REQUEST['wss-thread-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['wss-thread-sent-nonce'] ) ), 'wss-thread-sent' ) ) {
 
-			$s      = trim( $_REQUEST['s'] );
-			$query .= " WHERE user_name LIKE '%" . esc_sql( $s ) . "%'";
-			$query .= " OR user_email LIKE '%" . esc_sql( $s ) . "%'";
-			$query .= " OR title LIKE '%" . esc_sql( $s ) . "%'";
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
+
+			/* Update query args */
+			array_push( $args, $s, $s, $s );
+
+			$where .= ' WHERE user_name LIKE \'%%%s%%\'';
+			$where .= ' OR user_email LIKE \'%%%s%%\'';
+			$where .= ' OR title LIKE \'%%%s%%\'';
 
 			if ( 0 === strpos( $s, '#' ) ) {
 
 				$ticket_id = substr( $s, 1 );
-				$query    .= " OR id LIKE '%" . esc_sql( $ticket_id ) . "%'";
+
+				/* Update query args */
+				array_push( $args, $ticket_id );
+
+				$where .= ' OR id LIKE \'%%%d%%\'';
 
 			}
 		}
@@ -61,20 +81,42 @@ class wss_table extends WP_List_Table {
 		/*If filtered by the admin*/
 		if ( ! empty( $_REQUEST['orderby'] ) ) {
 
-			$query .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
-			$query .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
+			$val1 = esc_sql( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
+			$val2 = ! empty( $_REQUEST['order'] ) ? esc_sql( sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) ) : ' ASC';
+
+			/* Update query args */
+			array_push( $args, $val1, $val2 );
+
+			$order_by = ' ORDER BY %s %s';
 
 		} else {
 
-			$query .= ' ORDER BY status ASC';
+			$order_by = ' ORDER BY status ASC';
 
 		}
 
 		/*Pagination details*/
-		$query .= " LIMIT $per_page";
-		$query .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
+		$val3 = ( $page_number - 1 ) * $per_page;
 
-		$tickets = $wpdb->get_results( $query, 'ARRAY_A' );
+		/* Update query args */
+		array_push( $args, $per_page, $val3 );
+
+		$limit  = ' LIMIT %d';
+		$offset = ' OFFSET %d';
+
+		$tickets = $wpdb->get_results(
+			$wpdb->prepare(
+				"
+                SELECT * FROM {$wpdb->prefix}wss_support_tickets
+                $where
+                $order_by
+                $limit
+                $offset
+                ",
+				$args
+			),
+			'ARRAY_A'
+		);
 
 		return $tickets;
 	}
@@ -82,54 +124,75 @@ class wss_table extends WP_List_Table {
 
 	/**
 	 * Returns the count of tickets in the db.
+	 *
+	 * @return int
 	 */
 	public static function record_count() {
+
 		global $wpdb;
 
 		$sql = '
-			SELECT COUNT(*) FROM ' . $wpdb->prefix . 'wss_support_tickets
+			
 		';
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var(
+			"
+            SELECT COUNT(*) FROM {$wpdb->prefix}wss_support_tickets
+            "
+		);
 	}
 
 
+	/**
+	 * The primary column name
+	 *
+	 * @return string
+	 */
 	public function get_primary_column_name() {
+
 		return 'title';
+
 	}
 
 
 	/**
 	 * Text displayed when no tickets are available
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function no_items() {
-		echo __( 'It seems like therea are no support tickets opened at the moment.', 'wc-support-system' );
+
+		esc_html_e( 'It seems like therea are no support tickets opened at the moment.', 'wc-support-system' );
+
 	}
 
 
 	/**
 	 * Edit every single row of the table
 	 *
-	 * @param  array $item the single ticket in the row
-	 * @return mixed       the row
+	 * @param array $item the single ticket in the row.
+	 *
+	 * @return mixed
 	 */
 	public function single_row( $item ) {
-		echo '<tr class="ticket-' . $item['id'] . '">';
+
+		echo '<tr class="ticket-' . intval( $item['id'] ) . '">';
 			$this->single_row_columns( $item );
 		echo '</tr>';
+
 	}
 
 
 	/**
 	 * Render a column when no column specific method exists.
 	 *
-	 * @param array  $item
-	 * @param string $column_name
+	 * @param array  $item        the item.
+	 * @param string $column_name the name of the column.
+	 *
 	 * @return mixed
 	 */
 	public function column_default( $item, $column_name ) {
+
 		switch ( $column_name ) {
 
 			case 'product_id':
@@ -144,19 +207,15 @@ class wss_table extends WP_List_Table {
 				}
 
 				return $image;
-				break;
 
 			case 'title':
-				return '<span class="ticket-toggle' . ( $item['status'] == 1 ? ' bold' : '' ) . '" data-ticket-id="' . $item['id'] . '">' . stripcslashes( $item['title'] ) . '</span>';
-				break;
+				return '<span class="ticket-toggle' . ( 1 === intval( $item['status'] ) ? ' bold' : '' ) . '" data-ticket-id="' . $item['id'] . '">' . stripcslashes( $item['title'] ) . '</span>';
 
 			case 'status':
-				return wc_support_system::get_ticket_status_label( $item['status'] );
-				break;
+				return WC_Support_System::get_ticket_status_label( $item['status'] );
 
 			case 'delete':
 				return '<img data-ticket-id="' . $item['id'] . '" src="' . plugin_dir_url( __DIR__ ) . '/images/dustbin-admin.png">';
-				break;
 
 			default:
 				return $item[ $column_name ];
@@ -166,9 +225,15 @@ class wss_table extends WP_List_Table {
 
 	/**
 	 * Render the bulk edit checkbox
+	 *
+	 * @param array $item the item.
+	 *
+	 * @return string the input checkbox
 	 */
-	function column_cb( $item ) {
+	public function column_cb( $item ) {
+
 		return sprintf( '<input type="checkbox" name="delete[]" value="%s" />', $item['id'] );
+
 	}
 
 
@@ -177,7 +242,8 @@ class wss_table extends WP_List_Table {
 	 *
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
+
 		$columns = array(
 			'cb'          => '<input type="checkbox" />',
 			'id'          => __( 'Id', 'wc-support-system' ),
@@ -193,6 +259,7 @@ class wss_table extends WP_List_Table {
 		);
 
 		return $columns;
+
 	}
 
 
@@ -202,6 +269,7 @@ class wss_table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_sortable_columns() {
+
 		$sortable_columns = array(
 			'id'          => array( 'id', true ),
 			'title'       => array( 'title', true ),
@@ -215,6 +283,7 @@ class wss_table extends WP_List_Table {
 		);
 
 		return $sortable_columns;
+
 	}
 
 
@@ -224,32 +293,46 @@ class wss_table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_bulk_actions() {
+
 		$actions = array(
 			'delete' => __( 'Delete Permanently', 'wc-support-system' ),
 		);
 
 		return $actions;
+
 	}
 
 
 	/**
 	 * The bulk action process, delete tickets in this case
+	 *
+	 * @return void
 	 */
 	public function process_bulk_action() {
 
-		if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'delete' ) || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'delete' ) ) {
+		if ( isset( $_POST['wss-thread-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-thread-sent-nonce'] ) ), 'wss-thread-sent' ) ) {
 
-			$delete_ids = esc_sql( $_POST['delete'] );
+			if ( ( isset( $_POST['action'] ) && 'delete' === $_POST['action'] ) || ( isset( $_POST['action2'] ) && 'delete' === $_POST['action2'] ) ) {
 
-			foreach ( $delete_ids as $id ) {
-				wc_support_system::delete_single_ticket( $id );
+				$delete_ids = isset( $_POST['delete'] ) ? $_POST['delete'] : array();
+				$delete_ids = array_map( 'wp_unslash', $delete_ids );
+				$delete_ids = array_map( 'sanitize_text_field', $delete_ids );
+
+				foreach ( $delete_ids as $id ) {
+
+					WC_Support_System::delete_single_ticket( $id );
+
+				}
 			}
 		}
+
 	}
 
 
 	/**
 	 * Handles data query and filter, sorting, and pagination.
+	 *
+	 * @return void
 	 */
 	public function prepare_items() {
 
