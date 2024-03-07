@@ -1,9 +1,12 @@
 === Woocommerce Support System ===
 Contributors: ghera74
-Tags: Woocommerce, ecommerce, support, ticket, thread, shop, orders, products
+Tags: WooCommerce, support, ticket, thread, orders
 Version: 1.2.2
+Stable tag: 1.2.2
 Requires at least: 4.0
 Tested up to: 6.4
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
