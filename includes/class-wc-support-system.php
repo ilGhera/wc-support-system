@@ -2036,8 +2036,9 @@ class WC_Support_System {
 							echo '</td>';
 						echo '</tr>';
 
-						/*Reopen ticket after a thread is published*/
+					/*Reopen ticket after a thread is published*/
 					echo '</table>';
+					wp_nonce_field( 'wss-options', 'wss-options-nonce' );
 					echo '<input type="hidden" name="wss-options-hidden" value="1">';
 					echo '<input type="submit" class="button button-primary" value="' . esc_html__( 'Save', 'wc-support-system' ) . '">';
 				echo '</form>';
@@ -2056,13 +2057,17 @@ class WC_Support_System {
 	 */
 	public function wss_save_settings() {
 
+        /* Premium key form */
 		if ( isset( $_POST['premium-key-sent'], $_POST['wss-premium-key-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-premium-key-sent-nonce'] ) ), 'wss-premium-key-sent' ) ) {
 
 			/*Premium key*/
 			$premium_key = isset( $_POST['wss-premium-key'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-premium-key'] ) ) : '';
 			update_option( 'wss-premium-key', $premium_key );
 
-		} elseif ( isset( $_POST['wss-options-hidden'] ) ) {
+		}
+
+        /* Options form */
+		if ( isset( $_POST['wss-options-hidden'], $_POST['wss-options-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-options-nonce'] ) ), 'wss-options' ) ) {
 
 			/*Support page*/
 			$support_page = isset( $_POST['support-page'] ) ? sanitize_text_field( wp_unslash( $_POST['support-page'] ) ) : '';
