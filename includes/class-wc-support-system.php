@@ -5,13 +5,15 @@
  * @author ilGhera
  * @package wc-support-system-premium/includes
  *
- * @since 1.2.2
+ * @since 1.2.3
  */
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * WC_Support_System class
  *
- * @since 1.2.2
+ * @since 1.2.3
  */
 class WC_Support_System {
 

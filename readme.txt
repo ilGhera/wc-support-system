@@ -1,8 +1,8 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.2
-Stable tag: 1.2.2
+Version: 1.2.3
+Stable tag: 1.2.3
 Requires at least: 4.0
 Tested up to: 6.4
 License: GPLv3
@@ -55,6 +55,13 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.2.3 =
+Release date: 7 March 2024
+
+    * Enhancement: Coding standard 
+    * Bug: Nonce missed on saving options 
+
 
 = 1.2.2 =
 Release date: 31 December 2023

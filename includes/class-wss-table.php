@@ -5,8 +5,10 @@
  * @author ilGhera
  * @package wc-support-system-premium/includes
  *
- * @since 1.2.2
+ * @since 1.2.3
  */
+
+defined( 'ABSPATH' ) || exit;
 
 /*The main class is required*/
 if ( ! class_exists( 'WP_List_Table' ) ) {
