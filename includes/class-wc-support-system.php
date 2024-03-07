@@ -282,7 +282,6 @@ class WC_Support_System {
 			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients' );
 			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread' );
 			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket' );
-			/* wp_localize_script( 'wss-script', 'data', array( 'userEmail' => $user_data->user_email ) ); */
 
 			wp_localize_script(
 				'wss-script',
@@ -1497,7 +1496,6 @@ class WC_Support_System {
 
 			$title      = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 			$product_id = isset( $_POST['product-id'] ) ? sanitize_text_field( wp_unslash( $_POST['product-id'] ) ) : '';
-			/* $content    = isset( $_POST['wss-ticket'] ) ? wp_filter_post_kses( wp_unslash( $_POST['wss-ticket'] ) ) : ''; */
 			$content    = isset( $_POST['wss-ticket'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-ticket'] ) ) : '';
 			$recipients = isset( $_POST['additional-recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['additional-recipients'] ) ) : null;
 			$date       = date( 'Y-m-d H:i:s' );
