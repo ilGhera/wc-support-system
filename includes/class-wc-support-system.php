@@ -1684,6 +1684,10 @@ class WC_Support_System {
 	 */
 	public function wss_save_settings() {
 
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
         /* Premium key form */
 		if ( isset( $_POST['premium-key-sent'], $_POST['wss-premium-key-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-premium-key-sent-nonce'] ) ), 'wss-premium-key-sent' ) ) {
 
