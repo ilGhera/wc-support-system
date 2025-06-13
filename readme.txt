@@ -1,10 +1,14 @@
 === Woocommerce Support System - Premium ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.0.4
-Stable tag: 1.0.4
-Requires at least: 4.0
-Tested up to: 6.4
+Version: 1.0.5
+Stable tag: 1.0.5
+Requires at least: 5.0
+Tested up to: 6.8
+WC tested up to: 9
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
 
 Give support to your WooComerce customers with this fast and easy to use ticket system.
 
@@ -34,67 +38,74 @@ The ability to update the ticket with new messages, allows you to keep the logic
 == Changelog ==
 
 
+= 1.0.5 =
+Release Date: 13 June 2025
+
+    * Enhancement: WordPress 6.8 support 
+    * Enhancement: WooCommerce 9 support 
+
+
 = 1.0.4 =
 Release Date: 10 November 2022
 
-* Enhancement: WordPress 6.1 support 
-* Enhancement: PUC v5 support 
-* Update: Plugin Update Checker
+    * Enhancement: WordPress 6.1 support 
+    * Enhancement: PUC v5 support 
+    * Update: Plugin Update Checker
 
 
 = 1.0.3 =
 Release Date: 20 March, 2019
 
-* Bug Fix: Avoid sending repeated notifications to the user.
+    * Bug Fix: Avoid sending repeated notifications to the user.
 
 
 = 1.0.2 =
 Release Date: 19 March, 2019
 
-* Enhancement: Allowed HTML in Footer email text and in User notice fields.
-* Bug Fix: Front-end user can now see only his files with "Add Media" button.
+    * Enhancement: Allowed HTML in Footer email text and in User notice fields.
+    * Bug Fix: Front-end user can now see only his files with "Add Media" button.
 
 
 = 1.0.1 =
 Release Date: 18 March, 2019
 
-* Bug Fix: Some tickets not shown if created by the same user sometimes logged in and sometimes not.
+    * Bug Fix: Some tickets not shown if created by the same user sometimes logged in and sometimes not.
 
 
 = 1.0.0 =
 Release Date: 14 March, 2019
 
-* Enhancement: Upload files in tickets available for logged in customers.
-* Enhancement: General improvements.
-* Bug Fix: Frontend editor style missed.
+    * Enhancement: Upload files in tickets available for logged in customers.
+    * Enhancement: General improvements.
+    * Bug Fix: Frontend editor style missed.
 
 
 = 0.9.4 =
 Release Date: 12 September, 2018
 
-* Bug Fix: User message repeated many times.
+    * Bug Fix: User message repeated many times.
 
 
 = 0.9.3 =
 Release Date: 25 June, 2018
 
-* Bug Fix: JS scripts missed in setting page.
+    * Bug Fix: JS scripts missed in setting page.
 
 
 = 0.9.2 =
 Release Date: 15 June, 2018
 
-* Bug Fix: Plugin deactivation on WooCommerce missed.
-* Bug Fix: Settings page not visible
+    * Bug Fix: Plugin deactivation on WooCommerce missed.
+    * Bug Fix: Settings page not visible
 
 
 = 0.9.1 =
 Release Date: 24 May, 2018
 
-* Bug Fix: Products purchased by the user not found.
+    * Bug Fix: Products purchased by the user not found.
 
 
 = 0.9.0 =
 Release Date: 30 March, 2018
 
-* First release
+    * First release
