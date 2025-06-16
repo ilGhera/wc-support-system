@@ -124,12 +124,6 @@ Release Date: 26 March, 2021
     * Bug Fix: wp_unslash missed in ticket text
 
 
-= 1.0.5 =
-Release Date: 26 March, 2021
-
-    * Bug Fix: wp_unslash missed in ticket text
-
-
 = 1.0.4 =
 Release Date: 21 March, 2021
 
