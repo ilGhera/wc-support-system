@@ -125,10 +125,9 @@ Release Date: 26 March, 2021
 
 
 = 1.0.5 =
-Release Date: 13 June 2025
+Release Date: 26 March, 2021
 
-    * Enhancement: WordPress 6.8 support 
-    * Enhancement: WooCommerce 9 support 
+    * Bug Fix: wp_unslash missed in ticket text
 
 
 = 1.0.4 =
