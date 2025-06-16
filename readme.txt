@@ -57,6 +57,15 @@ https://youtu.be/XUtmBvoPwkI
 
 == Changelog ==
 
+= 1.2.4 =
+Release Date: 16 June 2025
+
+    * Enhancement: WordPress 6.8 support 
+    * Enhancement: WooCommerce 9 support 
+    * Update: (Premium) Plugin Update Checker 
+    * Update: (Premium) ilGhera Notice 
+
+
 = 1.2.3 =
 Release date: 7 March 2024
 
