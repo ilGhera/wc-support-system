@@ -37,6 +37,32 @@ class WSS_Table extends WP_List_Table {
 		);
 	}
 
+    /**
+     * Returns an array of CSS classes to be applied to the table.
+     * This method overrides the one from the parent WP_List_Table class.
+     *
+     * @return array Array of CSS class names.
+     */
+    protected function get_table_classes() {
+        /**
+         * Get the default classes from WP_List_Table.
+         */
+        $classes = parent::get_table_classes();
+
+        /**
+         * Remove the "ticket" class if present, as you want "tickets".
+         */
+        $classes = array_diff( $classes, array( 'ticket' ) );
+
+        /**
+         * Add the "tickets" class if you explicitly want it.
+         */
+        if ( ! in_array( 'tickets', $classes ) ) {
+            $classes[] = 'tickets';
+        }
+
+        return $classes;
+    }
 
 	/**
 	 * Get all tickets from the db
@@ -123,7 +149,6 @@ class WSS_Table extends WP_List_Table {
 		return $tickets;
 	}
 
-
 	/**
 	 * Returns the count of tickets in the db.
 	 *
@@ -144,7 +169,6 @@ class WSS_Table extends WP_List_Table {
 		);
 	}
 
-
 	/**
 	 * The primary column name
 	 *
@@ -156,7 +180,6 @@ class WSS_Table extends WP_List_Table {
 
 	}
 
-
 	/**
 	 * Text displayed when no tickets are available
 	 *
@@ -167,7 +190,6 @@ class WSS_Table extends WP_List_Table {
 		esc_html_e( 'It seems like therea are no support tickets opened at the moment.', 'wc-support-system' );
 
 	}
-
 
 	/**
 	 * Edit every single row of the table
@@ -183,7 +205,6 @@ class WSS_Table extends WP_List_Table {
 		echo '</tr>';
 
 	}
-
 
 	/**
 	 * Render a column when no column specific method exists.
@@ -224,7 +245,6 @@ class WSS_Table extends WP_List_Table {
 		}
 	}
 
-
 	/**
 	 * Render the bulk edit checkbox
 	 *
@@ -237,7 +257,6 @@ class WSS_Table extends WP_List_Table {
 		return sprintf( '<input type="checkbox" name="delete[]" value="%s" />', $item['id'] );
 
 	}
-
 
 	/**
 	 * Associative array of columns
@@ -264,7 +283,6 @@ class WSS_Table extends WP_List_Table {
 
 	}
 
-
 	/**
 	 * Columns to make sortable.
 	 *
@@ -288,7 +306,6 @@ class WSS_Table extends WP_List_Table {
 
 	}
 
-
 	/**
 	 * Returns an associative array containing the bulk action
 	 *
@@ -303,7 +320,6 @@ class WSS_Table extends WP_List_Table {
 		return $actions;
 
 	}
-
 
 	/**
 	 * The bulk action process, delete tickets in this case
@@ -329,7 +345,6 @@ class WSS_Table extends WP_List_Table {
 		}
 
 	}
-
 
 	/**
 	 * Handles data query and filter, sorting, and pagination.

@@ -38,7 +38,6 @@ class WC_Support_System {
 	 */
 	public $support_page_url;
 
-
 	/**
 	 * The constructor
 	 *
@@ -78,7 +77,6 @@ class WC_Support_System {
 		add_filter( 'set-screen-option', array( $this, 'set_screen' ), 10, 3 );
 	}
 
-
 	/**
 	 * Add the tickets table to the support page
 	 *
@@ -110,7 +108,6 @@ class WC_Support_System {
 		}
 
 	}
-
 
 	/**
 	 * Back-end scripts and style
@@ -170,7 +167,6 @@ class WC_Support_System {
 		}
 	}
 
-
 	/**
 	 * Front-end scripts and style
 	 */
@@ -215,7 +211,6 @@ class WC_Support_System {
 			wp_enqueue_style( 'chosen-style', WSS_URI . '/vendor/harvesthq/chosen/chosen.min.css', array(), WSS_VERSION );
 		}
 	}
-
 
 	/**
 	 * Create the plugin db tables
@@ -274,7 +269,6 @@ class WC_Support_System {
 
 	}
 
-
 	/**
 	 * Create the Support page
 	 *
@@ -295,7 +289,6 @@ class WC_Support_System {
 
 		return $output;
 	}
-
 
 	/**
 	 * Get the user data
@@ -322,7 +315,6 @@ class WC_Support_System {
 
 		return $output;
 	}
-
 
 	/**
 	 * Get the products bought by the specific customer
@@ -378,7 +370,6 @@ class WC_Support_System {
 
 	}
 
-
 	/**
 	 * Check if the logged in user can access to the support service, based on his purchases
 	 *
@@ -396,7 +387,6 @@ class WC_Support_System {
 
 		return $validation;
 	}
-
 
 	/**
 	 * Get the tickets that requires an answer (open)
@@ -417,7 +407,6 @@ class WC_Support_System {
 
 		return count( $tickets );
 	}
-
 
 	/**
 	 * Get the user's tickets
@@ -443,7 +432,6 @@ class WC_Support_System {
 		return $tickets;
 	}
 
-
 	/**
 	 * Opening a ticket, this alert is shown if a product is not selected
 	 *
@@ -453,7 +441,6 @@ class WC_Support_System {
 		echo '<div class="alert alert-warning">' . esc_html__( 'Please, choose a product for your support request.', 'wc-support-system' ) . '</div>';
 		exit;
 	}
-
 
 	/**
 	 * New ticket form
@@ -495,7 +482,6 @@ class WC_Support_System {
 			<?php
 	}
 
-
 	/**
 	 * New thread form
 	 *
@@ -529,7 +515,6 @@ class WC_Support_System {
 		</div>
 			<?php
 	}
-
 
 	/**
 	 * Get the ticket status
@@ -565,7 +550,6 @@ class WC_Support_System {
 		return $output;
 	}
 
-
 	/**
 	 * Get the status label of the ticket from the specific status id
 	 *
@@ -589,7 +573,6 @@ class WC_Support_System {
 
 		return $output ? '<div class="bootstrap-iso">' . $output . '</div>' : $output;
 	}
-
 
 	/**
 	 * Get the ticket threads
@@ -616,7 +599,6 @@ class WC_Support_System {
 		return $results;
 	}
 
-
 	/**
 	 * Ajax - Expand a single ticket in back-end
 	 *
@@ -635,7 +617,6 @@ class WC_Support_System {
 		}
 	}
 
-
 	/**
 	 * Ajax - Expand a single ticket in front-end
 	 *
@@ -652,7 +633,6 @@ class WC_Support_System {
 			<?php
 		}
 	}
-
 
 	/**
 	 * Callback - show all ticket threads to the user
@@ -731,7 +711,6 @@ class WC_Support_System {
 		exit;
 	}
 
-
 	/**
 	 * User tickets table
 	 *
@@ -809,7 +788,6 @@ class WC_Support_System {
 				echo '</div>';
 	}
 
-
 	/**
 	 * Ajax - Modal window with ticket change status functionality
 	 */
@@ -849,7 +827,6 @@ class WC_Support_System {
 		}
 	}
 
-
 	/**
 	 * Update the ticket after a new thread
 	 *
@@ -879,7 +856,6 @@ class WC_Support_System {
 		);
 	}
 
-
 	/**
 	 * Callback - Update the ticket status in the db after the admin action
 	 *
@@ -905,7 +881,6 @@ class WC_Support_System {
 		exit;
 	}
 
-
 	/**
 	 * Register to the db that the notification was sent
 	 *
@@ -930,7 +905,6 @@ class WC_Support_System {
 			)
 		);
 	}
-
 
 	/**
 	 * New thread notification used both to user and admin
@@ -980,7 +954,6 @@ class WC_Support_System {
 			$this->notification_sent( $ticket_id );
 		}
 	}
-
 
 	/**
 	 * Insert the new thread into the db
@@ -1041,7 +1014,6 @@ class WC_Support_System {
 		add_action( 'wp_footer', array( $this, 'wss_avoid_resend_footer_script' ) );
 	}
 
-
 	/**
 	 * Avoid resend script
 	 */
@@ -1055,7 +1027,6 @@ class WC_Support_System {
 		<?php
 	}
 
-
 	/**
 	 * Avoid resend notifications on page reload
 	 */
@@ -1068,7 +1039,6 @@ class WC_Support_System {
 			exit;
 		}
 	}
-
 
 	/**
 	 * Add a new thread to a ticket
@@ -1112,7 +1082,6 @@ class WC_Support_System {
 
 		}
 	}
-
 
 	/**
 	 * Insert a new ticket into the db
@@ -1166,7 +1135,6 @@ class WC_Support_System {
 		}
 	}
 
-
 	/**
 	 * Add all plugin admin pages and menu items
 	 *
@@ -1192,7 +1160,6 @@ class WC_Support_System {
 
 	}
 
-
 	/**
 	 * Scren options used for posts per page
 	 *
@@ -1212,7 +1179,6 @@ class WC_Support_System {
 		$this->tickets_obj = new WSS_Table();
 	}
 
-
 	/**
 	 * Display the number of tickets set by the admin
 	 *
@@ -1227,7 +1193,6 @@ class WC_Support_System {
 		return $value;
 
 	}
-
 
 	/**
 	 * Woocommerce Suport System tickets table
@@ -1249,7 +1214,6 @@ class WC_Support_System {
 		<?php
 	}
 
-
 	/**
 	 * Delete the specific thread
 	 *
@@ -1270,7 +1234,6 @@ class WC_Support_System {
 		);
 	}
 
-
 	/**
 	 * Ajax - fires the single thread delete
 	 *
@@ -1289,7 +1252,6 @@ class WC_Support_System {
 			<?php
 		}
 	}
-
 
 	/**
 	 * Callback - call the delete_single_thread method
@@ -1312,7 +1274,6 @@ class WC_Support_System {
 		exit;
 	}
 
-
 	/**
 	 * Ajax - fires the single ticket delete
 	 *
@@ -1333,7 +1294,6 @@ class WC_Support_System {
 			<?php
 		}
 	}
-
 
 	/**
 	 * Delete the specific ticket and all his threads
@@ -1364,7 +1324,6 @@ class WC_Support_System {
 		);
 	}
 
-
 	/**
 	 * Callback - call the delete_single_ticket method
 	 */
@@ -1383,7 +1342,6 @@ class WC_Support_System {
 
 		exit;
 	}
-
 
 	/**
 	 * Button premium call to action
@@ -1678,7 +1636,6 @@ class WC_Support_System {
 		echo '</div>';
 	}
 
-
 	/**
 	 * Save the WSS options
 	 */
@@ -1747,5 +1704,6 @@ class WC_Support_System {
 	}
 
 }
+
 new WC_Support_System();
 

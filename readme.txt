@@ -1,10 +1,11 @@
 === Woocommerce Support System ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.3
-Stable tag: 1.2.3
-Requires at least: 4.0
-Tested up to: 6.4
+Version: 1.2.4
+Stable tag: 1.2.4
+Requires at least: 5.0
+Tested up to: 6.8
+WC tested up to: 9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,6 +122,13 @@ Release Date: 10 May, 2022
 Release Date: 26 March, 2021
 
     * Bug Fix: wp_unslash missed in ticket text
+
+
+= 1.0.5 =
+Release Date: 13 June 2025
+
+    * Enhancement: WordPress 6.8 support 
+    * Enhancement: WooCommerce 9 support 
 
 
 = 1.0.4 =
