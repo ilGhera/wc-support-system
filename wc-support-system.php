@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Woocommerce Support System - Premium
+ * Plugin Name: ilGhera Support System for WooCommerce - Premium
  * Plugin URI: https://www.ilghera.com/product/wc-support-system/
  * Description:  Give support to your WooComerce customers with this fast and easy to use ticket system.
  * Author: ilGhera
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function wss_wc_not_installed() {
 	echo '<div class="notice notice-error is-dismissible">';
 		echo '<p>';
-		echo wp_kses_post( __( '<b>WARNING!</b> <i>WooCommerce Support System</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wc-support-system' ) );
+		echo wp_kses_post( __( '<b>WARNING!</b> <i>ilGhera Support System for WooCommerce</i> requires <b><a href="https://it.wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a></b> to be activated.', 'wc-support-system' ) );
 		echo '</p>';
 	echo '</div>';
 }
