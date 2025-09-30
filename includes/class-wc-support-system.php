@@ -1557,7 +1557,7 @@ class WC_Support_System {
 	public function wss_admin() {
 		?>
 		<div class="wrap">
-			<h1>Woocommerce Support System</h1>
+			<h1>ilGhera Support System for WooCommerce</h1>
 			<form id="wss-support-tickets" name="wss-support-tickets" method="post">
 				<?php
 				$this->tickets_obj->prepare_items();
@@ -1733,7 +1733,7 @@ class WC_Support_System {
 
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
-				echo '<h1>Woocommerce Support System - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
+				echo '<h1>ilGhera Support System for WooCommerce - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
 
 				/*Premium key form*/
 				echo '<form name="wss-options" class="wss-options one-of" method="post" action="">';
@@ -1741,7 +1741,7 @@ class WC_Support_System {
 						echo '<th scope="row">' . esc_html__( 'Premium Key', 'wc-support-system' ) . '</th>';
 						echo '<td>';
 							echo '<input type="text" class="regular-text" name="wss-premium-key" id="wss-premium-key" placeholder="' . esc_html__( 'Add your Premium Key', 'wc-support-system' ) . '" value="' . esc_attr( $premium_key ) . '" />';
-							echo '<p class="description">' . wp_kses_post( __( 'Add your Premium Key and keep update your copy of <strong>Woocommerce Support System - Premium</strong>.', 'wc-support-system' ) ) . '</p>';
+							echo '<p class="description">' . wp_kses_post( __( 'Add your Premium Key and keep update your copy of <strong>ilGhera Support System for WooCommerce - Premium</strong>.', 'wc-support-system' ) ) . '</p>';
 						echo '</td>';
 					echo '</table>';
 					wp_nonce_field( 'wss-premium-key-sent', 'wss-premium-key-sent-nonce' );
