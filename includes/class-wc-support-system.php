@@ -323,6 +323,7 @@ class WC_Support_System {
 				notified 	int(11) NOT NULL,
 				create_time datetime NOT NULL,
 				update_time datetime NOT NULL,
+                recipients  longtext,
 				UNIQUE KEY id (id)
 			) $charset_collate;";
 
