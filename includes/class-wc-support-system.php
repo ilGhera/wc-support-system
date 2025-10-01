@@ -1502,10 +1502,10 @@ class WC_Support_System {
 		$unread_tickets = $this->get_awaiting_tickets();
 		$bouble_count   = '<span class="update-plugins count-' . $unread_tickets . '" title="' . $unread_tickets . '""><span class="update-count">' . $unread_tickets . '</span></span>';
 
-		$menu_label = sprintf( 'WC Support %s', $bouble_count );
+		$menu_label = sprintf( 'Support System for WC %s', $bouble_count );
 
 		/*Main menu item*/
-		$hook = add_menu_page( 'WC Support', $menu_label, 'manage_options', 'wc-support-system', array( $this, 'wss_admin' ), 'dashicons-tickets-alt', 59 );
+		$hook = add_menu_page( 'Support System for WC', $menu_label, 'manage_options', 'wc-support-system', array( $this, 'wss_admin' ), 'dashicons-tickets-alt', 59 );
 
 		/*Tickets*/
 		add_submenu_page( 'wc-support-system', 'Tickets', 'Tickets', 'manage_options', 'wc-support-system' );
