@@ -197,9 +197,9 @@ class WC_Support_System {
 	public function wss_admin_scripts() {
 		$admin_page = get_current_screen();
 
-		if ( in_array( $admin_page->base, array( 'toplevel_page_wc-support-system', 'wc-support_page_wss-settings' ), true ) ) {
+		if ( in_array( $admin_page->base, array( 'toplevel_page_wc-support-system', 'support-system-for-wc_page_wss-settings' ), true ) ) {
 
-			if ( 'wc-support_page_wss-settings' === $admin_page->base ) {
+			if ( 'support-system-for-wc_page_wss-settings' === $admin_page->base ) {
 
 				wp_enqueue_style( 'tzcheckbox-style', WSS_URI . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.css', array(), WSS_VERSION );
 				wp_enqueue_script( 'tzcheckbox', WSS_URI . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.js', array( 'jquery' ), WSS_VERSION, false );
