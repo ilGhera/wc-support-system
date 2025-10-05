@@ -1,4 +1,4 @@
-=== Woocommerce Support System ===
+=== ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
 Version: 1.2.4
@@ -14,7 +14,7 @@ Give support to your WooComerce customers with this fast and easy to use ticket 
 
 == Description ==
 Customer care is a very important part of our online store and a support service is essential to bring our e-commerce to the next level.
-WooCommerce Support System integrates into your WordPress site a simple and fast support system, which will allow your users to open ticket assistance for WooCommerce products purchased, then receiving a notification when a reply is published.
+ilGhera Support System for WooCommerce integrates into your WordPress site a simple and fast support system, which will allow your users to open ticket assistance for WooCommerce products purchased, then receiving a notification when a reply is published.
 The ability to update the ticket with new messages, allows you to keep the logical thread of the conversation, making more productive your work and facilitating the user.
 
 
@@ -33,15 +33,15 @@ https://youtu.be/XUtmBvoPwkI
 **From your WordPress dashboard**
 
 * Visit Plugins > Add New.
-* Search for WooCommerce Support System and download it.
-* Activate WooCommerce Support System from your Plugins page.
-* Once Activated, go to <strong>WC Support</strong> menu and set you preferences.
+* Search for ilGhera Support System for WooCommerce and download it.
+* Activate ilGhera Support System for WooCommerce from your Plugins page.
+* Once Activated, go to <strong>Support System for WC</strong> menu and set you preferences.
 
 **From WordPress.org**
 
-* Download WooCommerce Support System
+* Download ilGhera Support System for WooCommerce
 * Upload the wc-support-system folder to your /wp-content/plugins/ directory, using your favorite method (ftp, sftp, scp, etc...)
-* Activate WooCommerce Support System from your Plugins page.
+* Activate ilGhera Support System for WooCommerce from your Plugins page.
 * Once Activated, go to **WC Support/ Settings** menu and set you preferences.
 
 

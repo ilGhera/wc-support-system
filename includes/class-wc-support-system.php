@@ -115,9 +115,9 @@ class WC_Support_System {
 	public function wss_admin_scripts() {
 		$admin_page = get_current_screen();
 
-		if ( in_array( $admin_page->base, array( 'toplevel_page_wc-support-system', 'wc-support_page_wss-settings' ), true ) ) {
+		if ( in_array( $admin_page->base, array( 'toplevel_page_wc-support-system', 'support-system-for-wc_page_wss-settings' ), true ) ) {
 
-			if ( 'wc-support_page_wss-settings' === $admin_page->base ) {
+			if ( 'support-system-for-wc_page_wss-settings' === $admin_page->base ) {
 
 				wp_enqueue_style( 'tzcheckbox-style', WSS_URI . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.css', array(), WSS_VERSION );
 				wp_enqueue_script( 'tzcheckbox', WSS_URI . 'js/tzCheckbox/jquery.tzCheckbox/jquery.tzCheckbox.js', array( 'jquery' ), WSS_VERSION, false );
@@ -237,6 +237,7 @@ class WC_Support_System {
 				notified 	int(11) NOT NULL,
 				create_time datetime NOT NULL,
 				update_time datetime NOT NULL,
+                recipients  longtext,
 				UNIQUE KEY id (id)
 			) $charset_collate;";
 
@@ -1145,10 +1146,10 @@ class WC_Support_System {
 		$unread_tickets = $this->get_awaiting_tickets();
 		$bouble_count   = '<span class="update-plugins count-' . $unread_tickets . '" title="' . $unread_tickets . '""><span class="update-count">' . $unread_tickets . '</span></span>';
 
-		$menu_label = sprintf( 'WC Support %s', $bouble_count );
+		$menu_label = sprintf( 'Support System for WC %s', $bouble_count );
 
 		/*Main menu item*/
-		$hook = add_menu_page( 'WC Support', $menu_label, 'manage_options', 'wc-support-system', array( $this, 'wss_admin' ), 'dashicons-tickets-alt', 59 );
+		$hook = add_menu_page( 'Support System for WC', $menu_label, 'manage_options', 'wc-support-system', array( $this, 'wss_admin' ), 'dashicons-tickets-alt', 59 );
 
 		/*Tickets*/
 		add_submenu_page( 'wc-support-system', 'Tickets', 'Tickets', 'manage_options', 'wc-support-system' );
@@ -1200,7 +1201,7 @@ class WC_Support_System {
 	public function wss_admin() {
 		?>
 		<div class="wrap">
-			<h1>Woocommerce Support System</h1>
+			<h1>ilGhera Support System for WooCommerce</h1>
 			<form id="wss-support-tickets" name="wss-support-tickets" method="post">
 				<?php
 				$this->tickets_obj->prepare_items();
@@ -1381,7 +1382,6 @@ class WC_Support_System {
 
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
-				echo '<h1>Woocommerce Support System - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
 				echo '<form name="wss-options" class="wss-options" method="post" action="">';
 					echo '<table class="form-table">';
 
