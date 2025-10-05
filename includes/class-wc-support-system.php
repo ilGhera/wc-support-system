@@ -1382,7 +1382,7 @@ class WC_Support_System {
 
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
-                echo '<h1>ilGhera Support System for WooCommerce - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
+				echo '<h1>ilGhera Support System for WooCommerce - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
 				echo '<form name="wss-options" class="wss-options" method="post" action="">';
 					echo '<table class="form-table">';
 
@@ -1642,11 +1642,11 @@ class WC_Support_System {
 	 */
 	public function wss_save_settings() {
 
-        if ( ! current_user_can( 'manage_options' ) ) {
-            return;
-        }
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        /* Premium key form */
+		/* Premium key form */
 		if ( isset( $_POST['premium-key-sent'], $_POST['wss-premium-key-sent-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-premium-key-sent-nonce'] ) ), 'wss-premium-key-sent' ) ) {
 
 			/*Premium key*/
@@ -1655,7 +1655,7 @@ class WC_Support_System {
 
 		}
 
-        /* Options form */
+		/* Options form */
 		if ( isset( $_POST['wss-options-hidden'], $_POST['wss-options-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-options-nonce'] ) ), 'wss-options' ) ) {
 
 			/*Support page*/

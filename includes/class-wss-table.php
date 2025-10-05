@@ -37,32 +37,32 @@ class WSS_Table extends WP_List_Table {
 		);
 	}
 
-    /**
-     * Returns an array of CSS classes to be applied to the table.
-     * This method overrides the one from the parent WP_List_Table class.
-     *
-     * @return array Array of CSS class names.
-     */
-    protected function get_table_classes() {
-        /**
-         * Get the default classes from WP_List_Table.
-         */
-        $classes = parent::get_table_classes();
+	/**
+	 * Returns an array of CSS classes to be applied to the table.
+	 * This method overrides the one from the parent WP_List_Table class.
+	 *
+	 * @return array Array of CSS class names.
+	 */
+	protected function get_table_classes() {
+		/**
+		 * Get the default classes from WP_List_Table.
+		 */
+		$classes = parent::get_table_classes();
 
-        /**
-         * Remove the "ticket" class if present, as you want "tickets".
-         */
-        $classes = array_diff( $classes, array( 'ticket' ) );
+		/**
+		 * Remove the "ticket" class if present, as you want "tickets".
+		 */
+		$classes = array_diff( $classes, array( 'ticket' ) );
 
-        /**
-         * Add the "tickets" class if you explicitly want it.
-         */
-        if ( ! in_array( 'tickets', $classes ) ) {
-            $classes[] = 'tickets';
-        }
+		/**
+		 * Add the "tickets" class if you explicitly want it.
+		 */
+		if ( ! in_array( 'tickets', $classes, true ) ) {
+			$classes[] = 'tickets';
+		}
 
-        return $classes;
-    }
+		return $classes;
+	}
 
 	/**
 	 * Get all tickets from the db
