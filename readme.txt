@@ -1,11 +1,11 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.4
-Stable tag: 1.2.4
+Version: 1.2.5
+Stable tag: 1.2.5
 Requires at least: 5.0
 Tested up to: 6.8
-WC tested up to: 9
+WC tested up to: 10
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -56,6 +56,15 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.2.5 =
+Release Date: 5 October 2025
+
+    * Enhancement: Plugin renamed
+    * Enhancement: New plugin images
+    * Enhancement: WooCommerce 10 support 
+    * Enhancement: Coding standard 
+
 
 = 1.2.4 =
 Release Date: 16 June 2025
