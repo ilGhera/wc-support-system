@@ -1382,6 +1382,7 @@ class WC_Support_System {
 
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
+                echo '<h1>ilGhera Support System for WooCommerce - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
 				echo '<form name="wss-options" class="wss-options" method="post" action="">';
 					echo '<table class="form-table">';
 
