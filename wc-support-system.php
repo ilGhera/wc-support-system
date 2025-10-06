@@ -4,7 +4,7 @@
  * Plugin URI: https://www.ilghera.com/product/wc-support-system/
  * Description:  Give support to your WooComerce customers with this fast and easy to use ticket system.
  * Author: ilGhera
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author URI: https://ilghera.com
  * Requires at least: 5.0
  * Tested up to: 6.8
@@ -55,7 +55,7 @@ function wss_activation() {
 		define( 'WSS_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WSS_URI', plugin_dir_url( __FILE__ ) );
 		define( 'WSS_INCLUDES', WSS_DIR . 'includes/' );
-		define( 'WSS_VERSION', '1.2.4' );
+		define( 'WSS_VERSION', '1.2.6' );
 
 		/*Files required*/
 		require WSS_INCLUDES . 'class-wc-support-system.php';

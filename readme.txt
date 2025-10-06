@@ -1,8 +1,8 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.5
-Stable tag: 1.2.5
+Version: 1.2.6
+Stable tag: 1.2.6
 Requires at least: 5.0
 Tested up to: 6.8
 WC tested up to: 10
@@ -56,6 +56,12 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.2.6 =
+Release Date: 6 October 2025
+
+    * Enhancement: Coding standard 
+
 
 = 1.2.5 =
 Release Date: 5 October 2025
