@@ -1360,7 +1360,6 @@ class WC_Support_System {
 		echo '</div>';
 	}
 
-
 	/**
 	 * WSS settings page
 	 */
