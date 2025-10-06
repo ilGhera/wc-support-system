@@ -674,10 +674,10 @@ class WC_Support_System {
 			if ( is_super_admin() ) {
 
 				echo '<form>';
-					echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wss' ) . '</label>';
+					echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wc-support-system' ) . '</label>';
 					$this->go_premium( true );
-					echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wss' ) . '</p>';
-					echo '<input type="text" name="additional-recipients-' . intval( $ticket_id ) . '" class="additional-recipients additional-recipients-' . intval( $ticket_id ) . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . esc_html__( 'Add one or more email addresses', 'wss' ) . '">';
+					echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wc-support-system' ) . '</p>';
+					echo '<input type="text" name="additional-recipients-' . intval( $ticket_id ) . '" class="additional-recipients additional-recipients-' . intval( $ticket_id ) . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . esc_html__( 'Add one or more email addresses', 'wc-support-system' ) . '">';
 				echo '</form>';
 
 			}
@@ -782,7 +782,7 @@ class WC_Support_System {
 					echo '</div>';
 				else :
 					echo '<div class="bootstrap-iso">';
-						echo '<div class="alert alert-danger">' . esc_html__( 'You must be logged in to access support service.', 'wss' ) . '</div>';
+						echo '<div class="alert alert-danger">' . esc_html__( 'You must be logged in to access support service.', 'wc-support-system' ) . '</div>';
 					echo '</div>';
 				endif;
 
@@ -937,7 +937,7 @@ class WC_Support_System {
 		}
 
 		/* Translators: 1 the user name 2 the ticket id */
-		$subject   = sprintf( __( '%1$s - Update ticket #%2$d' ), $user_name, $ticket_id );
+        $subject   = sprintf( __( '%1$s - Update ticket #%2$d', 'wc-support-system' ), $user_name, $ticket_id );
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		$headers[] = 'From: ' . $support_email_name . ' <' . $support_email . '>';
 		$message   = '<style>img {display: block; margin: 1rem 0; max-width: 700px; height: auto;}</style>';
@@ -1603,7 +1603,7 @@ class WC_Support_System {
 
 								$default_text = sprintf(
 									/* Translators: the website name */
-									__( "Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 'wss' ),
+									__( "Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 'wc-support-system' ),
 									get_bloginfo()
 								);
 
