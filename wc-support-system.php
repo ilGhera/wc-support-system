@@ -11,6 +11,7 @@
  * WC tested up to: 10
  * Text Domain: wc-support-system
  * Domain Path: /languages
+ * Requires Plugins: woocommerce
  * License: GPLv3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  *
