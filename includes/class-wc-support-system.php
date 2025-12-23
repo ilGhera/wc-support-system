@@ -1145,6 +1145,18 @@ class WC_Support_System {
 
 			if ( $ticket_id && $new_status ) {
 
+				// Check user capabilities
+				$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
+
+				if ( ! $has_admin_capability ) {
+					// If not admin/shop manager, check if user owns the ticket
+					$ticket = self::get_ticket( $ticket_id );
+					if ( ! $ticket || (int) $ticket->user_id !== get_current_user_id() ) {
+						wp_send_json_error( array( 'message' => __( 'You do not have permission to change this ticket status.', 'wc-support-system' ) ) );
+						exit;
+					}
+				}
+
 				$this->update_ticket( $ticket_id, $update_time, $new_status );
 				$new_label = self::get_ticket_status_label( $new_status );
 
@@ -1621,6 +1633,12 @@ class WC_Support_System {
 
 		if ( isset( $_POST['wss-delete-single-thread-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-delete-single-thread-nonce'] ) ), 'wss-delete-single-thread' ) ) {
 
+			// Check user capabilities - only shop managers and administrators can delete threads
+			if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to delete threads.', 'wc-support-system' ) ) );
+				exit;
+			}
+
 			$thread_id = isset( $_POST['thread_id'] ) ? sanitize_text_field( wp_unslash( $_POST['thread_id'] ) ) : $thread_id;
 
 			if ( $thread_id ) {
@@ -1691,6 +1709,12 @@ class WC_Support_System {
 	public function delete_single_ticket_callback() {
 
 		if ( isset( $_POST['wss-delete-single-ticket-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-delete-single-ticket-nonce'] ) ), 'wss-delete-single-ticket' ) ) {
+
+			// Check user capabilities - only shop managers and administrators can delete tickets
+			if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to delete tickets.', 'wc-support-system' ) ) );
+				exit;
+			}
 
 			$ticket_id = isset( $_POST['ticket_id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket_id'] ) ) : '';
 
