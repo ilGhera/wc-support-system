@@ -67,6 +67,17 @@ function wss_premium_activation() {
 
 		/*Files required*/
 		require WSS_INCLUDES . 'ilghera-notice/class-ilghera-notice.php';
+
+		/* Register product with ilGhera Notice */
+		Ilghera_Notice::get_instance()->add_product(
+			array(
+				'name'   => 'ilGhera Support System for WooCommerce - Premium',
+				'slug'   => 'woocommerce-support-system-premium',
+				'sign'   => 'wss',
+				'domain' => 'wc-support-system',
+			)
+		);
+
 		require WSS_INCLUDES . 'class-wc-support-system.php';
 		require WSS_INCLUDES . 'class-wss-table.php';
 
