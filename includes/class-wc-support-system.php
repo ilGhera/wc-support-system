@@ -490,8 +490,14 @@ class WC_Support_System {
 
 			$order = wc_get_order( $order_id );
 
+			if ( ! $order ) {
+				return null;
+			}
+
+			$order_email = $order->get_billing_email();
+
 			/*User not logged in*/
-			if ( $order->get_meta( '_billing_email' ) === $user_email ) {
+			if ( $order_email === $user_email ) {
 				$items = $order->get_items();
 				foreach ( $items as $item ) {
 					$item_data = $item->get_data();
@@ -529,10 +535,11 @@ class WC_Support_System {
 
 			if ( $products ) {
 				if ( $setcookie ) {
-					setcookie( 'wss-support-access', 1 );
-					setcookie( 'wss-guest-name', $guest_name );
-					setcookie( 'wss-guest-email', $email );
-					setcookie( 'wss-order-id', $order_id );
+					$expire = time() + (86400 * 30); // 30 days
+					setcookie( 'wss-support-access', '1', $expire, COOKIEPATH, COOKIE_DOMAIN );
+					setcookie( 'wss-guest-name', $guest_name, $expire, COOKIEPATH, COOKIE_DOMAIN );
+					setcookie( 'wss-guest-email', $email, $expire, COOKIEPATH, COOKIE_DOMAIN );
+					setcookie( 'wss-order-id', $order_id, $expire, COOKIEPATH, COOKIE_DOMAIN );
 
 					wp_safe_redirect( $this->support_page_url );
 					exit;
@@ -928,8 +935,9 @@ class WC_Support_System {
 					$has_access = true;
 				}
 			}
-			// Check if guest user owns the ticket (via cookie)
-			elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
+
+			// Check if guest user owns the ticket (via cookie) - separate check to handle all cases
+			if ( ! $has_access && isset( $_COOKIE['wss-guest-email'] ) ) {
 				$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
 				if ( $ticket->user_email === $guest_email ) {
 					$has_access = true;
