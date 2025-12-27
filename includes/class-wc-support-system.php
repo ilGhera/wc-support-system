@@ -357,8 +357,14 @@ class WC_Support_System {
 
 			$order = wc_get_order( $order_id );
 
+			if ( ! $order ) {
+				return null;
+			}
+
+			$order_email = $order->get_billing_email();
+
 			/*User not logged in*/
-			if ( $order->get_meta( '_billing_email' ) === $user_email ) {
+			if ( $order_email === $user_email ) {
 				$items = $order->get_items();
 				foreach ( $items as $item ) {
 					$item_data = $item->get_data();

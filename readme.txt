@@ -1,8 +1,8 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.8
-Stable tag: 1.2.8
+Version: 1.2.9
+Stable tag: 1.2.9
 Requires at least: 5.0
 Tested up to: 6.8
 WC tested up to: 10
@@ -56,6 +56,12 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.2.9 =
+Release Date: 27 December 2025
+
+    * Bug Fix: Corrected billing email retrieval method in get_user_products()
+    * Bug Fix: Added null check for order existence
 
 = 1.2.8 =
 Release Date: 27 December 2025
