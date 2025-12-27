@@ -905,7 +905,7 @@ class WC_Support_System {
 				"
                 SELECT *
                 FROM {$wpdb->prefix}wss_support_tickets
-                WHERE id = %d 
+                WHERE id = %d
                 ",
 				$ticket_id
 			)
@@ -913,6 +913,33 @@ class WC_Support_System {
 
 		if ( $results ) {
 			$ticket = $results[0];
+
+			// Verify ownership or admin privileges
+			$has_access = false;
+
+			// Check if user is admin or shop manager
+			if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' ) ) {
+				$has_access = true;
+			}
+			// Check if logged in user owns the ticket
+			elseif ( is_user_logged_in() ) {
+				$current_user = wp_get_current_user();
+				if ( $ticket->user_email === $current_user->user_email ) {
+					$has_access = true;
+				}
+			}
+			// Check if guest user owns the ticket (via cookie)
+			elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
+				$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+				if ( $ticket->user_email === $guest_email ) {
+					$has_access = true;
+				}
+			}
+
+			if ( ! $has_access ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to view this ticket.', 'wc-support-system' ) ) );
+				exit;
+			}
 
 			echo '<div id="wss-ticket" class="ticket-' . esc_attr( $ticket_id ) . '">';
 
