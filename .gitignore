@@ -1,2 +1,5 @@
 plugin-update-checker/
 includes/ilghera-notice/
+
+# Documentazione personale e file di lavoro
+*.md
