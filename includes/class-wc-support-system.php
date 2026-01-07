@@ -1184,9 +1184,32 @@ class WC_Support_System {
 				$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
 
 				if ( ! $has_admin_capability ) {
-					// If not admin/shop manager, check if user owns the ticket
+					// If not admin/shop manager, verify ticket ownership
 					$ticket = self::get_ticket( $ticket_id );
-					if ( ! $ticket || (int) $ticket->user_id !== get_current_user_id() ) {
+
+					if ( ! $ticket ) {
+						wp_send_json_error( array( 'message' => __( 'Ticket not found.', 'wc-support-system' ) ) );
+						exit;
+					}
+
+					$has_access = false;
+
+					// Check if logged in user owns the ticket (by email)
+					if ( is_user_logged_in() ) {
+						$current_user = wp_get_current_user();
+						if ( $ticket->user_email === $current_user->user_email ) {
+							$has_access = true;
+						}
+					}
+					// Check if guest user owns the ticket (via cookie)
+					elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
+						$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+						if ( $ticket->user_email === $guest_email ) {
+							$has_access = true;
+						}
+					}
+
+					if ( ! $has_access ) {
 						wp_send_json_error( array( 'message' => __( 'You do not have permission to change this ticket status.', 'wc-support-system' ) ) );
 						exit;
 					}
