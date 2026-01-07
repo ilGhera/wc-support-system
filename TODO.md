@@ -170,3 +170,60 @@ if ( ! $has_admin_capability ) {
 - The Wordfence report rejected the previous fix because guest users couldn't change their ticket status
 - This fix ensures consistency across all ownership verification checks
 - Follows the same pattern as the already-accepted `get_ticket_content_callback()` fix
+
+---
+
+### 5. `update_additional_recipients()` - ADDED SECURITY (line ~1427-1480)
+**File**: `includes/class-wc-support-system.php`
+
+**Issue**: Function was exposed via `wp_ajax_nopriv_` without ANY ownership verification
+- Anyone (logged-in or guest) could update recipients of ANY ticket
+- Critical security vulnerability for data manipulation
+
+**Added ownership verification**:
+- Admin/shop managers can update recipients of any ticket
+- Regular users can ONLY update recipients of their own tickets (verified via email)
+- Guest users can ONLY update recipients of their own tickets (via cookie)
+
+**Implementation**:
+```php
+// Check user capabilities or ownership
+$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
+
+if ( ! $has_admin_capability ) {
+    // If not admin/shop manager, verify ticket ownership
+    $ticket = self::get_ticket( $ticket_id );
+
+    if ( ! $ticket ) {
+        wp_send_json_error( array( 'message' => __( 'Ticket not found.', 'wc-support-system' ) ) );
+        exit;
+    }
+
+    $has_access = false;
+
+    // Check if logged in user owns the ticket (by email)
+    if ( is_user_logged_in() ) {
+        $current_user = wp_get_current_user();
+        if ( $ticket->user_email === $current_user->user_email ) {
+            $has_access = true;
+        }
+    }
+    // Check if guest user owns the ticket (via cookie)
+    elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
+        $guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+        if ( $ticket->user_email === $guest_email ) {
+            $has_access = true;
+        }
+    }
+
+    if ( ! $has_access ) {
+        wp_send_json_error( array( 'message' => __( 'You do not have permission to update recipients for this ticket.', 'wc-support-system' ) ) );
+        exit;
+    }
+}
+```
+
+**Why this is critical**:
+- This function was completely unprotected despite being exposed to non-logged-in users
+- Prevents unauthorized manipulation of ticket recipients
+- Maintains functionality for legitimate guest users while preventing abuse
