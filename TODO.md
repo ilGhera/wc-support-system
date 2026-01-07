@@ -1,5 +1,33 @@
 # WC Support System - Release History
 
+## 🚧 PENDING RELEASE - Security Fixes for Wordfence Report
+
+### Security Fixes Applied (Awaiting Release)
+
+Two critical security vulnerabilities have been fixed in response to Wordfence vulnerability report rejection:
+
+#### 1. Fixed: `change_ticket_status_callback()` Ownership Verification
+**Issue**: Previous fix used `user_id` comparison which failed for guest users (user_id = 0)
+**Fix**: Now uses `user_email` comparison with proper guest user support via cookie
+**Impact**: Guest users can now properly change status of their own tickets
+
+#### 2. Added: `update_additional_recipients()` Security Check
+**Issue**: Function was exposed via `wp_ajax_nopriv_` without ANY ownership verification
+**Fix**: Added complete ownership verification using email-based comparison
+**Impact**: Prevents unauthorized users from modifying ticket recipients
+
+**Files Modified**: `includes/class-wc-support-system.php`
+
+**Commits**:
+- `ae3c97e` - Security fix: Correct ownership verification in change_ticket_status_callback
+- `93c95d8` - Security fix: Add ownership verification to update_additional_recipients
+
+**Next Steps**: Ready for Wordfence resubmission and wordpress.org release
+
+---
+
+# WC Support System - Release History
+
 ## ✅ Version 1.2.9 (Free) / 1.2.7 (Premium) - 27 December 2025
 
 ### Bug Fix: Billing Email Retrieval in get_user_products()
