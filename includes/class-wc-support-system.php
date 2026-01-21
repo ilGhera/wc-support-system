@@ -1172,54 +1172,57 @@ class WC_Support_System {
 	 */
 	public function change_ticket_status_callback() {
 
-		if ( isset( $_POST['wss-change-ticket-status-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-change-ticket-status-nonce'] ) ), 'wss-change-ticket-status' ) ) {
+		// Verify nonce first - exit if invalid
+		if ( ! isset( $_POST['wss-change-ticket-status-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-change-ticket-status-nonce'] ) ), 'wss-change-ticket-status' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'wc-support-system' ) ) );
+			exit;
+		}
 
-			$ticket_id   = isset( $_POST['ticket_id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket_id'] ) ) : '';
-			$update_time = isset( $_POST['update_time'] ) ? sanitize_text_field( wp_unslash( $_POST['update_time'] ) ) : '';
-			$new_status  = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
+		$ticket_id   = isset( $_POST['ticket_id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket_id'] ) ) : '';
+		$update_time = isset( $_POST['update_time'] ) ? sanitize_text_field( wp_unslash( $_POST['update_time'] ) ) : '';
+		$new_status  = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
 
-			if ( $ticket_id && $new_status ) {
+		if ( $ticket_id && $new_status ) {
 
-				// Check user capabilities
-				$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
+			// Check user capabilities
+			$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
 
-				if ( ! $has_admin_capability ) {
-					// If not admin/shop manager, verify ticket ownership
-					$ticket = self::get_ticket( $ticket_id );
+			if ( ! $has_admin_capability ) {
+				// If not admin/shop manager, verify ticket ownership
+				$ticket = self::get_ticket( $ticket_id );
 
-					if ( ! $ticket ) {
-						wp_send_json_error( array( 'message' => __( 'Ticket not found.', 'wc-support-system' ) ) );
-						exit;
+				if ( ! $ticket ) {
+					wp_send_json_error( array( 'message' => __( 'Ticket not found.', 'wc-support-system' ) ) );
+					exit;
+				}
+
+				$has_access = false;
+
+				// Check if logged in user owns the ticket (by email)
+				if ( is_user_logged_in() ) {
+					$current_user = wp_get_current_user();
+					if ( $ticket->user_email === $current_user->user_email ) {
+						$has_access = true;
 					}
-
-					$has_access = false;
-
-					// Check if logged in user owns the ticket (by email)
-					if ( is_user_logged_in() ) {
-						$current_user = wp_get_current_user();
-						if ( $ticket->user_email === $current_user->user_email ) {
-							$has_access = true;
-						}
-					}
-					// Check if guest user owns the ticket (via cookie)
-					elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
-						$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-						if ( $ticket->user_email === $guest_email ) {
-							$has_access = true;
-						}
-					}
-
-					if ( ! $has_access ) {
-						wp_send_json_error( array( 'message' => __( 'You do not have permission to change this ticket status.', 'wc-support-system' ) ) );
-						exit;
+				}
+				// Check if guest user owns the ticket (via cookie)
+				elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
+					$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+					if ( $ticket->user_email === $guest_email ) {
+						$has_access = true;
 					}
 				}
 
-				$this->update_ticket( $ticket_id, $update_time, $new_status );
-				$new_label = self::get_ticket_status_label( $new_status );
-
-				echo wp_kses_post( $new_label );
+				if ( ! $has_access ) {
+					wp_send_json_error( array( 'message' => __( 'You do not have permission to change this ticket status.', 'wc-support-system' ) ) );
+					exit;
+				}
 			}
+
+			$this->update_ticket( $ticket_id, $update_time, $new_status );
+			$new_label = self::get_ticket_status_label( $new_status );
+
+			echo wp_kses_post( $new_label );
 		}
 
 		exit;
