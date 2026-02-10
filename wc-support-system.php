@@ -7,7 +7,7 @@
  * Version: 1.2.10
  * Author URI: https://ilghera.com
  * Requires at least: 5.0
- * Tested up to: 6.8
+ * Tested up to: 6.9
  * WC tested up to: 10
  * Text Domain: wc-support-system
  * Domain Path: /languages
@@ -55,7 +55,7 @@ function wss_activation() {
 		define( 'WSS_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WSS_URI', plugin_dir_url( __FILE__ ) );
 		define( 'WSS_INCLUDES', WSS_DIR . 'includes/' );
-		define( 'WSS_VERSION', '1.2.7' );
+		define( 'WSS_VERSION', '1.2.10' );
 
 		/*Files required*/
 		require WSS_INCLUDES . 'class-wc-support-system.php';
