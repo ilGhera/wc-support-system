@@ -3,3 +3,4 @@ includes/ilghera-notice/
 
 # Documentazione personale e file di lavoro
 *.md
+.aider*
