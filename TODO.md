@@ -4,7 +4,7 @@
 
 ### Security Fixes Applied (Awaiting Release)
 
-Two critical security vulnerabilities have been fixed in response to Wordfence vulnerability report rejection:
+Three critical security vulnerabilities have been fixed in response to Wordfence vulnerability reports:
 
 #### 1. Fixed: `change_ticket_status_callback()` Ownership Verification
 **Issue**: Previous fix used `user_id` comparison which failed for guest users (user_id = 0)
@@ -16,11 +16,54 @@ Two critical security vulnerabilities have been fixed in response to Wordfence v
 **Fix**: Added complete ownership verification using email-based comparison
 **Impact**: Prevents unauthorized users from modifying ticket recipients
 
+#### 3. Fixed: Guest User Cookie Validation Bypass (Wordfence Report - Feb 2026)
+**Issue**: Guest user access validation relied solely on the `wss-guest-email` cookie which could be easily spoofed by attackers. An unauthenticated attacker could set a fake cookie and access any ticket by ID via the `wp_ajax_nopriv_get_ticket_content` endpoint.
+**CVE**: Pending (Wordfence report: unauthorized access to `get_ticket_content_callback` in versions up to 1.2.6)
+
+**Fix**: Created new `validate_guest_ticket_access()` method that performs complete validation:
+1. Verifies both `wss-guest-email` AND `wss-order-id` cookies exist
+2. Validates the order exists in WooCommerce database
+3. Confirms the cookie email matches the order's billing email
+4. Verifies ticket ownership matches the validated email
+
+**Functions Updated**:
+- `get_ticket_content_callback()` - Primary target of the vulnerability
+- `change_ticket_status_callback()` - Also vulnerable to cookie spoofing
+- `update_additional_recipients()` - Also vulnerable to cookie spoofing
+
+**Implementation**:
+```php
+private function validate_guest_ticket_access( $ticket_email ) {
+    if ( ! isset( $_COOKIE['wss-guest-email'], $_COOKIE['wss-order-id'] ) ) {
+        return false;
+    }
+
+    $guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+    $order_id    = sanitize_text_field( wp_unslash( $_COOKIE['wss-order-id'] ) );
+
+    // Validate that the order exists and email matches the order's billing email.
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) {
+        return false;
+    }
+
+    if ( $order->get_billing_email() !== $guest_email ) {
+        return false;
+    }
+
+    // Verify ticket ownership.
+    return $ticket_email === $guest_email;
+}
+```
+
+**Impact**: Attackers can no longer spoof guest cookies to access arbitrary tickets. The `wp_ajax_nopriv_` hooks are preserved to maintain guest user functionality, but access is now properly validated against WooCommerce order data.
+
 **Files Modified**: `includes/class-wc-support-system.php`
 
 **Commits**:
 - `ae3c97e` - Security fix: Correct ownership verification in change_ticket_status_callback
 - `93c95d8` - Security fix: Add ownership verification to update_additional_recipients
+- (pending) - Security fix: Add robust guest cookie validation to prevent unauthorized ticket access
 
 **Next Steps**: Ready for Wordfence resubmission and wordpress.org release
 

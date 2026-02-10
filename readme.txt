@@ -1,8 +1,8 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.9
-Stable tag: 1.2.9
+Version: 1.2.10
+Stable tag: 1.2.10
 Requires at least: 5.0
 Tested up to: 6.8
 WC tested up to: 10
@@ -56,6 +56,13 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.2.10 =
+Release Date: 10 February 2026
+
+    * Security: Fixed guest user cookie validation bypass vulnerability
+    * Security: Added robust order-based validation for guest ticket access
+    * Security: Prevent unauthenticated attackers from viewing arbitrary ticket content
 
 = 1.2.9 =
 Release Date: 27 December 2025

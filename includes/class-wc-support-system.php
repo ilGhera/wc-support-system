@@ -570,6 +570,40 @@ class WC_Support_System {
 	}
 
 	/**
+	 * Validate guest user access to a ticket
+	 *
+	 * Verifies that:
+	 * 1. Both wss-guest-email and wss-order-id cookies exist
+	 * 2. The order exists and the email matches the order's billing email
+	 * 3. The ticket's user_email matches the guest email
+	 *
+	 * @param string $ticket_email The email associated with the ticket.
+	 *
+	 * @return bool True if access is valid, false otherwise.
+	 */
+	private function validate_guest_ticket_access( $ticket_email ) {
+		if ( ! isset( $_COOKIE['wss-guest-email'], $_COOKIE['wss-order-id'] ) ) {
+			return false;
+		}
+
+		$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
+		$order_id    = sanitize_text_field( wp_unslash( $_COOKIE['wss-order-id'] ) );
+
+		// Validate that the order exists and email matches the order's billing email.
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
+
+		if ( $order->get_billing_email() !== $guest_email ) {
+			return false;
+		}
+
+		// Verify ticket ownership.
+		return $ticket_email === $guest_email;
+	}
+
+	/**
 	 * Get the tickets that requires an answer (open)
 	 *
 	 * @return int
@@ -936,12 +970,9 @@ class WC_Support_System {
 				}
 			}
 
-			// Check if guest user owns the ticket (via cookie) - separate check to handle all cases
-			if ( ! $has_access && isset( $_COOKIE['wss-guest-email'] ) ) {
-				$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-				if ( $ticket->user_email === $guest_email ) {
-					$has_access = true;
-				}
+			// Check if guest user owns the ticket (via validated cookies) - separate check to handle all cases
+			if ( ! $has_access && $this->validate_guest_ticket_access( $ticket->user_email ) ) {
+				$has_access = true;
 			}
 
 			if ( ! $has_access ) {
@@ -1205,12 +1236,9 @@ class WC_Support_System {
 						$has_access = true;
 					}
 				}
-				// Check if guest user owns the ticket (via cookie)
-				elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
-					$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-					if ( $ticket->user_email === $guest_email ) {
-						$has_access = true;
-					}
+				// Check if guest user owns the ticket (via validated cookies)
+				elseif ( $this->validate_guest_ticket_access( $ticket->user_email ) ) {
+					$has_access = true;
 				}
 
 				if ( ! $has_access ) {
@@ -1457,12 +1485,9 @@ class WC_Support_System {
 							$has_access = true;
 						}
 					}
-					// Check if guest user owns the ticket (via cookie)
-					elseif ( isset( $_COOKIE['wss-guest-email'] ) ) {
-						$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-						if ( $ticket->user_email === $guest_email ) {
-							$has_access = true;
-						}
+					// Check if guest user owns the ticket (via validated cookies)
+					elseif ( $this->validate_guest_ticket_access( $ticket->user_email ) ) {
+						$has_access = true;
 					}
 
 					if ( ! $has_access ) {
