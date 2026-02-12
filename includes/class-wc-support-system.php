@@ -1012,7 +1012,7 @@ class WC_Support_System {
 						echo '<div class="clear"></div>';
 						echo '<img class="delete-thread" data-thread-id="' . esc_attr( $thread->id ) . '" src="' . esc_url( WSS_URI ) . '/images/dustbin.png">';
 					echo '</div>';
-					echo '<div class="thread-content">' . nl2br( wp_kses_post( wp_unslash( $thread->content ) ) ) . '</div>';
+					echo '<div class="thread-content">' . wp_kses_post( wp_unslash( $thread->content ) ) . '</div>';
 					echo '</div>';
 				}
 			}
