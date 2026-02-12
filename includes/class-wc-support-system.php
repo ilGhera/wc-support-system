@@ -1588,7 +1588,7 @@ class WC_Support_System {
 
 			$title      = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 			$product_id = isset( $_POST['product-id'] ) ? sanitize_text_field( wp_unslash( $_POST['product-id'] ) ) : '';
-			$content    = isset( $_POST['wss-ticket'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-ticket'] ) ) : '';
+			$content    = isset( $_POST['wss-ticket'] ) ? wp_filter_post_kses( wp_unslash( $_POST['wss-ticket'] ) ) : '';
 			$recipients = isset( $_POST['additional-recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['additional-recipients'] ) ) : null;
 			$date       = date( 'Y-m-d H:i:s' );
 
