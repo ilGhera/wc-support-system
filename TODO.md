@@ -1,5 +1,120 @@
 # WC Support System - Release History
 
+## 🚧 TODO: AI Upsell per versione Free
+
+**Branch**: `free`
+**Data**: Febbraio 2026
+
+### Obiettivo
+Mostrare il pulsante "AI Suggestion" nella versione free come upsell per incentivare l'upgrade alla versione premium.
+
+### Comportamento previsto
+1. Pulsante visibile solo per admin (nel form risposta ticket)
+2. Badge "PRO" accanto al testo del pulsante
+3. Al clic: mostra notice con descrizione feature e link upgrade
+
+### Implementazione (Approccio A - Solo upsell, nessun merge)
+Aggiungere direttamente nel branch free senza merge dal dev-version:
+
+**File da modificare**: `includes/class-wc-support-system.php`
+- Funzione `create_new_thread()` (~linea 778): aggiungere HTML pulsante con badge PRO
+
+**HTML da aggiungere** (prima del form, solo se `$is_admin`):
+```php
+<?php if ( $is_admin ) : ?>
+<div class="wss-ai-container wss-ai-premium-upsell">
+    <button type="button" class="button wss-ai-suggest-pro">
+        <span class="dashicons dashicons-lightbulb"></span>
+        <?php esc_html_e( 'AI Suggestion', 'wc-support-system' ); ?>
+        <span class="wss-pro-badge">PRO</span>
+    </button>
+</div>
+<?php endif; ?>
+```
+
+**CSS da aggiungere** in `css/wss-admin-style.css`:
+```css
+/* AI Upsell Button */
+.wss-ai-premium-upsell {
+    margin-bottom: 15px;
+}
+.wss-ai-suggest-pro {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.wss-pro-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+/* AI Upsell Modal */
+.wss-ai-upsell-notice {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-left: 4px solid #667eea;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+.wss-ai-upsell-notice h4 {
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wss-ai-upsell-notice ul {
+    margin: 10px 0;
+}
+.wss-ai-upsell-notice li {
+    margin: 5px 0;
+}
+```
+
+**JavaScript** (inline in `wss_admin_scripts()` o in admin_footer):
+```javascript
+jQuery(document).on('click', '.wss-ai-suggest-pro', function(e) {
+    e.preventDefault();
+    var $container = jQuery(this).closest('.wss-ai-premium-upsell');
+
+    if ($container.find('.wss-ai-upsell-notice').length) {
+        $container.find('.wss-ai-upsell-notice').slideToggle();
+        return;
+    }
+
+    var notice = '<div class="wss-ai-upsell-notice">' +
+        '<h4><span class="dashicons dashicons-lightbulb"></span> AI Suggestion - Funzionalità Premium</h4>' +
+        '<p>Genera risposte intelligenti ai ticket usando OpenAI, Anthropic, DeepSeek o Groq.</p>' +
+        '<ul>' +
+        '<li>✓ Suggerimenti basati sul contesto del ticket</li>' +
+        '<li>✓ Ricerca ticket simili già risolti</li>' +
+        '<li>✓ Raffina le risposte con istruzioni</li>' +
+        '</ul>' +
+        '<p><a href="https://www.ilghera.com/product/wc-support-system-premium/" class="button button-primary" target="_blank">Scopri la versione Premium →</a></p>' +
+        '</div>';
+
+    $container.append(notice);
+});
+```
+
+### Provider testati (versione premium)
+- DeepSeek: ✅ Testato
+- Anthropic: Da verificare
+- OpenAI: Non testato (stesso formato DeepSeek)
+- Groq: Non testato (stesso formato DeepSeek)
+
+### Note
+- La versione premium su branch `dev-version` ha la funzionalità AI completa
+- CLAUDE.md creato con documentazione architettura
+- Analisi gestione errori completata e salvata nel TODO del branch dev-version
+
+---
+
 ## 🚧 PENDING RELEASE - Security Fixes for Wordfence Report
 
 ### Security Fixes Applied (Awaiting Release)
