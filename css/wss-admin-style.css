@@ -262,3 +262,116 @@ span.date {
     }
 }
 
+/* Nav tabs */
+.wss-nav-tab-wrapper {
+    margin-bottom: 1rem;
+}
+.nav-tab-premium {
+    color: #b8860b !important;
+    font-weight: 600;
+}
+.nav-tab-premium:hover,
+.nav-tab-premium:focus {
+    color: #8b6508 !important;
+}
+.nav-tab-premium .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+.nav-tab-premium.nav-tab-active {
+    color: #f0b90b !important;
+    border-bottom-color: #f0b90b !important;
+}
+
+/* Premium upsell tab */
+.wss-premium-upsell {
+    max-width: 860px;
+    margin-top: 1.5rem;
+}
+.wss-premium-header {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+.wss-premium-header .dashicons {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #f0b90b;
+}
+.wss-premium-header h2 {
+    font-size: 1.6rem;
+    margin: 0.5rem 0;
+    color: #23282d;
+}
+.wss-premium-header .description {
+    font-size: 1rem;
+    color: #666;
+}
+.wss-premium-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.wss-feature {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s ease;
+}
+.wss-feature:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.wss-feature .dashicons {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    color: #f0b90b;
+}
+.wss-feature h3 {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #23282d;
+}
+.wss-feature p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+.wss-premium-cta {
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+.wss-premium-cta .button-hero {
+    background: #f0b90b;
+    border-color: #d4a009;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 0.6rem 2rem;
+}
+.wss-premium-cta .button-hero:hover {
+    background: #d4a009;
+    border-color: #b8860b;
+    color: #fff;
+}
+.wss-premium-cta .description {
+    margin-top: 0.75rem;
+    color: #666;
+}
+@media only screen and (max-width: 790px) {
+    .wss-premium-features {
+        grid-template-columns: 1fr;
+    }
+}
+

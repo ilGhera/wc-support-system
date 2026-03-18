@@ -1877,9 +1877,18 @@ class WC_Support_System {
 		$auto_close_notice_text = get_option( 'wss-auto-close-notice-text' );
 		$auto_close_days        = get_option( 'wss-auto-close-days' ) ? get_option( 'wss-auto-close-days' ) : 2;
 
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
+
 		echo '<div class="wrap">';
 			echo '<div class="wrap-left">';
 				echo '<h1>ilGhera Support System for WooCommerce - ' . esc_html__( 'Settings', 'wc-support-system' ) . '</h1>';
+
+				echo '<nav class="nav-tab-wrapper wss-nav-tab-wrapper">';
+					echo '<a href="' . esc_url( admin_url( 'admin.php?page=wss-settings&tab=general' ) ) . '" class="nav-tab ' . ( 'general' === $current_tab ? 'nav-tab-active' : '' ) . '">' . esc_html__( 'General', 'wc-support-system' ) . '</a>';
+					echo '<a href="' . esc_url( admin_url( 'admin.php?page=wss-settings&tab=premium' ) ) . '" class="nav-tab nav-tab-premium ' . ( 'premium' === $current_tab ? 'nav-tab-active' : '' ) . '"><span class="dashicons dashicons-star-filled"></span> ' . esc_html__( 'Premium', 'wc-support-system' ) . '</a>';
+				echo '</nav>';
+
+			if ( 'general' === $current_tab ) :
 
 				/*Premium key form*/
 				echo '<form name="wss-options" class="wss-options one-of" method="post" action="">';
@@ -2135,6 +2144,54 @@ class WC_Support_System {
 					echo '<input type="hidden" name="wss-options-hidden" value="1">';
 					echo '<input type="submit" class="button button-primary" value="' . esc_html__( 'Save', 'wc-support-system' ) . '">';
 				echo '</form>';
+
+			else :
+				?>
+				<div class="wss-premium-upsell">
+					<div class="wss-premium-header">
+						<span class="dashicons dashicons-star-filled"></span>
+						<h2><?php esc_html_e( 'Passa alla versione Premium', 'wc-support-system' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Sblocca funzionalità avanzate per offrire un supporto clienti ancora più efficace.', 'wc-support-system' ); ?></p>
+					</div>
+
+					<div class="wss-premium-features">
+						<div class="wss-feature">
+							<span class="dashicons dashicons-superhero"></span>
+							<h3><?php esc_html_e( 'AI Response Suggestions', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Ricevi suggerimenti di risposta generati dall\'AI direttamente nel ticket. Porta la tua chiave API (BYOK) e scegli tra OpenAI, Claude (Anthropic), DeepSeek o Groq.', 'wc-support-system' ); ?></p>
+						</div>
+
+						<div class="wss-feature">
+							<span class="dashicons dashicons-groups"></span>
+							<h3><?php esc_html_e( 'Supporto utenti non registrati', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Permetti anche agli utenti non loggati di aprire ticket di supporto, identificati tramite email e ordine WooCommerce.', 'wc-support-system' ); ?></p>
+						</div>
+
+						<div class="wss-feature">
+							<span class="dashicons dashicons-clock"></span>
+							<h3><?php esc_html_e( 'Chiusura automatica ticket', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Chiudi automaticamente i ticket inattivi dopo un numero di giorni configurabile, con notifica preventiva all\'utente.', 'wc-support-system' ); ?></p>
+						</div>
+
+						<div class="wss-feature">
+							<span class="dashicons dashicons-email-alt"></span>
+							<h3><?php esc_html_e( 'Destinatari aggiuntivi', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Invia le notifiche dei ticket anche ad altri indirizzi email oltre all\'amministratore, per un flusso di lavoro collaborativo.', 'wc-support-system' ); ?></p>
+						</div>
+					</div>
+
+					<div class="wss-premium-cta">
+						<a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank" class="button button-primary button-hero">
+							<?php esc_html_e( 'Acquista Premium', 'wc-support-system' ); ?>
+						</a>
+						<p class="description">
+							<?php esc_html_e( 'Licenza annuale con aggiornamenti e supporto inclusi.', 'wc-support-system' ); ?>
+						</p>
+					</div>
+				</div>
+				<?php
+			endif;
+
 			echo '</div>';
 			echo '<div class="wrap-right">';
 				echo '<iframe width="300" height="900" scrolling="no" src="http://www.ilghera.com/images/wss-premium-iframe.html"></iframe>';
