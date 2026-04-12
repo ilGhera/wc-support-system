@@ -43,8 +43,6 @@ class WC_Support_System {
 	 */
 	public function __construct() {
 
-		add_action( 'wss_cron_tickets_action', array( $this, 'wss_cron_tickets' ) );
-
 		add_action( 'admin_init', array( $this, 'wss_save_settings' ) );
 		add_action( 'admin_init', array( $this, 'dashboard_customer_access' ) );
 		add_action( 'admin_menu', array( $this, 'register_wss_admin' ) );
@@ -70,9 +68,6 @@ class WC_Support_System {
 		add_action( 'wp_ajax_nopriv_get_ticket_content', array( $this, 'get_ticket_content_callback' ) );
 		add_action( 'wp_ajax_product-select-warning', array( $this, 'product_select_warning_callback' ) );
 		add_action( 'wp_ajax_nopriv_product-select-warning', array( $this, 'product_select_warning_callback' ) );
-		add_action( 'wp_ajax_update-additional-recipients', array( $this, 'update_additional_recipients' ) );
-		add_action( 'wp_ajax_nopriv_update-additional-recipients', array( $this, 'update_additional_recipients' ) );
-
 		add_action( 'wp_footer', array( $this, 'ajax_get_ticket_content' ) );
 
 		add_shortcode( 'support-tickets-table', array( $this, 'support_tickets_table' ) );
@@ -218,24 +213,22 @@ class WC_Support_System {
 			$user = wp_get_current_user();
 
 			/* More data to script */
-			$get_ticket_nonce                   = wp_create_nonce( 'wss-get-ticket' );
-			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status' );
-			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend' );
-			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients' );
-			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread' );
-			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket' );
+			$get_ticket_nonce           = wp_create_nonce( 'wss-get-ticket' );
+			$change_ticket_status_nonce = wp_create_nonce( 'wss-change-ticket-status' );
+			$avoid_resend               = wp_create_nonce( 'wss-avoid-resend' );
+			$delete_single_thread       = wp_create_nonce( 'wss-delete-single-thread' );
+			$delete_single_ticket       = wp_create_nonce( 'wss-delete-single-ticket' );
 
 			wp_localize_script(
 				'wss-script',
 				'wssData',
 				array(
-					'userEmail'                       => $user->user_email,
-					'getTicketNonce'                  => $get_ticket_nonce,
-					'changeTicketStatusNonce'         => $change_ticket_status_nonce,
-					'avoidResendNonce'                => $avoid_resend,
-					'updateAdditionalRecipientsNonce' => $update_additional_recipients_nonce,
-					'deleteSingleThreadNonce'         => $delete_single_thread,
-					'deleteSingleTicketNonce'         => $delete_single_ticket,
+					'userEmail'               => $user->user_email,
+					'getTicketNonce'          => $get_ticket_nonce,
+					'changeTicketStatusNonce' => $change_ticket_status_nonce,
+					'avoidResendNonce'        => $avoid_resend,
+					'deleteSingleThreadNonce' => $delete_single_thread,
+					'deleteSingleTicketNonce' => $delete_single_ticket,
 				)
 			);
 
@@ -268,24 +261,22 @@ class WC_Support_System {
 			$user = wp_get_current_user();
 
 			/* More data to script */
-			$get_ticket_nonce                   = wp_create_nonce( 'wss-get-ticket' );
-			$change_ticket_status_nonce         = wp_create_nonce( 'wss-change-ticket-status' );
-			$avoid_resend                       = wp_create_nonce( 'wss-avoid-resend' );
-			$update_additional_recipients_nonce = wp_create_nonce( 'wss-update-additional-recipients' );
-			$delete_single_thread               = wp_create_nonce( 'wss-delete-single-thread' );
-			$delete_single_ticket               = wp_create_nonce( 'wss-delete-single-ticket' );
+			$get_ticket_nonce           = wp_create_nonce( 'wss-get-ticket' );
+			$change_ticket_status_nonce = wp_create_nonce( 'wss-change-ticket-status' );
+			$avoid_resend               = wp_create_nonce( 'wss-avoid-resend' );
+			$delete_single_thread       = wp_create_nonce( 'wss-delete-single-thread' );
+			$delete_single_ticket       = wp_create_nonce( 'wss-delete-single-ticket' );
 
 			wp_localize_script(
 				'wss-script',
 				'wssData',
 				array(
-					'userEmail'                       => $user->user_email,
-					'getTicketNonce'                  => $get_ticket_nonce,
-					'changeTicketStatusNonce'         => $change_ticket_status_nonce,
-					'avoidResendNonce'                => $avoid_resend,
-					'updateAdditionalRecipientsNonce' => $update_additional_recipients_nonce,
-					'deleteSingleThreadNonce'         => $delete_single_thread,
-					'deleteSingleTicketNonce'         => $delete_single_ticket,
+					'userEmail'               => $user->user_email,
+					'getTicketNonce'          => $get_ticket_nonce,
+					'changeTicketStatusNonce' => $change_ticket_status_nonce,
+					'avoidResendNonce'        => $avoid_resend,
+					'deleteSingleThreadNonce' => $delete_single_thread,
+					'deleteSingleTicketNonce' => $delete_single_ticket,
 				)
 			);
 			/*css*/
@@ -403,48 +394,11 @@ class WC_Support_System {
 
 		} else {
 
-			$id   = 0;
-			$name = null;
-
-			if ( isset( $_COOKIE['wss-guest-name'] ) ) {
-
-				$name = sanitize_text_field( wp_unslash( $_COOKIE['wss-guest-name'] ) );
-
-			} elseif ( isset( $_POST['wss-guest-name'], $_POST['wss-support-access-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-support-access-nonce'] ) ), 'wss-support-access' ) ) {
-
-				$name = sanitize_text_field( wp_unslash( $_POST['wss-guest-name'] ) );
-
-			}
-
-			$email = null;
-
-			if ( isset( $_COOKIE['wss-guest-email'] ) ) {
-
-				$email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-
-			} elseif ( isset( $_POST['wss-guest-email'] ) ) {
-
-				$email = sanitize_email( wp_unslash( $_POST['wss-guest-email'] ) );
-
-			}
-
-			$order_id = null;
-
-			if ( isset( $_COOKIE['wss-order-id'] ) ) {
-
-				$order_id = sanitize_text_field( wp_unslash( $_COOKIE['wss-order-id'] ) );
-
-			} elseif ( isset( $_POST['wss-order-id'] ) ) {
-
-				$order_id = sanitize_text_field( wp_unslash( $_POST['wss-order-id'] ) );
-
-			}
-
-			$output['id']       = $id;
-			$output['name']     = $name;
-			$output['email']    = $email;
+			$output['id']       = 0;
+			$output['name']     = null;
+			$output['email']    = null;
 			$output['admin']    = false;
-			$output['order_id'] = $order_id;
+			$output['order_id'] = null;
 		}
 
 		return $output;
@@ -519,35 +473,7 @@ class WC_Support_System {
 	 */
 	public function support_access_validation( $setcookie = null ) {
 
-		$validation = false;
-
-		$this->support_page     = get_option( 'wss-page' );
-		$this->support_page_url = get_the_permalink( $this->support_page );
-
-		if ( isset( $_POST['wss-support-access'], $_POST['wss-support-access-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-support-access-nonce'] ) ), 'wss-support-access' ) ) {
-
-			$guest_name = isset( $_POST['wss-guest-name'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-guest-name'] ) ) : null;
-			$email      = isset( $_POST['wss-guest-email'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-guest-email'] ) ) : null;
-			$order_id   = isset( $_POST['wss-order-id'] ) ? sanitize_text_field( wp_unslash( $_POST['wss-order-id'] ) ) : null;
-			$setcookie  = $setcookie ? $setcookie : true;
-
-			$products = $this->get_user_products( $order_id, $email );
-
-			if ( $products ) {
-				if ( $setcookie ) {
-					$expire = time() + (86400 * 30); // 30 days
-					setcookie( 'wss-support-access', '1', $expire, COOKIEPATH, COOKIE_DOMAIN );
-					setcookie( 'wss-guest-name', $guest_name, $expire, COOKIEPATH, COOKIE_DOMAIN );
-					setcookie( 'wss-guest-email', $email, $expire, COOKIEPATH, COOKIE_DOMAIN );
-					setcookie( 'wss-order-id', $order_id, $expire, COOKIEPATH, COOKIE_DOMAIN );
-
-					wp_safe_redirect( $this->support_page_url );
-					exit;
-				}
-			}
-		}
-
-		return $validation;
+		return false;
 
 	}
 
@@ -567,40 +493,6 @@ class WC_Support_System {
 		}
 
 		return $validation;
-	}
-
-	/**
-	 * Validate guest user access to a ticket
-	 *
-	 * Verifies that:
-	 * 1. Both wss-guest-email and wss-order-id cookies exist
-	 * 2. The order exists and the email matches the order's billing email
-	 * 3. The ticket's user_email matches the guest email
-	 *
-	 * @param string $ticket_email The email associated with the ticket.
-	 *
-	 * @return bool True if access is valid, false otherwise.
-	 */
-	private function validate_guest_ticket_access( $ticket_email ) {
-		if ( ! isset( $_COOKIE['wss-guest-email'], $_COOKIE['wss-order-id'] ) ) {
-			return false;
-		}
-
-		$guest_email = sanitize_email( wp_unslash( $_COOKIE['wss-guest-email'] ) );
-		$order_id    = sanitize_text_field( wp_unslash( $_COOKIE['wss-order-id'] ) );
-
-		// Validate that the order exists and email matches the order's billing email.
-		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
-			return false;
-		}
-
-		if ( $order->get_billing_email() !== $guest_email ) {
-			return false;
-		}
-
-		// Verify ticket ownership.
-		return $ticket_email === $guest_email;
 	}
 
 	/**
@@ -624,50 +516,12 @@ class WC_Support_System {
 	}
 
 	/**
-	 * Check for tickets not updated from a while (time option available) and send a message to the user
+	 * Auto close tickets (Premium feature - not available in free version)
 	 *
 	 * @return void
 	 */
 	public function wss_cron_tickets() {
-
-		global $wpdb;
-
-		$tickets = $wpdb->get_results(
-			"
-            SELECT *
-            FROM {$wpdb->prefix}wss_support_tickets
-            WHERE status = 2
-            "
-		);
-
-		/*Get the setting options*/
-		$notice_period = 60 * 60 * 24 * get_option( 'wss-auto-close-days-notice' );
-		$closing_delay = 60 * 60 * 24 * get_option( 'wss-auto-close-days' );
-
-		/*Message*/
-		$auto_close_notice_text = get_option( 'wss-auto-close-notice-text' );
-
-		if ( $tickets ) {
-			foreach ( $tickets as $ticket ) {
-				$last_update = strtotime( $ticket->update_time );
-				$now         = strtotime( 'now' );
-
-				if ( ( $now - $last_update ) >= ( $notice_period + $closing_delay ) ) {
-
-					/*Last update is used for not modifying the ticket date*/
-					$this->update_ticket( $ticket->id, $ticket->update_time, 3 );
-
-				} elseif ( ( $now - $last_update ) >= $notice_period ) {
-
-					if ( 0 === $this->get_ticket( $ticket->id, 'notified' ) ) {
-
-						/*Send user notification*/
-						$this->support_notification( $ticket->id, $auto_close_notice_text, null, $ticket->user_email, true );
-
-					}
-				}
-			}
-		}
+		// Premium feature only.
 	}
 
 	/**
@@ -752,9 +606,6 @@ class WC_Support_System {
 				}
 				?>
 				</select>
-				<?php if ( $this->is_additional_recipients_on() ) { ?>
-					<input type="text" name="additional-recipients" class="additional-recipients" data-blacklist="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo esc_html__( 'Send notifications to other email addresses', 'wc-support-system' ); ?>">
-				<?php } ?>
 				<input type="text" name="title" placeholder="<?php echo esc_html__( 'Ticket subject', 'wc-support-system' ); ?>" required="required">
 				<?php wp_editor( '', 'wss-ticket' ); ?>
 				<input type="hidden" name="ticket-sent" value="1">
@@ -970,27 +821,12 @@ class WC_Support_System {
 				}
 			}
 
-			// Check if guest user owns the ticket (via validated cookies) - separate check to handle all cases
-			if ( ! $has_access && $this->validate_guest_ticket_access( $ticket->user_email ) ) {
-				$has_access = true;
-			}
-
 			if ( ! $has_access ) {
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to view this ticket.', 'wc-support-system' ) ) );
 				exit;
 			}
 
 			echo '<div id="wss-ticket" class="ticket-' . esc_attr( $ticket_id ) . '">';
-
-			if ( $this->is_additional_recipients_on() ) {
-
-				echo '<form>';
-				echo '<label for="additional-recipients">' . esc_html__( 'Additional recipients', 'wc-support-system' ) . '</label>';
-				echo '<p class="description">' . esc_html__( 'These email addresses will receive notifications about this ticket updates.', 'wc-support-system' ) . '</p>';
-				echo '<input type="text" name="additional-recipients-' . esc_attr( $ticket_id ) . '" class="additional-recipients additional-recipients-' . esc_attr( $ticket_id ) . '" data-blacklist="' . esc_attr( $ticket->user_email ) . '" placeholder="' . esc_html__( 'Add one or more email addresses', 'wc-support-system' ) . '" value="' . esc_attr( $ticket->recipients ) . '">';
-				echo '</form>';
-
-			}
 
 			$threads = self::get_ticket_threads( $ticket_id );
 			if ( $threads ) {
@@ -1023,17 +859,12 @@ class WC_Support_System {
 	}
 
 	/**
-	 * Exit button for not logged in users (delete cookies)
+	 * Exit button for not logged in users (Premium feature - not available in free version)
 	 *
 	 * @return void
 	 */
 	public function support_exit_button() {
-
-		if ( isset( $_COOKIE['wss-support-access'] ) ) {
-
-			echo '<button type="button" class="btn btn-default support-exit-button">' . esc_html__( 'Exit', 'wc-support-system' ) . '</button>';
-
-		}
+		// Premium feature only.
 	}
 
 	/**
@@ -1044,7 +875,7 @@ class WC_Support_System {
 	public function support_tickets_table() {
 
 		/*The user has access to the support service*/
-		if ( ( isset( $_COOKIE['wss-support-access'] ) && get_option( 'wss-guest-users' ) ) || $this->logged_in_user_support_access_validation() ) :
+		if ( $this->logged_in_user_support_access_validation() ) :
 
 			$userdata   = $this->user_data();
 			$user_id    = $userdata['id'];
@@ -1101,29 +932,16 @@ class WC_Support_System {
 			}
 			$this->create_new_ticket( $order_id, $user_email );
 
-			/*Bad data provided or guest users not allowed from the plugin options*/
-		elseif ( ( isset( $_POST['wss-support-access'], $_POST['wss-support-access-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-support-access-nonce'] ) ), 'wss-support-access' ) ) && ! $this->support_access_validation( false ) || ! get_option( 'wss-guest-users' ) ) :
-			echo '<div class="bootstrap-iso">';
-				echo '<div class="alert alert-danger">' . esc_html__( 'It seems like you have not access to the support service at the moment.', 'wc-support-system' ) . '</div>';
-			echo '</div>';
-
 			/*Logged in user but not a customer*/
-			elseif ( is_user_logged_in() ) :
+		elseif ( is_user_logged_in() ) :
+			echo '<div class="bootstrap-iso">';
+				echo '<div class="alert alert-danger">' . esc_html__( 'It seems like you haven\'t bought any productat the moment.', 'wc-support-system' ) . '</div>';
+			echo '</div>';
+			else :
 				echo '<div class="bootstrap-iso">';
-					echo '<div class="alert alert-danger">' . esc_html__( 'It seems like you haven\'t bought any productat the moment.', 'wc-support-system' ) . '</div>';
+					echo '<div class="alert alert-warning">' . esc_html__( 'Please log in to access the support service.', 'wc-support-system' ) . '</div>';
 				echo '</div>';
-				else :
-					?>
-				<form id="wes-support-access" method="POST" action="">
-					<input type="text" name="wss-guest-name" id="wss-guest-name" placeholder="<?php echo esc_html__( 'Your name', 'wc-support-system' ); ?>" required="required">
-					<input type="email" name="wss-guest-email" id="wss-guest-email" placeholder="<?php echo esc_html__( 'Email (used for the order)', 'wc-support-system' ); ?>" required="required">
-					<input type="text" name="wss-order-id" id="wss-order-id" placeholder="<?php echo esc_html__( 'The order id', 'wc-support-system' ); ?>" required="required">
-					<input type="hidden" name="wss-support-access" value="1">
-					<input type="submit" value="<?php echo esc_html__( 'Access', 'wc-support-system' ); ?>">
-					<?php wp_nonce_field( 'wss-support-access', 'wss-support-access-nonce' ); ?>
-				</form>
-					<?php
-				endif;
+			endif;
 
 				echo '</div>';
 	}
@@ -1235,10 +1053,6 @@ class WC_Support_System {
 					if ( $ticket->user_email === $current_user->user_email ) {
 						$has_access = true;
 					}
-				}
-				// Check if guest user owns the ticket (via validated cookies)
-				elseif ( $this->validate_guest_ticket_access( $ticket->user_email ) ) {
-					$has_access = true;
 				}
 
 				if ( ! $has_access ) {
@@ -1450,61 +1264,6 @@ class WC_Support_System {
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Update the additional recipients of a ticket with Ajax
-	 */
-	public function update_additional_recipients() {
-
-		if ( isset( $_POST['wss-update-additional-recipients-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wss-update-additional-recipients-nonce'] ) ), 'wss-update-additional-recipients' ) ) {
-
-			$ticket_id  = isset( $_POST['ticket-id'] ) ? sanitize_text_field( wp_unslash( $_POST['ticket-id'] ) ) : null;
-			$recipients = isset( $_POST['recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['recipients'] ) ) : null;
-
-			if ( $ticket_id ) {
-
-				// Check user capabilities or ownership
-				$has_admin_capability = current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
-
-				if ( ! $has_admin_capability ) {
-					// If not admin/shop manager, verify ticket ownership
-					$ticket = self::get_ticket( $ticket_id );
-
-					if ( ! $ticket ) {
-						wp_send_json_error( array( 'message' => __( 'Ticket not found.', 'wc-support-system' ) ) );
-						exit;
-					}
-
-					$has_access = false;
-
-					// Check if logged in user owns the ticket (by email)
-					if ( is_user_logged_in() ) {
-						$current_user = wp_get_current_user();
-						if ( $ticket->user_email === $current_user->user_email ) {
-							$has_access = true;
-						}
-					}
-					// Check if guest user owns the ticket (via validated cookies)
-					elseif ( $this->validate_guest_ticket_access( $ticket->user_email ) ) {
-						$has_access = true;
-					}
-
-					if ( ! $has_access ) {
-						wp_send_json_error( array( 'message' => __( 'You do not have permission to update recipients for this ticket.', 'wc-support-system' ) ) );
-						exit;
-					}
-				}
-
-				global $wpdb;
-
-				$wpdb->update( $wpdb->prefix . 'wss_support_tickets', array( 'recipients' => $recipients ), array( 'id' => $ticket_id ) );
-
-			}
-		}
-
-		exit;
-
 	}
 
 	/**
@@ -1871,11 +1630,7 @@ class WC_Support_System {
 		$support_email          = get_option( 'wss-support-email' );
 		$support_email_name     = get_option( 'wss-support-email-name' );
 		$support_email_footer   = get_option( 'wss-support-email-footer' );
-		$user_closing_tickets   = get_option( 'wss-user-closing-tickets' );
-		$auto_close_tickets     = get_option( 'wss-auto-close-tickets' );
-		$auto_close_days_notice = get_option( 'wss-auto-close-days-notice' ) ? get_option( 'wss-auto-close-days-notice' ) : 7;
-		$auto_close_notice_text = get_option( 'wss-auto-close-notice-text' );
-		$auto_close_days        = get_option( 'wss-auto-close-days' ) ? get_option( 'wss-auto-close-days' ) : 2;
+		$user_closing_tickets = get_option( 'wss-user-closing-tickets' );
 
 		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 
@@ -1998,10 +1753,11 @@ class WC_Support_System {
 						echo '<tr class="wss-additional-recipients-field notifications-fields">';
 							echo '<th scope="row">' . esc_html__( 'Additional recipients', 'wc-support-system' ) . '</th>';
 							echo '<td>';
-								echo '<label for="wss-additional-recipients">';
-									echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1"' . ( 1 === intval( $additional_recipients ) ? ' checked="checked"' : '' ) . '>';
+								echo '<label for="wss-additional-recipients" style="opacity:.5;">';
+									echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1" disabled="disabled">';
 									echo esc_html__( 'Allow the user to specify multiple email addresses for receiving notifications.', 'wc-support-system' );
 								echo '</label>';
+								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
 							echo '</td>';
 						echo '</tr>';
 
@@ -2058,14 +1814,15 @@ class WC_Support_System {
 							echo '</td>';
 						echo '</tr>';
 
-						/*Support for not logged in users*/
+						/*Support for not logged in users - Premium feature*/
 						echo '<tr>';
 							echo '<th scope="row">' . esc_html__( 'Guest users', 'wc-support-system' ) . '</th>';
 							echo '<td>';
-								echo '<label for="guest-users">';
-									echo '<input type="checkbox" name="guest-users" value="1"' . ( 1 === intval( $guest_users ) ? ' checked="checked"' : '' ) . '>';
+								echo '<label for="guest-users" style="opacity:.5;">';
+									echo '<input type="checkbox" name="guest-users" value="1" disabled="disabled">';
 									echo esc_html__( 'Not logged in users can receive support providing the email and an order id.', 'wc-support-system' );
 								echo '</label>';
+								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
 							echo '</td>';
 						echo '</tr>';
 
@@ -2091,50 +1848,15 @@ class WC_Support_System {
 							echo '</td>';
 						echo '</tr>';
 
-						/*Close not updated tickets after a specified period*/
-						echo '<tr class="auto-close-tickets-field">';
+						/*Close not updated tickets after a specified period - Premium feature*/
+						echo '<tr>';
 							echo '<th scope="row">' . esc_html__( 'Auto close tickets', 'wc-support-system' ) . '</th>';
 							echo '<td>';
-								echo '<label for="">';
-									echo '<input type="checkbox" class="auto-close-tickets" name="auto-close-tickets" value="1"' . ( 1 === intval( $auto_close_tickets ) ? ' checked="checked"' : '' ) . '>';
+								echo '<label for="" style="opacity:.5;">';
+									echo '<input type="checkbox" name="auto-close-tickets" value="1" disabled="disabled">';
 									echo esc_html__( 'Close tickets not updated for a specified period.', 'wc-support-system' );
 								echo '</label>';
-							echo '</td>';
-						echo '</tr>';
-
-						/*Days of no updates for sending a notice to the user*/
-						echo '<tr class="auto-close-fields">';
-							echo '<th scope="row">' . esc_html__( 'Notice period', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-								echo '<input type="number" name="auto-close-days-notice" min="1" max="100" step="1" value="' . esc_attr( $auto_close_days_notice ) . '">';
-								echo '<p class="description">' . esc_html__( 'Days with no updates for sending a notice to the user.', 'wc-support-system' ) . '</p>';
-							echo '</td>';
-						echo '</tr>';
-
-						/*Closing ticket user notification*/
-						echo '<tr class="auto-close-fields">';
-							echo '<th scope="row">' . esc_html__( 'User notice', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-
-								/* Translators: the website name */
-								$default_text = sprintf(
-									__( "Hi, we have not heard back from you in a few days.\nDo you need anything else from us for this support case?\nIf yes, please update the ticket on %s, we will get back to you asap.\nIf your questions have been answered, please disregard this message and we will mark this case as resolved.\nThanks!", 'wss' ),
-									get_bloginfo()
-								);
-
-								$notice = $auto_close_notice_text ? $auto_close_notice_text : $default_text;
-
-								echo '<textarea class="auto-close-notice-text" name="auto-close-notice-text" cols="60" rows="6">' . wp_kses_post( $notice ) . '</textarea>';
-								echo '<p class="description">' . esc_html__( 'Message to the user informing him that the ticket is going to be closed.', 'wc-support-system' ) . '</p>';
-							echo '</td>';
-						echo '</tr>';
-
-						/*Days after the notice for closing the ticket defintely*/
-						echo '<tr class="auto-close-fields">';
-							echo '<th scope="row">' . esc_html__( 'Closing delay', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-								echo '<input type="number" name="auto-close-days" min="1" max="10" step="1" value="' . esc_attr( $auto_close_days ) . '">';
-								echo '<p class="description">' . esc_html__( 'Days after the notice for closing the ticket definitely.', 'wc-support-system' ) . '</p>';
+								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
 							echo '</td>';
 						echo '</tr>';
 
@@ -2272,10 +1994,6 @@ class WC_Support_System {
 			update_option( 'wss-customer-uploads', $customer_uploads );
 			$this->customer_upload_files( $customer_uploads );
 
-			/*Guest users*/
-			$guest_users = isset( $_POST['guest-users'] ) ? sanitize_text_field( wp_unslash( $_POST['guest-users'] ) ) : 0;
-			update_option( 'wss-guest-users', $guest_users );
-
 			/*Reopen ticket*/
 			$reopen_ticket = isset( $_POST['reopen-ticket'] ) ? sanitize_text_field( wp_unslash( $_POST['reopen-ticket'] ) ) : 0;
 			update_option( 'wss-reopen-ticket', $reopen_ticket );
@@ -2283,16 +2001,6 @@ class WC_Support_System {
 			/*User closing tickets*/
 			$user_closing_ticket = isset( $_POST['user-closing-tickets'] ) ? sanitize_text_field( wp_unslash( $_POST['user-closing-tickets'] ) ) : 0;
 			update_option( 'wss-user-closing-tickets', $user_closing_ticket );
-
-			/*Auto close tickets*/
-			$auto_close_tickets     = isset( $_POST['auto-close-tickets'] ) ? sanitize_text_field( wp_unslash( $_POST['auto-close-tickets'] ) ) : 0;
-			$auto_close_days_notice = isset( $_POST['auto-close-days-notice'] ) ? sanitize_text_field( wp_unslash( $_POST['auto-close-days-notice'] ) ) : '';
-			$auto_close_notice_text = isset( $_POST['auto-close-notice-text'] ) ? wp_filter_post_kses( wp_unslash( $_POST['auto-close-notice-text'] ) ) : '';
-			$auto_close_days        = isset( $_POST['auto-close-days'] ) ? sanitize_text_field( wp_unslash( $_POST['auto-close-days'] ) ) : '';
-			update_option( 'wss-auto-close-tickets', $auto_close_tickets );
-			update_option( 'wss-auto-close-days-notice', $auto_close_days_notice );
-			update_option( 'wss-auto-close-notice-text', $auto_close_notice_text );
-			update_option( 'wss-auto-close-days', $auto_close_days );
 
 		}
 	}
