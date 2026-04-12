@@ -278,7 +278,7 @@ span.date {
     font-size: 14px;
     width: 14px;
     height: 14px;
-    vertical-align: middle;
+    vertical-align: text-bottom;
     margin-right: 2px;
 }
 .nav-tab-premium.nav-tab-active {
