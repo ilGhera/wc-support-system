@@ -1749,18 +1749,6 @@ class WC_Support_System {
 							echo '</td>';
 						echo '</tr>';
 
-						/*Additional recipients*/
-						echo '<tr class="wss-additional-recipients-field notifications-fields">';
-							echo '<th scope="row">' . esc_html__( 'Additional recipients', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-								echo '<label for="wss-additional-recipients" style="opacity:.5;">';
-									echo '<input type="checkbox" class="wss-additional-recipients" name="wss-additional-recipients" value="1" disabled="disabled">';
-									echo esc_html__( 'Allow the user to specify multiple email addresses for receiving notifications.', 'wc-support-system' );
-								echo '</label>';
-								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
-							echo '</td>';
-						echo '</tr>';
-
 						/*Admin email notification*/
 						echo '<tr class="admin-notification-field notifications-fields">';
 							echo '<th scope="row">' . esc_html__( 'Admin email notification', 'wc-support-system' ) . '</th>';
@@ -1814,18 +1802,6 @@ class WC_Support_System {
 							echo '</td>';
 						echo '</tr>';
 
-						/*Support for not logged in users - Premium feature*/
-						echo '<tr>';
-							echo '<th scope="row">' . esc_html__( 'Guest users', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-								echo '<label for="guest-users" style="opacity:.5;">';
-									echo '<input type="checkbox" name="guest-users" value="1" disabled="disabled">';
-									echo esc_html__( 'Not logged in users can receive support providing the email and an order id.', 'wc-support-system' );
-								echo '</label>';
-								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
-							echo '</td>';
-						echo '</tr>';
-
 						/*Reopen a ticket after a new thread is sent in back-end*/
 						echo '<tr>';
 							echo '<th scope="row">' . esc_html__( 'Reopen ticket', 'wc-support-system' ) . '</th>';
@@ -1845,18 +1821,6 @@ class WC_Support_System {
 									echo '<input type="checkbox" class="user-closing-tickets" name="user-closing-tickets" value="1"' . ( 1 === intval( $user_closing_tickets ) ? ' checked="checked"' : '' ) . '>';
 									echo esc_html__( 'Allow user to close tickets.', 'wc-support-system' );
 								echo '</label>';
-							echo '</td>';
-						echo '</tr>';
-
-						/*Close not updated tickets after a specified period - Premium feature*/
-						echo '<tr>';
-							echo '<th scope="row">' . esc_html__( 'Auto close tickets', 'wc-support-system' ) . '</th>';
-							echo '<td>';
-								echo '<label for="" style="opacity:.5;">';
-									echo '<input type="checkbox" name="auto-close-tickets" value="1" disabled="disabled">';
-									echo esc_html__( 'Close tickets not updated for a specified period.', 'wc-support-system' );
-								echo '</label>';
-								echo '<p class="description">' . esc_html__( 'Available in Premium version.', 'wc-support-system' ) . '</p>';
 							echo '</td>';
 						echo '</tr>';
 
