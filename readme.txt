@@ -1,11 +1,11 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.2.10
-Stable tag: 1.2.10
+Version: 1.3.0
+Stable tag: 1.3.0
 Requires at least: 5.0
 Tested up to: 6.9
-WC tested up to: 10
+WC tested up to: 10.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -56,6 +56,14 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.3.0 =
+Release Date: 12 April 2026
+
+    * New feature: "Premium" tab in settings page showcasing available premium features (AI suggestions, guest user support, auto-close tickets)
+    * Enhancement: WooCommerce 10.6 support
+    * Bug fix: Thread display double spacing removed
+    * Bug fix: Ticket content formatting and sanitization improved
 
 = 1.2.10 =
 Release Date: 10 February 2026
