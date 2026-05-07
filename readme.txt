@@ -1,8 +1,8 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.3.0
-Stable tag: 1.3.0
+Version: 1.3.1
+Stable tag: 1.3.1
 Requires at least: 5.0
 Tested up to: 6.9
 WC tested up to: 10.6
@@ -56,6 +56,11 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.3.1 =
+Release Date: 7 May 2026
+
+    * Security fix: Removed unauthenticated access to ticket content - guest user support is a premium feature only
 
 = 1.3.0 =
 Release Date: 12 April 2026
