@@ -65,7 +65,6 @@ class WC_Support_System {
 		add_action( 'wp_ajax_delete-thread', array( $this, 'delete_single_thread_callback' ) );
 		add_action( 'wp_ajax_change-ticket-status', array( $this, 'change_ticket_status_callback' ) );
 		add_action( 'wp_ajax_get_ticket_content', array( $this, 'get_ticket_content_callback' ) );
-		add_action( 'wp_ajax_nopriv_get_ticket_content', array( $this, 'get_ticket_content_callback' ) );
 		add_action( 'wp_ajax_product-select-warning', array( $this, 'product_select_warning_callback' ) );
 		add_action( 'wp_ajax_nopriv_product-select-warning', array( $this, 'product_select_warning_callback' ) );
 		add_action( 'wp_footer', array( $this, 'ajax_get_ticket_content' ) );
