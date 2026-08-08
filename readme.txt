@@ -4,8 +4,8 @@ Tags: WooCommerce, support, ticket, thread, orders
 Version: 1.3.1
 Stable tag: 1.3.1
 Requires at least: 5.0
-Tested up to: 6.9
-WC tested up to: 10.6
+Tested up to: 7.0
+WC tested up to: 11.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
