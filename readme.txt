@@ -58,10 +58,9 @@ https://youtu.be/XUtmBvoPwkI
 == Changelog ==
 
 = 1.3.2 =
-Release Date: 8 August 2026
+Release Date: 13 August 2026
 
-    * Compatibility: WordPress 7.0
-    * Compatibility: WooCommerce 11.0.0
+    * Compatibility: WooCommerce 11.0.1
 
 = 1.3.1 =
 Release Date: 7 May 2026
