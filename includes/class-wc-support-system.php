@@ -1835,42 +1835,42 @@ class WC_Support_System {
 				<div class="wss-premium-upsell">
 					<div class="wss-premium-header">
 						<span class="dashicons dashicons-star-filled"></span>
-						<h2><?php esc_html_e( 'Passa alla versione Premium', 'wc-support-system' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Sblocca funzionalità avanzate per offrire un supporto clienti ancora più efficace.', 'wc-support-system' ); ?></p>
+						<h2><?php esc_html_e( 'Upgrade to the Premium version', 'wc-support-system' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Unlock advanced features to offer an even more effective customer support.', 'wc-support-system' ); ?></p>
 					</div>
 
 					<div class="wss-premium-features">
 						<div class="wss-feature">
 							<span class="dashicons dashicons-superhero"></span>
 							<h3><?php esc_html_e( 'AI Response Suggestions', 'wc-support-system' ); ?></h3>
-							<p><?php esc_html_e( 'Ricevi suggerimenti di risposta generati dall\'AI direttamente nel ticket. Porta la tua chiave API (BYOK) e scegli tra OpenAI, Claude (Anthropic), DeepSeek o Groq.', 'wc-support-system' ); ?></p>
+							<p><?php esc_html_e( 'Get AI generated reply suggestions right inside the ticket. Bring your own API key (BYOK) and choose between OpenAI, Claude (Anthropic), DeepSeek and Groq.', 'wc-support-system' ); ?></p>
 						</div>
 
 						<div class="wss-feature">
 							<span class="dashicons dashicons-groups"></span>
-							<h3><?php esc_html_e( 'Supporto utenti non registrati', 'wc-support-system' ); ?></h3>
-							<p><?php esc_html_e( 'Permetti anche agli utenti non loggati di aprire ticket di supporto, identificati tramite email e ordine WooCommerce.', 'wc-support-system' ); ?></p>
+							<h3><?php esc_html_e( 'Guest user support', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Let users who are not logged in open support tickets, identified by their email address and WooCommerce order.', 'wc-support-system' ); ?></p>
 						</div>
 
 						<div class="wss-feature">
 							<span class="dashicons dashicons-clock"></span>
-							<h3><?php esc_html_e( 'Chiusura automatica ticket', 'wc-support-system' ); ?></h3>
-							<p><?php esc_html_e( 'Chiudi automaticamente i ticket inattivi dopo un numero di giorni configurabile, con notifica preventiva all\'utente.', 'wc-support-system' ); ?></p>
+							<h3><?php esc_html_e( 'Automatic ticket closing', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Automatically close inactive tickets after a configurable number of days, with a notice sent to the user in advance.', 'wc-support-system' ); ?></p>
 						</div>
 
 						<div class="wss-feature">
 							<span class="dashicons dashicons-email-alt"></span>
-							<h3><?php esc_html_e( 'Destinatari aggiuntivi', 'wc-support-system' ); ?></h3>
-							<p><?php esc_html_e( 'Invia le notifiche dei ticket anche ad altri indirizzi email oltre all\'amministratore, per un flusso di lavoro collaborativo.', 'wc-support-system' ); ?></p>
+							<h3><?php esc_html_e( 'Additional email recipients', 'wc-support-system' ); ?></h3>
+							<p><?php esc_html_e( 'Send ticket notifications to other email addresses besides the administrator, for a collaborative workflow.', 'wc-support-system' ); ?></p>
 						</div>
 					</div>
 
 					<div class="wss-premium-cta">
 						<a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank" class="button button-primary button-hero">
-							<?php esc_html_e( 'Acquista Premium', 'wc-support-system' ); ?>
+							<?php esc_html_e( 'Buy Premium', 'wc-support-system' ); ?>
 						</a>
 						<p class="description">
-							<?php esc_html_e( 'Licenza annuale con aggiornamenti e supporto inclusi.', 'wc-support-system' ); ?>
+							<?php esc_html_e( 'Annual license, updates and support included.', 'wc-support-system' ); ?>
 						</p>
 					</div>
 				</div>

@@ -422,11 +422,12 @@ msgid "Save"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2153
-msgid "Passa alla versione Premium"
+msgid "Upgrade to the Premium version"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2154
-msgid "Sblocca funzionalità avanzate per offrire un supporto clienti ancora più efficace."
+msgid ""
+"Unlock advanced features to offer an even more effective customer support."
 msgstr ""
 
 #: includes/class-wc-support-system.php:2160
@@ -434,39 +435,48 @@ msgid "AI Response Suggestions"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2161
-msgid "Ricevi suggerimenti di risposta generati dall'AI direttamente nel ticket. Porta la tua chiave API (BYOK) e scegli tra OpenAI, Claude (Anthropic), DeepSeek o Groq."
+msgid ""
+"Get AI generated reply suggestions right inside the ticket. Bring your own "
+"API key (BYOK) and choose between OpenAI, Claude (Anthropic), DeepSeek and "
+"Groq."
 msgstr ""
 
 #: includes/class-wc-support-system.php:2166
-msgid "Supporto utenti non registrati"
+msgid "Guest user support"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2167
-msgid "Permetti anche agli utenti non loggati di aprire ticket di supporto, identificati tramite email e ordine WooCommerce."
+msgid ""
+"Let users who are not logged in open support tickets, identified by their "
+"email address and WooCommerce order."
 msgstr ""
 
 #: includes/class-wc-support-system.php:2172
-msgid "Chiusura automatica ticket"
+msgid "Automatic ticket closing"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2173
-msgid "Chiudi automaticamente i ticket inattivi dopo un numero di giorni configurabile, con notifica preventiva all'utente."
+msgid ""
+"Automatically close inactive tickets after a configurable number of days, "
+"with a notice sent to the user in advance."
 msgstr ""
 
 #: includes/class-wc-support-system.php:2178
-msgid "Destinatari aggiuntivi"
+msgid "Additional email recipients"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2179
-msgid "Invia le notifiche dei ticket anche ad altri indirizzi email oltre all'amministratore, per un flusso di lavoro collaborativo."
+msgid ""
+"Send ticket notifications to other email addresses besides the "
+"administrator, for a collaborative workflow."
 msgstr ""
 
 #: includes/class-wc-support-system.php:2185
-msgid "Acquista Premium"
+msgid "Buy Premium"
 msgstr ""
 
 #: includes/class-wc-support-system.php:2188
-msgid "Licenza annuale con aggiornamenti e supporto inclusi."
+msgid "Annual license, updates and support included."
 msgstr ""
 
 #: includes/class-wss-table.php:33
