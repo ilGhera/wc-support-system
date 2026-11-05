@@ -8,7 +8,7 @@
  * Author URI: https://ilghera.com
  * Requires at least: 5.0
  * Tested up to: 7.1
- * WC tested up to: 11.2.1
+ * WC tested up to: 11.2.2
  * Text Domain: wc-support-system
  * Domain Path: /languages
  * Requires Plugins: woocommerce
