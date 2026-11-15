@@ -1905,7 +1905,7 @@ class WC_Support_System {
 
 			echo '</div>';
 			echo '<div class="wrap-right">';
-				echo '<iframe width="300" height="900" scrolling="no" src="https://www.ilghera.com/images/wss-premium-iframe.html"></iframe>';
+				echo '<iframe width="300" height="900" scrolling="no" src="https://www.ilghera.com/images/wss-iframe.html"></iframe>';
 			echo '</div>';
 			echo '<div class="clear"></div>';
 		echo '</div>';
