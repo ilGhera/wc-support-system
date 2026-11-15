@@ -8,6 +8,32 @@
  * @since 1.0.3
  */
 
+if ( ! function_exists( 'wss_ilghera_url' ) ) {
+
+	/**
+	 * Indirizzo di una pagina prodotto su ilghera.com: lingua dell'utente e tracciamento.
+	 *
+	 * @param string $slug     lo slug del prodotto, uguale nelle due lingue.
+	 * @param string $campaign utm_campaign: settings (upgrade) o license (rinnovo).
+	 *
+	 * @return string
+	 */
+	function wss_ilghera_url( $slug, $campaign = 'settings' ) {
+
+		$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+		$path   = ( 0 === strpos( $locale, 'it' ) ) ? 'it/prodotto' : 'product';
+
+		return add_query_arg(
+			array(
+				'utm_source'   => 'wp-plugin',
+				'utm_medium'   => 'wc-support-system',
+				'utm_campaign' => $campaign,
+			),
+			'https://www.ilghera.com/' . $path . '/' . $slug . '/'
+		);
+	}
+}
+
 /**
  * WC_Support_System class
  *
@@ -1866,7 +1892,7 @@ class WC_Support_System {
 					</div>
 
 					<div class="wss-premium-cta">
-						<a href="https://www.ilghera.com/product/woocommerce-support-system-premium/" target="_blank" class="button button-primary button-hero">
+						<a href="<?php echo esc_url( wss_ilghera_url( 'woocommerce-support-system-premium', 'settings' ) ); ?>" target="_blank" class="button button-primary button-hero">
 							<?php esc_html_e( 'Buy Premium', 'wc-support-system' ); ?>
 						</a>
 						<p class="description">
