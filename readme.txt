@@ -1,8 +1,8 @@
 === ilGhera Support System for WooCommerce ===
 Contributors: ghera74
 Tags: WooCommerce, support, ticket, thread, orders
-Version: 1.3.9
-Stable tag: 1.3.9
+Version: 1.3.10
+Stable tag: 1.3.10
 Requires at least: 5.0
 Tested up to: 7.1
 WC tested up to: 11.3.0
@@ -56,6 +56,13 @@ https://youtu.be/XUtmBvoPwkI
 
 
 == Changelog ==
+
+= 1.3.10 =
+Release Date: 19 November 2026
+
+    * Bug Fix: la versione free carica l'iframe wss-iframe.html
+    * Bug Fix: iframe della barra laterale in https
+    * Bug Fix: link al premium nella lingua dell'utente, con tracciamento
 
 = 1.3.9 =
 Release Date: 12 November 2026
